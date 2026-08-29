@@ -15,10 +15,13 @@ services:
     restart: unless-stopped
 
   api:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: doit-backend
+    image: maven:3.9.6-eclipse-temurin-21-alpine
+    container_name: doit-backend-dev
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+      - maven-repo:/root/.m2
+    command: mvn spring-boot:run
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/doit_db
       - SPRING_DATASOURCE_USERNAME=doit_user
@@ -30,15 +33,20 @@ services:
     restart: unless-stopped
 
   web:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: doit-frontend
+    image: node:20-alpine
+    container_name: doit-frontend-dev
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    # Instala os pacotes se não existirem e roda o servidor de dev (Vite com hot-reload)
+    command: sh -c "npm install && npm run dev"
     ports:
-      - "80:80"
+      - "5173:5173"
+      - "5174:5174"
     depends_on:
       - api
     restart: unless-stopped
 
 volumes:
   postgres_data:
+  maven-repo:
