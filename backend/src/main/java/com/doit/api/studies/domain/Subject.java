@@ -28,15 +28,18 @@ public class Subject {
 
     private String schedule; // e.g. 19:00 - 20:40
 
+    private String days; // e.g. Seg, Qua
+
     public Subject() {}
 
-    public Subject(String name, SubjectStatus status, SubjectGrade grade, Integer semesterTaken, String professor, String schedule) {
+    public Subject(String name, SubjectStatus status, SubjectGrade grade, Integer semesterTaken, String professor, String schedule, String days) {
         this.name = name;
         this.status = status;
         this.grade = grade;
         this.semesterTaken = semesterTaken;
         this.professor = professor;
         this.schedule = schedule;
+        this.days = days;
     }
 
     public Long getId() { return id; }
@@ -52,4 +55,6 @@ public class Subject {
     public void setProfessor(String professor) { this.professor = professor; }
     public String getSchedule() { return schedule; }
     public void setSchedule(String schedule) { this.schedule = schedule; }
+    public String getDays() { return days; }
+    public void setDays(String days) { this.days = days; }
 }

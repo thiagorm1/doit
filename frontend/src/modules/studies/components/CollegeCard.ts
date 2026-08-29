@@ -113,7 +113,10 @@ export const CollegeCard = () => `
             <option value="COMPLETED">Concluída</option>
             <option value="PENDING">Pendente</option>
           </select>
-          <input type="text" id="subj-schedule" placeholder="Horário (Ex: 19:00 - 20:40)" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
+          <div id="subj-enrolled-fields" class="flex gap-2">
+            <input type="text" id="subj-days" placeholder="Dias (Ex: Seg, Qua)" class="flex-1 bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
+            <input type="text" id="subj-schedule" placeholder="Horário (Ex: 19:00)" class="flex-1 bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
+          </div>
           <div id="subj-completed-fields" class="hidden flex gap-2">
             <select id="subj-grade" class="flex-1 bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all">
               <option value="E">Excelente (E)</option>
@@ -210,7 +213,7 @@ export const initCollegeCard = async () => {
              <span class="text-body-sm text-on-surface">${s.name}</span>
              ${s.professor ? `<span class="text-[10px] text-on-surface-variant">Prof. ${s.professor}</span>` : ''}
           </div>
-          <span class="text-[10px] text-primary">${s.schedule || 'Cursando'}</span>
+          <span class="text-[10px] text-primary">${(s.days ? s.days + (s.schedule ? ' - ' + s.schedule : '') : s.schedule) || 'Cursando'}</span>
         </div>
       `).join('');
     }
@@ -272,7 +275,7 @@ export const initCollegeCard = async () => {
         <div>
           <span class="block text-sm text-on-surface">${s.name}</span>
           ${s.professor ? `<span class="block text-[10px] text-on-surface-variant">Prof. ${s.professor}</span>` : ''}
-          <span class="block text-xs text-on-surface-variant">${s.status} ${s.status === 'COMPLETED' ? `- Nota ${s.grade} (Sem ${s.semesterTaken})` : (s.schedule ? `- ${s.schedule}` : '')}</span>
+          <span class="block text-xs text-on-surface-variant">${s.status} ${s.status === 'COMPLETED' ? `- Nota ${s.grade} (Sem ${s.semesterTaken})` : ((s.days ? ` - ${s.days}` : '') + (s.schedule ? ` - ${s.schedule}` : ''))}</span>
         </div>
         <button class="delete-subj text-error hover:text-error/80 cursor-pointer" data-id="${s.id}"><span class="material-symbols-outlined text-[16px]">delete</span></button>
       </div>
@@ -404,7 +407,7 @@ export const initCollegeCard = async () => {
   // Status Change Logic
   const stSel = document.getElementById('subj-status') as HTMLSelectElement;
   const cmpFlds = document.getElementById('subj-completed-fields')!;
-  const schFld = document.getElementById('subj-schedule')!;
+  const schFld = document.getElementById('subj-enrolled-fields')!;
   stSel.addEventListener('change', () => {
     if (stSel.value === 'COMPLETED') {
       cmpFlds.classList.remove('hidden');
@@ -436,9 +439,11 @@ export const initCollegeCard = async () => {
     const profInput = document.getElementById('subj-prof') as HTMLInputElement;
     const semInput = document.getElementById('subj-semester') as HTMLInputElement;
     const schInput = document.getElementById('subj-schedule') as HTMLInputElement;
+    const daysInput = document.getElementById('subj-days') as HTMLInputElement;
     const name = nameInput.value;
     const prof = profInput.value;
     const sch = schInput.value;
+    const days = daysInput.value;
     const status = stSel.value;
     const grade = (document.getElementById('subj-grade') as HTMLSelectElement).value;
     const sem = parseInt(semInput.value);
@@ -461,6 +466,7 @@ export const initCollegeCard = async () => {
           name, status, 
           professor: prof,
           schedule: status === 'ENROLLED' ? sch : null,
+          days: status === 'ENROLLED' ? days : null,
           grade: status === 'COMPLETED' ? grade : null, 
           semesterTaken: status === 'COMPLETED' ? sem : null 
         })
@@ -474,6 +480,7 @@ export const initCollegeCard = async () => {
       nameInput.value = '';
       profInput.value = '';
       schInput.value = '';
+      daysInput.value = '';
       if(status === 'COMPLETED') semInput.value = '';
       
       showToast('Matéria adicionada com sucesso!');

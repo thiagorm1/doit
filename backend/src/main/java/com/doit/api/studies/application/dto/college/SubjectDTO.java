@@ -11,6 +11,7 @@ public class SubjectDTO {
     private Integer semesterTaken;
     private String professor;
     private String schedule;
+    private String days;
 
     // Getters and Setters
     public Long getId() { return id; }
@@ -27,4 +28,6 @@ public class SubjectDTO {
     public void setProfessor(String professor) { this.professor = professor; }
     public String getSchedule() { return schedule; }
     public void setSchedule(String schedule) { this.schedule = schedule; }
+    public String getDays() { return days; }
+    public void setDays(String days) { this.days = days; }
 }

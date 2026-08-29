@@ -44,6 +44,7 @@ public class CollegeService {
             dto.setSemesterTaken(s.getSemesterTaken());
             dto.setProfessor(s.getProfessor());
             dto.setSchedule(s.getSchedule());
+            dto.setDays(s.getDays());
             return dto;
         }).collect(Collectors.toList());
 
@@ -78,6 +79,7 @@ public class CollegeService {
         subject.setSemesterTaken(dto.getSemesterTaken());
         subject.setProfessor(dto.getProfessor());
         subject.setSchedule(dto.getSchedule());
+        subject.setDays(dto.getDays());
         subject = subjectRepository.save(subject);
         
         dto.setId(subject.getId());
