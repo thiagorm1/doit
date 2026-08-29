@@ -14,11 +14,11 @@ export const MetricsCard = () => `
         </div>
         <div>
           <span class="block font-body-sm text-body-sm text-on-surface-variant">Sessões Realizadas</span>
-          <span class="block font-headline-md text-headline-md font-bold text-on-surface">42</span>
+          <span id="metrics-sessions" class="block font-headline-md text-headline-md font-bold text-on-surface">--</span>
         </div>
       </div>
       <div class="flex flex-col items-end">
-        <span class="text-tertiary text-label-caps font-label-caps flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">arrow_upward</span> 12%</span>
+        <span class="text-tertiary text-label-caps font-label-caps flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">arrow_upward</span> --</span>
         <span class="text-on-surface-variant text-[10px]">vs. última semana</span>
       </div>
     </div>
@@ -29,7 +29,7 @@ export const MetricsCard = () => `
         </div>
         <div>
           <span class="block font-body-sm text-body-sm text-on-surface-variant">Média de Estudo</span>
-          <span class="block font-headline-md text-headline-md font-bold text-on-surface">4h 15m</span>
+          <span id="metrics-focus" class="block font-headline-md text-headline-md font-bold text-on-surface">--</span>
         </div>
       </div>
       <span class="text-on-surface-variant text-label-caps font-label-caps">/ DIA</span>
@@ -41,7 +41,7 @@ export const MetricsCard = () => `
         </div>
         <div>
           <span class="block font-body-sm text-body-sm text-on-surface-variant">Média de Descanso</span>
-          <span class="block font-headline-md text-headline-md font-bold text-on-surface">45m</span>
+          <span id="metrics-break" class="block font-headline-md text-headline-md font-bold text-on-surface">--</span>
         </div>
       </div>
       <span class="text-on-surface-variant text-label-caps font-label-caps">/ DIA</span>
@@ -49,3 +49,42 @@ export const MetricsCard = () => `
   </div>
 </section>
 `;
+
+export const initMetricsCard = async () => {
+  const elSessions = document.getElementById('metrics-sessions');
+  const elFocus = document.getElementById('metrics-focus');
+  const elBreak = document.getElementById('metrics-break');
+
+  if (!elSessions || !elFocus || !elBreak) return;
+
+  const fetchMetrics = async () => {
+    try {
+      const res = await fetch('http://localhost:8080/api/studies/pomodoro/metrics');
+      if (!res.ok) throw new Error('API falhou');
+      
+      const data = await res.json();
+      
+      elSessions.textContent = data.totalSessions.toString();
+      
+      const formatMinToHours = (min: number) => {
+        const h = Math.floor(min / 60);
+        const m = min % 60;
+        if (h > 0) return `${h}h ${m}m`;
+        return `${m}m`;
+      };
+
+      elFocus.textContent = formatMinToHours(data.averageFocusTimePerDay);
+      elBreak.textContent = formatMinToHours(data.averageBreakTimePerDay);
+
+    } catch (err) {
+      console.warn('Backend indisponível. Falha ao carregar métricas.');
+      elSessions.textContent = '0';
+      elFocus.textContent = '0m';
+      elBreak.textContent = '0m';
+    }
+  };
+
+  await fetchMetrics();
+
+  window.addEventListener('pomodoro-completed', fetchMetrics);
+};

@@ -1,6 +1,6 @@
 import { PomodoroCard } from './components/PomodoroCard';
 import { MetricsCard } from './components/MetricsCard';
-import { MindMapsCard } from './components/MindMapsCard';
+import { CollegeCard } from './components/CollegeCard';
 import { KnowledgeBaseArea } from './components/KnowledgeBaseArea';
 
 export const StudiesView = () => `
@@ -18,9 +18,19 @@ export const StudiesView = () => `
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter mb-gutter relative z-10">
     ${PomodoroCard()}
     ${MetricsCard()}
-    ${MindMapsCard()}
+    ${CollegeCard()}
   </div>
   
   <!-- Knowledge Base Area -->
   ${KnowledgeBaseArea()}
 `;
+
+import { initPomodoro } from './components/PomodoroCard';
+import { initMetricsCard } from './components/MetricsCard';
+import { initCollegeCard } from './components/CollegeCard';
+
+export const initStudiesView = () => {
+  initPomodoro();
+  initMetricsCard();
+  initCollegeCard();
+};
