@@ -62,6 +62,12 @@ export const CollegeCard = () => `
     </div>
   </div>
 
+  <!-- Toast de Sucesso -->
+  <div id="college-toast" class="hidden absolute top-4 left-1/2 -translate-x-1/2 bg-[#4CAF50] text-white px-4 py-2 rounded-full shadow-lg text-sm font-bold items-center gap-2 z-[60] transition-opacity duration-300 opacity-0">
+    <span class="material-symbols-outlined text-[18px]">check_circle</span>
+    <span id="college-toast-msg">Sucesso!</span>
+  </div>
+
   <!-- Modal de Configuração Faculdade (Overlay Interno) -->
   <div id="college-modal" class="hidden absolute inset-0 bg-surface/95 z-50 flex flex-col rounded-xl backdrop-blur-md border border-outline-variant/30 shadow-2xl">
     <div class="p-4 border-b border-outline-variant/20 flex justify-between items-center bg-surface-container-low/50">
@@ -156,6 +162,25 @@ export const CollegeCard = () => `
 export const initCollegeCard = async () => {
   const elConfigSem = document.getElementById('college-current-sem')!;
   const elConfigGrad = document.getElementById('college-grad-sem')!;
+
+  const showToast = (msg: string) => {
+    const toast = document.getElementById('college-toast')!;
+    document.getElementById('college-toast-msg')!.textContent = msg;
+    toast.classList.remove('hidden');
+    toast.classList.add('flex');
+    requestAnimationFrame(() => {
+      toast.classList.remove('opacity-0');
+      toast.classList.add('opacity-100');
+    });
+    setTimeout(() => {
+      toast.classList.remove('opacity-100');
+      toast.classList.add('opacity-0');
+      setTimeout(() => {
+        toast.classList.remove('flex');
+        toast.classList.add('hidden');
+      }, 300);
+    }, 3000);
+  };
 
   const fetchState = async () => {
     try {
@@ -451,6 +476,7 @@ export const initCollegeCard = async () => {
       schInput.value = '';
       if(status === 'COMPLETED') semInput.value = '';
       
+      showToast('Matéria adicionada com sucesso!');
       await fetchState();
     } catch (e) {
       subjAddBtn.innerHTML = 'Erro!';
@@ -506,6 +532,7 @@ export const initCollegeCard = async () => {
       semInput.value = '';
       gradeInput.value = '';
       
+      showToast('Prova adicionada com sucesso!');
       await fetchState();
     } catch (e) {
       examAddBtn.innerHTML = 'Erro!';
