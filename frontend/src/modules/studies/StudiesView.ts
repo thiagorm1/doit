@@ -16,11 +16,17 @@ export const StudiesView = () => `
   </div>
   
   <!-- Top Grid: Bento Style -->
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter mb-gutter relative z-10">
-    ${PomodoroCard()}
-    ${MetricsCard()}
-    ${CollegeCard()}
-    ${ContestCard()}
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter mb-gutter relative z-10">
+    <div class="flex flex-col">
+      ${PomodoroCard()}
+    </div>
+    <div class="flex flex-col gap-gutter">
+      ${ContestCard()}
+      ${MetricsCard()}
+    </div>
+    <div class="flex flex-col">
+      ${CollegeCard()}
+    </div>
   </div>
   
   <!-- Knowledge Base Area -->

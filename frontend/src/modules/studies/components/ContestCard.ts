@@ -1,69 +1,88 @@
 export const ContestCard = () => `
-<section class="glass-panel rounded-xl p-lg col-span-1 lg:col-span-4 flex flex-col glow-hover transition-all duration-300 relative overflow-hidden h-[400px]">
+<style>
+@keyframes flipTop {
+  0% { transform: rotateX(0deg); }
+  100% { transform: rotateX(-90deg); }
+}
+@keyframes flipBottom {
+  0% { transform: rotateX(90deg); }
+  100% { transform: rotateX(0deg); }
+}
+.flip-animate-top {
+  animation: flipTop 0.25s ease-in forwards;
+}
+.flip-animate-bottom {
+  animation: flipBottom 0.25s ease-out 0.25s forwards;
+}
+.perspective-1000 {
+  perspective: 1000px;
+}
+.transform-origin-bottom {
+  transform-origin: bottom;
+}
+.transform-origin-top {
+  transform-origin: top;
+}
+.backface-hidden {
+  backface-visibility: hidden;
+}
+</style>
+<section class="glass-panel rounded-xl p-md flex flex-col glow-hover transition-all duration-300 relative overflow-hidden group">
   <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none"></div>
   
-  <div class="flex justify-between items-start z-10">
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
-        <span class="material-symbols-outlined text-[20px]">workspace_premium</span>
-      </div>
-      <div>
-        <h2 class="text-title-md font-title-md text-on-surface mb-0.5">Concurso Objetivo</h2>
-        <p id="contest-position" class="text-body-sm text-on-surface-variant">Carregando...</p>
+  <div class="flex justify-between items-center z-10 mb-2">
+    <div class="flex items-center gap-2">
+      <span class="material-symbols-outlined text-[18px] text-primary">workspace_premium</span>
+      <div class="leading-tight">
+        <h2 id="contest-name-display" class="text-sm font-bold text-on-surface">Concurso Objetivo</h2>
+        <p id="contest-position" class="text-[10px] text-on-surface-variant">Carregando...</p>
       </div>
     </div>
-    <button id="contest-edit-btn" class="text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center bg-surface-container-highest rounded-md w-7 h-7 cursor-pointer">
-      <span class="material-symbols-outlined text-[16px]">settings</span>
+    <button id="contest-edit-btn" class="text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center bg-surface-container-highest rounded-md w-6 h-6 cursor-pointer">
+      <span class="material-symbols-outlined text-[14px]">settings</span>
     </button>
   </div>
 
-  <div class="flex-1 flex flex-col items-center justify-center z-10 relative mt-4">
+  <div class="flex-1 flex flex-col items-center justify-center z-10 relative">
     <div id="contest-not-configured" class="hidden text-center text-on-surface-variant">
-      <span class="material-symbols-outlined text-4xl mb-2 opacity-50">event_busy</span>
-      <p>Nenhum concurso configurado.</p>
+      <span class="material-symbols-outlined text-xl mb-1 opacity-50">event_busy</span>
+      <p class="text-xs">Não configurado</p>
     </div>
 
     <div id="contest-configured" class="flex flex-col items-center w-full">
-      <h3 id="contest-name-display" class="text-lg font-bold text-on-surface mb-6 text-center"></h3>
-      
       <!-- Split Flap Countdown -->
-      <div class="flex gap-2 sm:gap-4 justify-center text-on-surface font-mono text-3xl sm:text-4xl font-bold">
+      <div class="flex gap-2 justify-center text-on-surface font-mono text-2xl font-bold mt-2">
         <div class="flex flex-col items-center">
-          <div class="bg-surface-container-highest px-3 py-2 sm:px-4 sm:py-3 rounded-lg shadow-inner relative overflow-hidden">
-             <span id="flap-days">00</span>
-             <div class="absolute inset-x-0 top-1/2 h-px bg-background/80"></div>
+          <div class="bg-surface-container-highest px-2 py-1 rounded shadow-inner relative overflow-hidden perspective-1000" id="flap-days-container">
+             <span id="flap-days" class="relative z-10">00</span>
+             <div class="absolute inset-x-0 top-1/2 h-px bg-background/80 z-20"></div>
           </div>
-          <span class="text-[10px] text-on-surface-variant uppercase mt-2 tracking-widest font-sans">Dias</span>
+          <span class="text-[9px] text-on-surface-variant uppercase mt-1 tracking-widest font-sans">Dias</span>
         </div>
-        <span class="mt-2 text-on-surface-variant opacity-50">:</span>
+        <span class="mt-1 text-on-surface-variant opacity-50">:</span>
         <div class="flex flex-col items-center">
-          <div class="bg-surface-container-highest px-3 py-2 sm:px-4 sm:py-3 rounded-lg shadow-inner relative overflow-hidden">
-             <span id="flap-hours">00</span>
-             <div class="absolute inset-x-0 top-1/2 h-px bg-background/80"></div>
+          <div class="bg-surface-container-highest px-2 py-1 rounded shadow-inner relative overflow-hidden perspective-1000" id="flap-hours-container">
+             <span id="flap-hours" class="relative z-10">00</span>
+             <div class="absolute inset-x-0 top-1/2 h-px bg-background/80 z-20"></div>
           </div>
-          <span class="text-[10px] text-on-surface-variant uppercase mt-2 tracking-widest font-sans">Horas</span>
+          <span class="text-[9px] text-on-surface-variant uppercase mt-1 tracking-widest font-sans">Horas</span>
         </div>
-        <span class="mt-2 text-on-surface-variant opacity-50">:</span>
+        <span class="mt-1 text-on-surface-variant opacity-50">:</span>
         <div class="flex flex-col items-center">
-          <div class="bg-surface-container-highest px-3 py-2 sm:px-4 sm:py-3 rounded-lg shadow-inner relative overflow-hidden">
-             <span id="flap-mins">00</span>
-             <div class="absolute inset-x-0 top-1/2 h-px bg-background/80"></div>
+          <div class="bg-surface-container-highest px-2 py-1 rounded shadow-inner relative overflow-hidden perspective-1000" id="flap-mins-container">
+             <span id="flap-mins" class="relative z-10">00</span>
+             <div class="absolute inset-x-0 top-1/2 h-px bg-background/80 z-20"></div>
           </div>
-          <span class="text-[10px] text-on-surface-variant uppercase mt-2 tracking-widest font-sans">Min</span>
+          <span class="text-[9px] text-on-surface-variant uppercase mt-1 tracking-widest font-sans">Min</span>
         </div>
-        <span class="mt-2 text-on-surface-variant opacity-50">:</span>
+        <span class="mt-1 text-on-surface-variant opacity-50">:</span>
         <div class="flex flex-col items-center">
-          <div class="bg-surface-container-highest px-3 py-2 sm:px-4 sm:py-3 rounded-lg shadow-inner relative overflow-hidden">
-             <span id="flap-secs" class="text-primary">00</span>
-             <div class="absolute inset-x-0 top-1/2 h-px bg-background/80"></div>
+          <div class="bg-surface-container-highest px-2 py-1 rounded shadow-inner relative overflow-hidden perspective-1000" id="flap-secs-container">
+             <span id="flap-secs" class="text-primary relative z-10">00</span>
+             <div class="absolute inset-x-0 top-1/2 h-px bg-background/80 z-20"></div>
           </div>
-          <span class="text-[10px] text-on-surface-variant uppercase mt-2 tracking-widest font-sans">Seg</span>
+          <span class="text-[9px] text-on-surface-variant uppercase mt-1 tracking-widest font-sans">Seg</span>
         </div>
-      </div>
-      
-      <div class="mt-8 flex items-center gap-2 text-on-surface-variant bg-surface-container px-4 py-2 rounded-full border border-outline-variant/20">
-        <span class="material-symbols-outlined text-[18px]">calendar_month</span>
-        <span id="contest-date-display" class="text-sm font-medium">--</span>
       </div>
     </div>
   </div>
@@ -113,7 +132,6 @@ export const initContestCard = () => {
   
   const elPosition = document.getElementById('contest-position')!;
   const elName = document.getElementById('contest-name-display')!;
-  const elDate = document.getElementById('contest-date-display')!;
   
   const iName = document.getElementById('cfg-contest-name') as HTMLInputElement;
   const iPos = document.getElementById('cfg-contest-position') as HTMLInputElement;
@@ -166,10 +184,19 @@ export const initContestCard = () => {
     const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const secs = Math.floor((diff % (1000 * 60)) / 1000);
     
-    fDays.textContent = String(days).padStart(2, '0');
-    fHours.textContent = String(hours).padStart(2, '0');
-    fMins.textContent = String(mins).padStart(2, '0');
-    fSecs.textContent = String(secs).padStart(2, '0');
+    const updateFlap = (el: HTMLElement, val: string) => {
+      if (el.textContent !== val) {
+        el.classList.remove('flip-animate-top');
+        void el.offsetWidth; // trigger reflow
+        el.classList.add('flip-animate-top');
+        el.textContent = val;
+      }
+    };
+
+    updateFlap(fDays, String(days).padStart(2, '0'));
+    updateFlap(fHours, String(hours).padStart(2, '0'));
+    updateFlap(fMins, String(mins).padStart(2, '0'));
+    updateFlap(fSecs, String(secs).padStart(2, '0'));
   };
 
   const renderCard = (data: any) => {
@@ -179,10 +206,6 @@ export const initContestCard = () => {
       
       elPosition.textContent = data.targetPosition || 'Cargo não definido';
       elName.textContent = data.contestName;
-      
-      // Format date: "4 de Novembro de 2026"
-      const d = new Date(data.examDate + "T00:00:00");
-      elDate.textContent = new Intl.DateTimeFormat('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }).format(d);
       
       currentTargetDate = data.examDate;
       if (countdownInterval) clearInterval(countdownInterval);
