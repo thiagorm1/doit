@@ -14,5 +14,31 @@ services:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
 
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: doit-backend
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/doit_db
+      - SPRING_DATASOURCE_USERNAME=doit_user
+      - SPRING_DATASOURCE_PASSWORD=doit_password
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: doit-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
 volumes:
   postgres_data:
