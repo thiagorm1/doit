@@ -101,11 +101,13 @@ export const CollegeCard = () => `
       <div id="content-subjects" class="hidden flex-col h-full">
         <div class="flex gap-2 mb-5">
            <button id="subtab-subj-add" class="px-4 py-1.5 bg-primary text-on-secondary rounded-full text-xs font-bold transition-colors shadow-sm">Adicionar</button>
+           <button id="subtab-subj-active" class="px-4 py-1.5 bg-surface border border-outline-variant/30 text-on-surface-variant hover:text-on-surface rounded-full text-xs font-bold transition-colors">Ativos</button>
            <button id="subtab-subj-hist" class="px-4 py-1.5 bg-surface border border-outline-variant/30 text-on-surface-variant hover:text-on-surface rounded-full text-xs font-bold transition-colors">Histórico</button>
         </div>
         
         <div id="subj-form-area" class="bg-surface-container-low p-4 rounded-xl border border-outline-variant/20 shadow-sm flex flex-col space-y-3">
-          <h4 class="text-on-surface text-body-sm font-bold mb-1">Nova Matéria</h4>
+          <h4 class="text-on-surface text-body-sm font-bold mb-1">Matéria</h4>
+          <input type="hidden" id="subj-id" />
           <input type="text" id="subj-name" placeholder="Nome da Matéria" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
           <input type="text" id="subj-prof" placeholder="Nome do Professor (Opcional)" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
           <select id="subj-status" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all">
@@ -126,11 +128,15 @@ export const CollegeCard = () => `
             </select>
             <input type="number" id="subj-semester" placeholder="Semestre" class="flex-1 bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
           </div>
-          <button id="subj-add-btn" class="w-full py-2.5 mt-2 rounded-lg bg-primary text-on-secondary text-sm font-bold hover:bg-primary-fixed transition-colors shadow-md">Adicionar</button>
+          <button id="subj-add-btn" class="w-full py-2.5 mt-2 rounded-lg bg-primary text-on-secondary text-sm font-bold hover:bg-primary-fixed transition-colors shadow-md">Salvar</button>
         </div>
         
-        <div id="subj-list-area" class="hidden flex-1 overflow-y-auto space-y-2 pb-10">
-          <div id="subj-list" class="space-y-2"></div>
+        <div id="subj-active-list-area" class="hidden flex-1 overflow-y-auto space-y-2 pb-10">
+          <div id="subj-active-list" class="space-y-2"></div>
+        </div>
+
+        <div id="subj-hist-list-area" class="hidden flex-1 overflow-y-auto space-y-2 pb-10">
+          <div id="subj-hist-list" class="space-y-2"></div>
         </div>
       </div>
 
@@ -138,22 +144,28 @@ export const CollegeCard = () => `
       <div id="content-exams" class="hidden flex-col h-full">
         <div class="flex gap-2 mb-5">
            <button id="subtab-exam-add" class="px-4 py-1.5 bg-primary text-on-secondary rounded-full text-xs font-bold transition-colors shadow-sm">Adicionar</button>
+           <button id="subtab-exam-active" class="px-4 py-1.5 bg-surface border border-outline-variant/30 text-on-surface-variant hover:text-on-surface rounded-full text-xs font-bold transition-colors">Ativos</button>
            <button id="subtab-exam-hist" class="px-4 py-1.5 bg-surface border border-outline-variant/30 text-on-surface-variant hover:text-on-surface rounded-full text-xs font-bold transition-colors">Histórico</button>
         </div>
         
         <div id="exam-form-area" class="bg-surface-container-low p-4 rounded-xl border border-outline-variant/20 shadow-sm flex flex-col space-y-3">
-          <h4 class="text-on-surface text-body-sm font-bold mb-1">Nova Prova</h4>
+          <h4 class="text-on-surface text-body-sm font-bold mb-1">Prova</h4>
+          <input type="hidden" id="exam-id" />
           <input type="text" id="exam-title" placeholder="Título (Ex: Cálculo I - P1)" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
           <div class="flex gap-2">
             <input type="date" id="exam-date" class="flex-1 bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
             <input type="number" id="exam-sem" placeholder="Semestre" class="flex-1 bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
           </div>
-          <input type="number" step="0.1" id="exam-grade" placeholder="Nota (Opcional, 0 a 10)" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
-          <button id="exam-add-btn" class="w-full py-2.5 mt-2 rounded-lg bg-primary text-on-secondary text-sm font-bold hover:bg-primary-fixed transition-colors shadow-md">Adicionar</button>
+          <input type="number" step="0.1" id="exam-grade" placeholder="Nota (Opcional, deixe vazio se ainda não fez)" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
+          <button id="exam-add-btn" class="w-full py-2.5 mt-2 rounded-lg bg-primary text-on-secondary text-sm font-bold hover:bg-primary-fixed transition-colors shadow-md">Salvar</button>
         </div>
         
-        <div id="exam-list-area" class="hidden flex-1 overflow-y-auto space-y-2 pb-10">
-          <div id="exam-list" class="space-y-2"></div>
+        <div id="exam-active-list-area" class="hidden flex-1 overflow-y-auto space-y-2 pb-10">
+          <div id="exam-active-list" class="space-y-2"></div>
+        </div>
+
+        <div id="exam-hist-list-area" class="hidden flex-1 overflow-y-auto space-y-2 pb-10">
+          <div id="exam-hist-list" class="space-y-2"></div>
         </div>
       </div>
 
@@ -269,18 +281,48 @@ export const initCollegeCard = async () => {
   };
 
   const renderModalLists = (data: any) => {
-    const listSubj = document.getElementById('subj-list')!;
-    listSubj.innerHTML = data.subjects.map((s:any) => `
-      <div class="bg-surface-container p-2 rounded flex justify-between items-center">
+    // Subjects Split
+    const activeSubjs = data.subjects.filter((s:any) => s.status !== 'COMPLETED');
+    const histSubjs = data.subjects.filter((s:any) => s.status === 'COMPLETED');
+
+    const renderSubjRow = (s:any) => `
+      <div class="bg-surface-container p-2 rounded flex justify-between items-center group">
         <div>
           <span class="block text-sm text-on-surface">${s.name}</span>
           ${s.professor ? `<span class="block text-[10px] text-on-surface-variant">Prof. ${s.professor}</span>` : ''}
           <span class="block text-xs text-on-surface-variant">${s.status} ${s.status === 'COMPLETED' ? `- Nota ${s.grade} (Sem ${s.semesterTaken})` : ((s.days ? ` - ${s.days}` : '') + (s.schedule ? ` - ${s.schedule}` : ''))}</span>
         </div>
-        <button class="delete-subj text-error hover:text-error/80 cursor-pointer" data-id="${s.id}"><span class="material-symbols-outlined text-[16px]">delete</span></button>
+        <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          ${s.status !== 'COMPLETED' ? `<button class="edit-subj text-primary hover:text-primary-fixed cursor-pointer" data-id="${s.id}" title="Editar / Concluir"><span class="material-symbols-outlined text-[18px]">edit</span></button>` : ''}
+          <button class="delete-subj text-error hover:text-error/80 cursor-pointer" data-id="${s.id}"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+        </div>
       </div>
-    `).join('');
+    `;
 
+    document.getElementById('subj-active-list')!.innerHTML = activeSubjs.map(renderSubjRow).join('');
+    document.getElementById('subj-hist-list')!.innerHTML = histSubjs.map(renderSubjRow).join('');
+
+    // Exams Split
+    const activeExams = data.exams.filter((e:any) => e.grade == null);
+    const histExams = data.exams.filter((e:any) => e.grade != null);
+
+    const renderExamRow = (e:any) => `
+      <div class="bg-surface-container p-2 rounded flex justify-between items-center group">
+        <div>
+          <span class="block text-sm text-on-surface">${e.title}</span>
+          <span class="block text-xs text-on-surface-variant">${e.examDate} - Nota: ${e.grade != null ? e.grade : '-'} (Sem ${e.semester})</span>
+        </div>
+        <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          ${e.grade == null ? `<button class="edit-exam text-primary hover:text-primary-fixed cursor-pointer" data-id="${e.id}" title="Editar / Lançar Nota"><span class="material-symbols-outlined text-[18px]">edit</span></button>` : ''}
+          <button class="delete-exam text-error hover:text-error/80 cursor-pointer" data-id="${e.id}"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('exam-active-list')!.innerHTML = activeExams.map(renderExamRow).join('');
+    document.getElementById('exam-hist-list')!.innerHTML = histExams.map(renderExamRow).join('');
+
+    // Binds
     document.querySelectorAll('.delete-subj').forEach(btn => {
       btn.addEventListener('click', async (ev) => {
         const id = (ev.currentTarget as HTMLElement).getAttribute('data-id');
@@ -288,23 +330,49 @@ export const initCollegeCard = async () => {
         fetchState();
       });
     });
-
-    const listExam = document.getElementById('exam-list')!;
-    listExam.innerHTML = data.exams.map((e:any) => `
-      <div class="bg-surface-container p-2 rounded flex justify-between items-center">
-        <div>
-          <span class="block text-sm text-on-surface">${e.title}</span>
-          <span class="block text-xs text-on-surface-variant">${e.examDate} - Nota: ${e.grade != null ? e.grade : '-'} (Sem ${e.semester})</span>
-        </div>
-        <button class="delete-exam text-error hover:text-error/80 cursor-pointer" data-id="${e.id}"><span class="material-symbols-outlined text-[16px]">delete</span></button>
-      </div>
-    `).join('');
-
     document.querySelectorAll('.delete-exam').forEach(btn => {
       btn.addEventListener('click', async (ev) => {
         const id = (ev.currentTarget as HTMLElement).getAttribute('data-id');
         await fetch(`http://localhost:8080/api/studies/college/exams/${id}`, { method: 'DELETE' });
         fetchState();
+      });
+    });
+
+    // Edit logic for Subjects
+    document.querySelectorAll('.edit-subj').forEach(btn => {
+      btn.addEventListener('click', (ev) => {
+        const id = (ev.currentTarget as HTMLElement).getAttribute('data-id');
+        const s = activeSubjs.find((x:any) => x.id == id);
+        if(s) {
+          (document.getElementById('subj-id') as HTMLInputElement).value = s.id;
+          (document.getElementById('subj-name') as HTMLInputElement).value = s.name;
+          (document.getElementById('subj-prof') as HTMLInputElement).value = s.professor || '';
+          (document.getElementById('subj-status') as HTMLSelectElement).value = s.status;
+          (document.getElementById('subj-days') as HTMLInputElement).value = s.days || '';
+          (document.getElementById('subj-schedule') as HTMLInputElement).value = s.schedule || '';
+          
+          document.getElementById('subj-status')!.dispatchEvent(new Event('change'));
+          document.getElementById('subj-add-btn')!.innerHTML = 'Salvar Alterações';
+          setSubjTab('add');
+        }
+      });
+    });
+
+    // Edit logic for Exams
+    document.querySelectorAll('.edit-exam').forEach(btn => {
+      btn.addEventListener('click', (ev) => {
+        const id = (ev.currentTarget as HTMLElement).getAttribute('data-id');
+        const e = activeExams.find((x:any) => x.id == id);
+        if(e) {
+          (document.getElementById('exam-id') as HTMLInputElement).value = e.id;
+          (document.getElementById('exam-title') as HTMLInputElement).value = e.title;
+          (document.getElementById('exam-date') as HTMLInputElement).value = e.examDate;
+          (document.getElementById('exam-sem') as HTMLInputElement).value = e.semester || '';
+          (document.getElementById('exam-grade') as HTMLInputElement).value = e.grade || '';
+          
+          document.getElementById('exam-add-btn')!.innerHTML = 'Salvar Alterações';
+          setExamTab('add');
+        }
       });
     });
   };
@@ -359,49 +427,57 @@ export const initCollegeCard = async () => {
 
   // Sub-tabs Logic
   const stSubjAdd = document.getElementById('subtab-subj-add')!;
+  const stSubjActive = document.getElementById('subtab-subj-active')!;
   const stSubjHist = document.getElementById('subtab-subj-hist')!;
   const subjFormArea = document.getElementById('subj-form-area')!;
-  const subjListArea = document.getElementById('subj-list-area')!;
+  const subjActiveArea = document.getElementById('subj-active-list-area')!;
+  const subjHistArea = document.getElementById('subj-hist-list-area')!;
 
-  const setSubjTab = (mode: 'add' | 'hist') => {
-    if(mode === 'add') {
-      stSubjAdd.className = 'px-4 py-1.5 bg-primary text-on-secondary rounded-full text-xs font-bold transition-colors shadow-sm';
-      stSubjHist.className = 'px-4 py-1.5 bg-surface border border-outline-variant/30 text-on-surface-variant hover:text-on-surface rounded-full text-xs font-bold transition-colors';
-      subjFormArea.classList.remove('hidden');
-      subjFormArea.classList.add('flex');
-      subjListArea.classList.add('hidden');
-    } else {
-      stSubjHist.className = 'px-4 py-1.5 bg-primary text-on-secondary rounded-full text-xs font-bold transition-colors shadow-sm';
-      stSubjAdd.className = 'px-4 py-1.5 bg-surface border border-outline-variant/30 text-on-surface-variant hover:text-on-surface rounded-full text-xs font-bold transition-colors';
-      subjFormArea.classList.add('hidden');
-      subjFormArea.classList.remove('flex');
-      subjListArea.classList.remove('hidden');
+  const styleActiveTab = 'px-4 py-1.5 bg-primary text-on-secondary rounded-full text-xs font-bold transition-colors shadow-sm';
+  const styleInactiveTab = 'px-4 py-1.5 bg-surface border border-outline-variant/30 text-on-surface-variant hover:text-on-surface rounded-full text-xs font-bold transition-colors';
+
+  export const setSubjTab = (mode: 'add' | 'active' | 'hist') => {
+    stSubjAdd.className = mode === 'add' ? styleActiveTab : styleInactiveTab;
+    stSubjActive.className = mode === 'active' ? styleActiveTab : styleInactiveTab;
+    stSubjHist.className = mode === 'hist' ? styleActiveTab : styleInactiveTab;
+    
+    subjFormArea.classList.toggle('hidden', mode !== 'add');
+    subjFormArea.classList.toggle('flex', mode === 'add');
+    subjActiveArea.classList.toggle('hidden', mode !== 'active');
+    subjHistArea.classList.toggle('hidden', mode !== 'hist');
+
+    // Reset hidden id if changing away from form (optional, let's just leave it so they can continue)
+    if (mode === 'add' && (document.getElementById('subj-id') as HTMLInputElement).value === '') {
+      document.getElementById('subj-add-btn')!.innerHTML = 'Adicionar';
     }
   };
   stSubjAdd.addEventListener('click', () => setSubjTab('add'));
+  stSubjActive.addEventListener('click', () => setSubjTab('active'));
   stSubjHist.addEventListener('click', () => setSubjTab('hist'));
 
   const stExamAdd = document.getElementById('subtab-exam-add')!;
+  const stExamActive = document.getElementById('subtab-exam-active')!;
   const stExamHist = document.getElementById('subtab-exam-hist')!;
   const examFormArea = document.getElementById('exam-form-area')!;
-  const examListArea = document.getElementById('exam-list-area')!;
+  const examActiveArea = document.getElementById('exam-active-list-area')!;
+  const examHistArea = document.getElementById('exam-hist-list-area')!;
 
-  const setExamTab = (mode: 'add' | 'hist') => {
-    if(mode === 'add') {
-      stExamAdd.className = 'px-4 py-1.5 bg-primary text-on-secondary rounded-full text-xs font-bold transition-colors shadow-sm';
-      stExamHist.className = 'px-4 py-1.5 bg-surface border border-outline-variant/30 text-on-surface-variant hover:text-on-surface rounded-full text-xs font-bold transition-colors';
-      examFormArea.classList.remove('hidden');
-      examFormArea.classList.add('flex');
-      examListArea.classList.add('hidden');
-    } else {
-      stExamHist.className = 'px-4 py-1.5 bg-primary text-on-secondary rounded-full text-xs font-bold transition-colors shadow-sm';
-      stExamAdd.className = 'px-4 py-1.5 bg-surface border border-outline-variant/30 text-on-surface-variant hover:text-on-surface rounded-full text-xs font-bold transition-colors';
-      examFormArea.classList.add('hidden');
-      examFormArea.classList.remove('flex');
-      examListArea.classList.remove('hidden');
+  export const setExamTab = (mode: 'add' | 'active' | 'hist') => {
+    stExamAdd.className = mode === 'add' ? styleActiveTab : styleInactiveTab;
+    stExamActive.className = mode === 'active' ? styleActiveTab : styleInactiveTab;
+    stExamHist.className = mode === 'hist' ? styleActiveTab : styleInactiveTab;
+    
+    examFormArea.classList.toggle('hidden', mode !== 'add');
+    examFormArea.classList.toggle('flex', mode === 'add');
+    examActiveArea.classList.toggle('hidden', mode !== 'active');
+    examHistArea.classList.toggle('hidden', mode !== 'hist');
+
+    if (mode === 'add' && (document.getElementById('exam-id') as HTMLInputElement).value === '') {
+      document.getElementById('exam-add-btn')!.innerHTML = 'Adicionar';
     }
   };
   stExamAdd.addEventListener('click', () => setExamTab('add'));
+  stExamActive.addEventListener('click', () => setExamTab('active'));
   stExamHist.addEventListener('click', () => setExamTab('hist'));
 
   // Status Change Logic
@@ -447,6 +523,8 @@ export const initCollegeCard = async () => {
     const status = stSel.value;
     const grade = (document.getElementById('subj-grade') as HTMLSelectElement).value;
     const sem = parseInt(semInput.value);
+    const subjIdVal = (document.getElementById('subj-id') as HTMLInputElement).value;
+    const subjId = subjIdVal ? parseInt(subjIdVal) : null;
     
     if(!name) return;
 
@@ -463,6 +541,7 @@ export const initCollegeCard = async () => {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ 
+          id: subjId,
           name, status, 
           professor: prof,
           schedule: status === 'ENROLLED' ? sch : null,
@@ -481,9 +560,10 @@ export const initCollegeCard = async () => {
       profInput.value = '';
       schInput.value = '';
       daysInput.value = '';
+      (document.getElementById('subj-id') as HTMLInputElement).value = '';
       if(status === 'COMPLETED') semInput.value = '';
       
-      showToast('Matéria adicionada com sucesso!');
+      showToast(subjId ? 'Matéria atualizada com sucesso!' : 'Matéria adicionada com sucesso!');
       await fetchState();
     } catch (e) {
       subjAddBtn.innerHTML = 'Erro!';
@@ -492,7 +572,7 @@ export const initCollegeCard = async () => {
     // Reset after 1s
     setTimeout(() => {
       subjAddBtn.className = originalBg;
-      subjAddBtn.innerHTML = originalText;
+      subjAddBtn.innerHTML = 'Adicionar';
       subjAddBtn.disabled = false;
     }, 1000);
   });
@@ -508,6 +588,8 @@ export const initCollegeCard = async () => {
     const date = dateInput.value;
     const sem = parseInt(semInput.value);
     const gradeRaw = gradeInput.value;
+    const examIdVal = (document.getElementById('exam-id') as HTMLInputElement).value;
+    const examId = examIdVal ? parseInt(examIdVal) : null;
     
     if(!title || !date || !sem) return;
 
@@ -524,6 +606,7 @@ export const initCollegeCard = async () => {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ 
+          id: examId,
           title, examDate: date, semester: sem,
           grade: gradeRaw ? parseFloat(gradeRaw) : null
         })
@@ -538,8 +621,9 @@ export const initCollegeCard = async () => {
       dateInput.value = '';
       semInput.value = '';
       gradeInput.value = '';
+      (document.getElementById('exam-id') as HTMLInputElement).value = '';
       
-      showToast('Prova adicionada com sucesso!');
+      showToast(examId ? 'Prova atualizada com sucesso!' : 'Prova adicionada com sucesso!');
       await fetchState();
     } catch (e) {
       examAddBtn.innerHTML = 'Erro!';
@@ -548,7 +632,7 @@ export const initCollegeCard = async () => {
     // Reset after 1s
     setTimeout(() => {
       examAddBtn.className = originalBg;
-      examAddBtn.innerHTML = originalText;
+      examAddBtn.innerHTML = 'Adicionar';
       examAddBtn.disabled = false;
     }, 1000);
   });
