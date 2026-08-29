@@ -1,6 +1,7 @@
-import { PomodoroCard } from './components/PomodoroCard';
-import { MetricsCard } from './components/MetricsCard';
-import { CollegeCard } from './components/CollegeCard';
+import { PomodoroCard, initPomodoro } from './components/PomodoroCard';
+import { MetricsCard, initMetricsCard } from './components/MetricsCard';
+import { CollegeCard, initCollegeCard } from './components/CollegeCard';
+import { ContestCard, initContestCard } from './components/ContestCard';
 import { KnowledgeBaseArea } from './components/KnowledgeBaseArea';
 
 export const StudiesView = () => `
@@ -19,18 +20,16 @@ export const StudiesView = () => `
     ${PomodoroCard()}
     ${MetricsCard()}
     ${CollegeCard()}
+    ${ContestCard()}
   </div>
   
   <!-- Knowledge Base Area -->
   ${KnowledgeBaseArea()}
 `;
 
-import { initPomodoro } from './components/PomodoroCard';
-import { initMetricsCard } from './components/MetricsCard';
-import { initCollegeCard } from './components/CollegeCard';
-
 export const initStudiesView = () => {
   initPomodoro();
   initMetricsCard();
   initCollegeCard();
+  initContestCard();
 };
