@@ -8,7 +8,7 @@ export const CollegeCard = () => `
       Faculdade
     </h2>
     <button id="college-edit-btn" class="text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center bg-surface-container-highest rounded-md w-7 h-7 cursor-pointer">
-      <span class="material-symbols-outlined text-[16px]">edit</span>
+      <span class="material-symbols-outlined text-[16px]">settings</span>
     </button>
   </div>
 
@@ -321,43 +321,110 @@ export const initCollegeCard = async () => {
     fetchState();
   });
 
-  document.getElementById('subj-add-btn')!.addEventListener('click', async () => {
-    const name = (document.getElementById('subj-name') as HTMLInputElement).value;
+  const subjAddBtn = document.getElementById('subj-add-btn') as HTMLButtonElement;
+  subjAddBtn.addEventListener('click', async () => {
+    const nameInput = document.getElementById('subj-name') as HTMLInputElement;
+    const semInput = document.getElementById('subj-semester') as HTMLInputElement;
+    const name = nameInput.value;
     const status = stSel.value;
     const grade = (document.getElementById('subj-grade') as HTMLSelectElement).value;
-    const sem = parseInt((document.getElementById('subj-semester') as HTMLInputElement).value);
+    const sem = parseInt(semInput.value);
     
     if(!name) return;
 
-    await fetch('http://localhost:8080/api/studies/college/subjects', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ 
-        name, status, 
-        grade: status === 'COMPLETED' ? grade : null, 
-        semesterTaken: status === 'COMPLETED' ? sem : null 
-      })
-    });
-    fetchState();
+    // Start animation
+    const originalText = subjAddBtn.innerHTML;
+    const originalBg = subjAddBtn.className;
+    
+    subjAddBtn.disabled = true;
+    subjAddBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[16px] leading-none" style="font-variation-settings: \'wght\' 600;">sync</span>';
+    subjAddBtn.classList.add('opacity-80', 'cursor-not-allowed');
+
+    try {
+      await fetch('http://localhost:8080/api/studies/college/subjects', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ 
+          name, status, 
+          grade: status === 'COMPLETED' ? grade : null, 
+          semesterTaken: status === 'COMPLETED' ? sem : null 
+        })
+      });
+      
+      // Success animation
+      subjAddBtn.innerHTML = '<span class="material-symbols-outlined text-[16px] leading-none" style="font-variation-settings: \'wght\' 600;">check</span>';
+      subjAddBtn.classList.remove('bg-primary', 'hover:bg-primary-fixed');
+      subjAddBtn.classList.add('bg-[#4CAF50]', 'text-white');
+      
+      nameInput.value = '';
+      if(status === 'COMPLETED') semInput.value = '';
+      
+      await fetchState();
+    } catch (e) {
+      subjAddBtn.innerHTML = 'Erro!';
+    }
+
+    // Reset after 1s
+    setTimeout(() => {
+      subjAddBtn.className = originalBg;
+      subjAddBtn.innerHTML = originalText;
+      subjAddBtn.disabled = false;
+    }, 1000);
   });
 
-  document.getElementById('exam-add-btn')!.addEventListener('click', async () => {
-    const title = (document.getElementById('exam-title') as HTMLInputElement).value;
-    const date = (document.getElementById('exam-date') as HTMLInputElement).value;
-    const sem = parseInt((document.getElementById('exam-sem') as HTMLInputElement).value);
-    const gradeRaw = (document.getElementById('exam-grade') as HTMLInputElement).value;
+  const examAddBtn = document.getElementById('exam-add-btn') as HTMLButtonElement;
+  examAddBtn.addEventListener('click', async () => {
+    const titleInput = document.getElementById('exam-title') as HTMLInputElement;
+    const dateInput = document.getElementById('exam-date') as HTMLInputElement;
+    const semInput = document.getElementById('exam-sem') as HTMLInputElement;
+    const gradeInput = document.getElementById('exam-grade') as HTMLInputElement;
+    
+    const title = titleInput.value;
+    const date = dateInput.value;
+    const sem = parseInt(semInput.value);
+    const gradeRaw = gradeInput.value;
     
     if(!title || !date || !sem) return;
 
-    await fetch('http://localhost:8080/api/studies/college/exams', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ 
-        title, examDate: date, semester: sem,
-        grade: gradeRaw ? parseFloat(gradeRaw) : null
-      })
-    });
-    fetchState();
+    // Start animation
+    const originalText = examAddBtn.innerHTML;
+    const originalBg = examAddBtn.className;
+    
+    examAddBtn.disabled = true;
+    examAddBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[16px] leading-none" style="font-variation-settings: \'wght\' 600;">sync</span>';
+    examAddBtn.classList.add('opacity-80', 'cursor-not-allowed');
+
+    try {
+      await fetch('http://localhost:8080/api/studies/college/exams', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ 
+          title, examDate: date, semester: sem,
+          grade: gradeRaw ? parseFloat(gradeRaw) : null
+        })
+      });
+      
+      // Success animation
+      examAddBtn.innerHTML = '<span class="material-symbols-outlined text-[16px] leading-none" style="font-variation-settings: \'wght\' 600;">check</span>';
+      examAddBtn.classList.remove('bg-primary', 'hover:bg-primary-fixed');
+      examAddBtn.classList.add('bg-[#4CAF50]', 'text-white');
+      
+      titleInput.value = '';
+      dateInput.value = '';
+      semInput.value = '';
+      gradeInput.value = '';
+      
+      await fetchState();
+    } catch (e) {
+      examAddBtn.innerHTML = 'Erro!';
+    }
+
+    // Reset after 1s
+    setTimeout(() => {
+      examAddBtn.className = originalBg;
+      examAddBtn.innerHTML = originalText;
+      examAddBtn.disabled = false;
+    }, 1000);
   });
 
   await fetchState();
