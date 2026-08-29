@@ -1,30 +1,16 @@
 export const ContestCard = () => `
 <style>
-@keyframes flipTop {
+@keyframes flipPlate {
   0% { transform: rotateX(0deg); }
-  100% { transform: rotateX(-90deg); }
+  50% { transform: rotateX(-90deg); filter: brightness(0.7); }
+  100% { transform: rotateX(0deg); filter: brightness(1); }
 }
-@keyframes flipBottom {
-  0% { transform: rotateX(90deg); }
-  100% { transform: rotateX(0deg); }
-}
-.flip-animate-top {
-  animation: flipTop 0.25s ease-in forwards;
-}
-.flip-animate-bottom {
-  animation: flipBottom 0.25s ease-out 0.25s forwards;
+.animate-flip-plate {
+  animation: flipPlate 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
+  transform-style: preserve-3d;
 }
 .perspective-1000 {
   perspective: 1000px;
-}
-.transform-origin-bottom {
-  transform-origin: bottom;
-}
-.transform-origin-top {
-  transform-origin: top;
-}
-.backface-hidden {
-  backface-visibility: hidden;
 }
 </style>
 <section class="glass-panel rounded-xl p-md flex flex-col glow-hover transition-all duration-300 relative overflow-hidden group">
@@ -51,38 +37,43 @@ export const ContestCard = () => `
 
     <div id="contest-configured" class="flex flex-col items-center w-full">
       <!-- Split Flap Countdown -->
-      <div class="flex gap-2 justify-center text-on-surface font-mono text-2xl font-bold mt-2">
-        <div class="flex flex-col items-center">
-          <div class="bg-surface-container-highest px-2 py-1 rounded shadow-inner relative overflow-hidden perspective-1000" id="flap-days-container">
-             <span id="flap-days" class="relative z-10">00</span>
+      <div class="flex gap-2 justify-center text-on-surface font-mono text-2xl font-bold mt-1">
+        <div class="flex flex-col items-center perspective-1000">
+          <div class="bg-surface-container-highest px-2 py-1 rounded shadow-inner relative overflow-hidden" id="flap-days-container">
+             <span id="flap-days" class="relative z-10 block">00</span>
              <div class="absolute inset-x-0 top-1/2 h-px bg-background/80 z-20"></div>
           </div>
           <span class="text-[9px] text-on-surface-variant uppercase mt-1 tracking-widest font-sans">Dias</span>
         </div>
         <span class="mt-1 text-on-surface-variant opacity-50">:</span>
-        <div class="flex flex-col items-center">
-          <div class="bg-surface-container-highest px-2 py-1 rounded shadow-inner relative overflow-hidden perspective-1000" id="flap-hours-container">
-             <span id="flap-hours" class="relative z-10">00</span>
+        <div class="flex flex-col items-center perspective-1000">
+          <div class="bg-surface-container-highest px-2 py-1 rounded shadow-inner relative overflow-hidden" id="flap-hours-container">
+             <span id="flap-hours" class="relative z-10 block">00</span>
              <div class="absolute inset-x-0 top-1/2 h-px bg-background/80 z-20"></div>
           </div>
           <span class="text-[9px] text-on-surface-variant uppercase mt-1 tracking-widest font-sans">Horas</span>
         </div>
         <span class="mt-1 text-on-surface-variant opacity-50">:</span>
-        <div class="flex flex-col items-center">
-          <div class="bg-surface-container-highest px-2 py-1 rounded shadow-inner relative overflow-hidden perspective-1000" id="flap-mins-container">
-             <span id="flap-mins" class="relative z-10">00</span>
+        <div class="flex flex-col items-center perspective-1000">
+          <div class="bg-surface-container-highest px-2 py-1 rounded shadow-inner relative overflow-hidden" id="flap-mins-container">
+             <span id="flap-mins" class="relative z-10 block">00</span>
              <div class="absolute inset-x-0 top-1/2 h-px bg-background/80 z-20"></div>
           </div>
           <span class="text-[9px] text-on-surface-variant uppercase mt-1 tracking-widest font-sans">Min</span>
         </div>
         <span class="mt-1 text-on-surface-variant opacity-50">:</span>
-        <div class="flex flex-col items-center">
-          <div class="bg-surface-container-highest px-2 py-1 rounded shadow-inner relative overflow-hidden perspective-1000" id="flap-secs-container">
-             <span id="flap-secs" class="text-primary relative z-10">00</span>
+        <div class="flex flex-col items-center perspective-1000">
+          <div class="bg-surface-container-highest px-2 py-1 rounded shadow-inner relative overflow-hidden" id="flap-secs-container">
+             <span id="flap-secs" class="text-primary relative z-10 block">00</span>
              <div class="absolute inset-x-0 top-1/2 h-px bg-background/80 z-20"></div>
           </div>
           <span class="text-[9px] text-on-surface-variant uppercase mt-1 tracking-widest font-sans">Seg</span>
         </div>
+      </div>
+      
+      <div class="mt-3 flex items-center gap-1.5 text-on-surface-variant bg-surface-container px-3 py-1 rounded-full border border-outline-variant/20">
+        <span class="material-symbols-outlined text-[14px]">calendar_month</span>
+        <span id="contest-date-display" class="text-[10px] font-medium uppercase tracking-wide">--</span>
       </div>
     </div>
   </div>
@@ -184,19 +175,21 @@ export const initContestCard = () => {
     const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const secs = Math.floor((diff % (1000 * 60)) / 1000);
     
-    const updateFlap = (el: HTMLElement, val: string) => {
+    const updateFlap = (el: HTMLElement, container: HTMLElement, val: string) => {
       if (el.textContent !== val) {
-        el.classList.remove('flip-animate-top');
-        void el.offsetWidth; // trigger reflow
-        el.classList.add('flip-animate-top');
-        el.textContent = val;
+        container.classList.remove('animate-flip-plate');
+        void container.offsetWidth; // trigger reflow
+        container.classList.add('animate-flip-plate');
+        setTimeout(() => {
+          el.textContent = val;
+        }, 200); // Change text halfway through the 0.4s flip
       }
     };
 
-    updateFlap(fDays, String(days).padStart(2, '0'));
-    updateFlap(fHours, String(hours).padStart(2, '0'));
-    updateFlap(fMins, String(mins).padStart(2, '0'));
-    updateFlap(fSecs, String(secs).padStart(2, '0'));
+    updateFlap(fDays, document.getElementById('flap-days-container')!, String(days).padStart(2, '0'));
+    updateFlap(fHours, document.getElementById('flap-hours-container')!, String(hours).padStart(2, '0'));
+    updateFlap(fMins, document.getElementById('flap-mins-container')!, String(mins).padStart(2, '0'));
+    updateFlap(fSecs, document.getElementById('flap-secs-container')!, String(secs).padStart(2, '0'));
   };
 
   const renderCard = (data: any) => {
@@ -206,6 +199,9 @@ export const initContestCard = () => {
       
       elPosition.textContent = data.targetPosition || 'Cargo não definido';
       elName.textContent = data.contestName;
+      
+      const d = new Date(data.examDate + "T00:00:00");
+      document.getElementById('contest-date-display')!.textContent = new Intl.DateTimeFormat('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }).format(d);
       
       currentTargetDate = data.examDate;
       if (countdownInterval) clearInterval(countdownInterval);
