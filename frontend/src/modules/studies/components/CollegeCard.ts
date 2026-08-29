@@ -62,62 +62,62 @@ export const CollegeCard = () => `
     </div>
   </div>
 
-  <!-- Modal de Configuração Faculdade -->
-  <div id="college-modal" class="hidden absolute inset-0 bg-surface-container/95 z-50 flex flex-col rounded-xl backdrop-blur-sm border border-outline-variant/30">
-    <div class="p-4 border-b border-outline-variant/20 flex justify-between items-center">
+  <!-- Modal de Configuração Faculdade (Overlay Interno) -->
+  <div id="college-modal" class="hidden absolute inset-0 bg-surface/95 z-50 flex flex-col rounded-xl backdrop-blur-md border border-outline-variant/30 shadow-2xl">
+    <div class="p-4 border-b border-outline-variant/20 flex justify-between items-center bg-surface-container-low/50">
       <h3 class="font-headline-md text-on-surface text-[18px]">Gestão Acadêmica</h3>
-      <button id="college-modal-close" class="text-on-surface-variant hover:text-primary cursor-pointer"><span class="material-symbols-outlined">close</span></button>
+      <button id="college-modal-close" class="text-on-surface-variant hover:text-primary cursor-pointer transition-colors"><span class="material-symbols-outlined">close</span></button>
     </div>
     
     <!-- Tabs -->
-    <div class="flex border-b border-outline-variant/20">
-      <button id="tab-config" class="flex-1 py-2 text-primary font-bold border-b-2 border-primary text-body-sm">Config</button>
-      <button id="tab-subjects" class="flex-1 py-2 text-on-surface-variant hover:text-on-surface text-body-sm">Matérias</button>
-      <button id="tab-exams" class="flex-1 py-2 text-on-surface-variant hover:text-on-surface text-body-sm">Provas</button>
+    <div class="flex border-b border-outline-variant/20 bg-surface-container-low/30">
+      <button id="tab-config" class="flex-1 py-3 text-primary font-bold border-b-2 border-primary text-body-sm transition-colors">Config</button>
+      <button id="tab-subjects" class="flex-1 py-3 text-on-surface-variant hover:text-on-surface text-body-sm transition-colors">Matérias</button>
+      <button id="tab-exams" class="flex-1 py-3 text-on-surface-variant hover:text-on-surface text-body-sm transition-colors">Provas</button>
     </div>
 
-    <div class="flex-1 overflow-y-auto p-4 custom-scrollbar">
+    <div class="flex-1 overflow-y-auto p-5 custom-scrollbar">
       
       <!-- TAB CONFIG -->
-      <div id="content-config" class="flex flex-col space-y-4">
-        <div class="flex flex-col gap-1">
-          <label class="text-on-surface-variant text-body-sm">Semestre Atual</label>
-          <input type="number" id="cfg-sem-atual" class="w-full bg-surface-container-highest border border-outline-variant/50 rounded p-2 text-on-surface" />
+      <div id="content-config" class="flex flex-col space-y-5">
+        <div class="flex flex-col gap-1.5">
+          <label class="text-on-surface-variant text-body-sm font-medium">Semestre Atual</label>
+          <input type="number" id="cfg-sem-atual" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2.5 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
         </div>
-        <div class="flex flex-col gap-1">
-          <label class="text-on-surface-variant text-body-sm">Semestre de Conclusão</label>
-          <input type="number" id="cfg-sem-conclusao" class="w-full bg-surface-container-highest border border-outline-variant/50 rounded p-2 text-on-surface" />
+        <div class="flex flex-col gap-1.5">
+          <label class="text-on-surface-variant text-body-sm font-medium">Semestre de Conclusão</label>
+          <input type="number" id="cfg-sem-conclusao" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2.5 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
         </div>
-        <button id="cfg-save-btn" class="w-full py-2 rounded bg-primary text-on-secondary font-bold hover:bg-primary-fixed transition-colors mt-4">Salvar Configurações</button>
+        <button id="cfg-save-btn" class="w-full py-2.5 rounded-lg bg-primary text-on-secondary font-bold hover:bg-primary-fixed transition-colors mt-2 shadow-md">Salvar Configurações</button>
       </div>
 
       <!-- TAB MATÉRIAS -->
       <div id="content-subjects" class="hidden flex-col h-full">
-        <div class="flex gap-2 mb-4">
-           <button id="subtab-subj-add" class="px-3 py-1 bg-primary text-on-secondary rounded-full text-xs font-bold transition-colors">Adicionar</button>
-           <button id="subtab-subj-hist" class="px-3 py-1 bg-surface border border-outline-variant/30 text-on-surface-variant hover:text-on-surface rounded-full text-xs font-bold transition-colors">Histórico</button>
+        <div class="flex gap-2 mb-5">
+           <button id="subtab-subj-add" class="px-4 py-1.5 bg-primary text-on-secondary rounded-full text-xs font-bold transition-colors shadow-sm">Adicionar</button>
+           <button id="subtab-subj-hist" class="px-4 py-1.5 bg-surface border border-outline-variant/30 text-on-surface-variant hover:text-on-surface rounded-full text-xs font-bold transition-colors">Histórico</button>
         </div>
         
-        <div id="subj-form-area" class="bg-surface-container-highest p-3 rounded border border-outline-variant/20">
-          <h4 class="text-on-surface text-body-sm font-bold mb-2">Nova Matéria</h4>
-          <input type="text" id="subj-name" placeholder="Nome da Matéria" class="w-full bg-surface border border-outline-variant/50 rounded p-1 mb-2 text-on-surface text-sm" />
-          <input type="text" id="subj-prof" placeholder="Nome do Professor (Opcional)" class="w-full bg-surface border border-outline-variant/50 rounded p-1 mb-2 text-on-surface text-sm" />
-          <select id="subj-status" class="w-full bg-surface border border-outline-variant/50 rounded p-1 mb-2 text-on-surface text-sm">
+        <div id="subj-form-area" class="bg-surface-container-low p-4 rounded-xl border border-outline-variant/20 shadow-sm flex flex-col space-y-3">
+          <h4 class="text-on-surface text-body-sm font-bold mb-1">Nova Matéria</h4>
+          <input type="text" id="subj-name" placeholder="Nome da Matéria" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
+          <input type="text" id="subj-prof" placeholder="Nome do Professor (Opcional)" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
+          <select id="subj-status" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all">
             <option value="ENROLLED">Matriculado Atualmente</option>
             <option value="COMPLETED">Concluída</option>
             <option value="PENDING">Pendente</option>
           </select>
-          <input type="text" id="subj-schedule" placeholder="Horário (Ex: 19:00 - 20:40)" class="w-full bg-surface border border-outline-variant/50 rounded p-1 mb-2 text-on-surface text-sm" />
-          <div id="subj-completed-fields" class="hidden flex gap-2 mb-2">
-            <select id="subj-grade" class="flex-1 bg-surface border border-outline-variant/50 rounded p-1 text-on-surface text-sm">
+          <input type="text" id="subj-schedule" placeholder="Horário (Ex: 19:00 - 20:40)" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
+          <div id="subj-completed-fields" class="hidden flex gap-2">
+            <select id="subj-grade" class="flex-1 bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all">
               <option value="E">Excelente (E)</option>
               <option value="B">Bom (B)</option>
               <option value="R">Regular (R)</option>
               <option value="I">Insuficiente (I)</option>
             </select>
-            <input type="number" id="subj-semester" placeholder="Semestre" class="flex-1 bg-surface border border-outline-variant/50 rounded p-1 text-on-surface text-sm" />
+            <input type="number" id="subj-semester" placeholder="Semestre" class="flex-1 bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
           </div>
-          <button id="subj-add-btn" class="w-full py-1 rounded bg-primary text-on-secondary text-sm font-bold hover:bg-primary-fixed transition-colors">Adicionar</button>
+          <button id="subj-add-btn" class="w-full py-2.5 mt-2 rounded-lg bg-primary text-on-secondary text-sm font-bold hover:bg-primary-fixed transition-colors shadow-md">Adicionar</button>
         </div>
         
         <div id="subj-list-area" class="hidden flex-1 overflow-y-auto space-y-2 pb-10">
@@ -127,20 +127,20 @@ export const CollegeCard = () => `
 
       <!-- TAB PROVAS -->
       <div id="content-exams" class="hidden flex-col h-full">
-        <div class="flex gap-2 mb-4">
-           <button id="subtab-exam-add" class="px-3 py-1 bg-primary text-on-secondary rounded-full text-xs font-bold transition-colors">Adicionar</button>
-           <button id="subtab-exam-hist" class="px-3 py-1 bg-surface border border-outline-variant/30 text-on-surface-variant hover:text-on-surface rounded-full text-xs font-bold transition-colors">Histórico</button>
+        <div class="flex gap-2 mb-5">
+           <button id="subtab-exam-add" class="px-4 py-1.5 bg-primary text-on-secondary rounded-full text-xs font-bold transition-colors shadow-sm">Adicionar</button>
+           <button id="subtab-exam-hist" class="px-4 py-1.5 bg-surface border border-outline-variant/30 text-on-surface-variant hover:text-on-surface rounded-full text-xs font-bold transition-colors">Histórico</button>
         </div>
         
-        <div id="exam-form-area" class="bg-surface-container-highest p-3 rounded border border-outline-variant/20">
-          <h4 class="text-on-surface text-body-sm font-bold mb-2">Nova Prova</h4>
-          <input type="text" id="exam-title" placeholder="Título (Ex: Cálculo I - P1)" class="w-full bg-surface border border-outline-variant/50 rounded p-1 mb-2 text-on-surface text-sm" />
-          <div class="flex gap-2 mb-2">
-            <input type="date" id="exam-date" class="flex-1 bg-surface border border-outline-variant/50 rounded p-1 text-on-surface text-sm" />
-            <input type="number" id="exam-sem" placeholder="Semestre" class="flex-1 bg-surface border border-outline-variant/50 rounded p-1 text-on-surface text-sm" />
+        <div id="exam-form-area" class="bg-surface-container-low p-4 rounded-xl border border-outline-variant/20 shadow-sm flex flex-col space-y-3">
+          <h4 class="text-on-surface text-body-sm font-bold mb-1">Nova Prova</h4>
+          <input type="text" id="exam-title" placeholder="Título (Ex: Cálculo I - P1)" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
+          <div class="flex gap-2">
+            <input type="date" id="exam-date" class="flex-1 bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
+            <input type="number" id="exam-sem" placeholder="Semestre" class="flex-1 bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
           </div>
-          <input type="number" step="0.1" id="exam-grade" placeholder="Nota (Opcional, 0 a 10)" class="w-full bg-surface border border-outline-variant/50 rounded p-1 mb-2 text-on-surface text-sm" />
-          <button id="exam-add-btn" class="w-full py-1 rounded bg-primary text-on-secondary text-sm font-bold hover:bg-primary-fixed transition-colors">Adicionar</button>
+          <input type="number" step="0.1" id="exam-grade" placeholder="Nota (Opcional, 0 a 10)" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
+          <button id="exam-add-btn" class="w-full py-2.5 mt-2 rounded-lg bg-primary text-on-secondary text-sm font-bold hover:bg-primary-fixed transition-colors shadow-md">Adicionar</button>
         </div>
         
         <div id="exam-list-area" class="hidden flex-1 overflow-y-auto space-y-2 pb-10">
@@ -337,14 +337,16 @@ export const initCollegeCard = async () => {
 
   const setSubjTab = (mode: 'add' | 'hist') => {
     if(mode === 'add') {
-      stSubjAdd.className = 'px-3 py-1 bg-primary text-on-secondary rounded-full text-xs font-bold transition-colors';
-      stSubjHist.className = 'px-3 py-1 bg-surface border border-outline-variant/30 text-on-surface-variant hover:text-on-surface rounded-full text-xs font-bold transition-colors';
+      stSubjAdd.className = 'px-4 py-1.5 bg-primary text-on-secondary rounded-full text-xs font-bold transition-colors shadow-sm';
+      stSubjHist.className = 'px-4 py-1.5 bg-surface border border-outline-variant/30 text-on-surface-variant hover:text-on-surface rounded-full text-xs font-bold transition-colors';
       subjFormArea.classList.remove('hidden');
+      subjFormArea.classList.add('flex');
       subjListArea.classList.add('hidden');
     } else {
-      stSubjHist.className = 'px-3 py-1 bg-primary text-on-secondary rounded-full text-xs font-bold transition-colors';
-      stSubjAdd.className = 'px-3 py-1 bg-surface border border-outline-variant/30 text-on-surface-variant hover:text-on-surface rounded-full text-xs font-bold transition-colors';
+      stSubjHist.className = 'px-4 py-1.5 bg-primary text-on-secondary rounded-full text-xs font-bold transition-colors shadow-sm';
+      stSubjAdd.className = 'px-4 py-1.5 bg-surface border border-outline-variant/30 text-on-surface-variant hover:text-on-surface rounded-full text-xs font-bold transition-colors';
       subjFormArea.classList.add('hidden');
+      subjFormArea.classList.remove('flex');
       subjListArea.classList.remove('hidden');
     }
   };
@@ -358,14 +360,16 @@ export const initCollegeCard = async () => {
 
   const setExamTab = (mode: 'add' | 'hist') => {
     if(mode === 'add') {
-      stExamAdd.className = 'px-3 py-1 bg-primary text-on-secondary rounded-full text-xs font-bold transition-colors';
-      stExamHist.className = 'px-3 py-1 bg-surface border border-outline-variant/30 text-on-surface-variant hover:text-on-surface rounded-full text-xs font-bold transition-colors';
+      stExamAdd.className = 'px-4 py-1.5 bg-primary text-on-secondary rounded-full text-xs font-bold transition-colors shadow-sm';
+      stExamHist.className = 'px-4 py-1.5 bg-surface border border-outline-variant/30 text-on-surface-variant hover:text-on-surface rounded-full text-xs font-bold transition-colors';
       examFormArea.classList.remove('hidden');
+      examFormArea.classList.add('flex');
       examListArea.classList.add('hidden');
     } else {
-      stExamHist.className = 'px-3 py-1 bg-primary text-on-secondary rounded-full text-xs font-bold transition-colors';
-      stExamAdd.className = 'px-3 py-1 bg-surface border border-outline-variant/30 text-on-surface-variant hover:text-on-surface rounded-full text-xs font-bold transition-colors';
+      stExamHist.className = 'px-4 py-1.5 bg-primary text-on-secondary rounded-full text-xs font-bold transition-colors shadow-sm';
+      stExamAdd.className = 'px-4 py-1.5 bg-surface border border-outline-variant/30 text-on-surface-variant hover:text-on-surface rounded-full text-xs font-bold transition-colors';
       examFormArea.classList.add('hidden');
+      examFormArea.classList.remove('flex');
       examListArea.classList.remove('hidden');
     }
   };
