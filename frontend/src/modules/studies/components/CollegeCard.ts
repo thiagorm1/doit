@@ -79,7 +79,7 @@ export const CollegeCard = () => `
     <div class="flex-1 overflow-y-auto p-4 custom-scrollbar">
       
       <!-- TAB CONFIG -->
-      <div id="content-config" class="space-y-4">
+      <div id="content-config" class="flex flex-col space-y-4">
         <div class="flex flex-col gap-1">
           <label class="text-on-surface-variant text-body-sm">Semestre Atual</label>
           <input type="number" id="cfg-sem-atual" class="w-full bg-surface-container-highest border border-outline-variant/50 rounded p-2 text-on-surface" />
@@ -92,8 +92,13 @@ export const CollegeCard = () => `
       </div>
 
       <!-- TAB MATÉRIAS -->
-      <div id="content-subjects" class="hidden space-y-4">
-        <div class="bg-surface-container-highest p-3 rounded border border-outline-variant/20">
+      <div id="content-subjects" class="hidden flex-col h-full">
+        <div class="flex gap-2 mb-4">
+           <button id="subtab-subj-add" class="px-3 py-1 bg-primary text-on-secondary rounded-full text-xs font-bold transition-colors">Adicionar</button>
+           <button id="subtab-subj-hist" class="px-3 py-1 bg-surface border border-outline-variant/30 text-on-surface-variant hover:text-on-surface rounded-full text-xs font-bold transition-colors">Histórico</button>
+        </div>
+        
+        <div id="subj-form-area" class="bg-surface-container-highest p-3 rounded border border-outline-variant/20">
           <h4 class="text-on-surface text-body-sm font-bold mb-2">Nova Matéria</h4>
           <input type="text" id="subj-name" placeholder="Nome da Matéria" class="w-full bg-surface border border-outline-variant/50 rounded p-1 mb-2 text-on-surface text-sm" />
           <input type="text" id="subj-prof" placeholder="Nome do Professor (Opcional)" class="w-full bg-surface border border-outline-variant/50 rounded p-1 mb-2 text-on-surface text-sm" />
@@ -112,14 +117,22 @@ export const CollegeCard = () => `
             </select>
             <input type="number" id="subj-semester" placeholder="Semestre" class="flex-1 bg-surface border border-outline-variant/50 rounded p-1 text-on-surface text-sm" />
           </div>
-          <button id="subj-add-btn" class="w-full py-1 rounded bg-primary text-on-secondary text-sm font-bold hover:bg-primary-fixed">Adicionar</button>
+          <button id="subj-add-btn" class="w-full py-1 rounded bg-primary text-on-secondary text-sm font-bold hover:bg-primary-fixed transition-colors">Adicionar</button>
         </div>
-        <div id="subj-list" class="space-y-2"></div>
+        
+        <div id="subj-list-area" class="hidden flex-1 overflow-y-auto space-y-2 pb-10">
+          <div id="subj-list" class="space-y-2"></div>
+        </div>
       </div>
 
       <!-- TAB PROVAS -->
-      <div id="content-exams" class="hidden space-y-4">
-        <div class="bg-surface-container-highest p-3 rounded border border-outline-variant/20">
+      <div id="content-exams" class="hidden flex-col h-full">
+        <div class="flex gap-2 mb-4">
+           <button id="subtab-exam-add" class="px-3 py-1 bg-primary text-on-secondary rounded-full text-xs font-bold transition-colors">Adicionar</button>
+           <button id="subtab-exam-hist" class="px-3 py-1 bg-surface border border-outline-variant/30 text-on-surface-variant hover:text-on-surface rounded-full text-xs font-bold transition-colors">Histórico</button>
+        </div>
+        
+        <div id="exam-form-area" class="bg-surface-container-highest p-3 rounded border border-outline-variant/20">
           <h4 class="text-on-surface text-body-sm font-bold mb-2">Nova Prova</h4>
           <input type="text" id="exam-title" placeholder="Título (Ex: Cálculo I - P1)" class="w-full bg-surface border border-outline-variant/50 rounded p-1 mb-2 text-on-surface text-sm" />
           <div class="flex gap-2 mb-2">
@@ -127,9 +140,12 @@ export const CollegeCard = () => `
             <input type="number" id="exam-sem" placeholder="Semestre" class="flex-1 bg-surface border border-outline-variant/50 rounded p-1 text-on-surface text-sm" />
           </div>
           <input type="number" step="0.1" id="exam-grade" placeholder="Nota (Opcional, 0 a 10)" class="w-full bg-surface border border-outline-variant/50 rounded p-1 mb-2 text-on-surface text-sm" />
-          <button id="exam-add-btn" class="w-full py-1 rounded bg-primary text-on-secondary text-sm font-bold hover:bg-primary-fixed">Adicionar</button>
+          <button id="exam-add-btn" class="w-full py-1 rounded bg-primary text-on-secondary text-sm font-bold hover:bg-primary-fixed transition-colors">Adicionar</button>
         </div>
-        <div id="exam-list" class="space-y-2"></div>
+        
+        <div id="exam-list-area" class="hidden flex-1 overflow-y-auto space-y-2 pb-10">
+          <div id="exam-list" class="space-y-2"></div>
+        </div>
       </div>
 
     </div>
@@ -303,12 +319,58 @@ export const initCollegeCard = async () => {
       t.classList.remove('text-primary', 'font-bold', 'border-b-2', 'border-primary');
       t.classList.add('text-on-surface-variant');
     });
-    [cCfg, cSub, cExm].forEach(c => c.classList.add('hidden'));
+    [cCfg, cSub, cExm].forEach(c => {
+      c.classList.remove('flex');
+      c.classList.add('hidden');
+    });
   };
 
-  tCfg.addEventListener('click', () => { resetTabs(); tCfg.classList.add('text-primary', 'font-bold', 'border-b-2', 'border-primary'); cCfg.classList.remove('hidden'); });
-  tSub.addEventListener('click', () => { resetTabs(); tSub.classList.add('text-primary', 'font-bold', 'border-b-2', 'border-primary'); cSub.classList.remove('hidden'); });
-  tExm.addEventListener('click', () => { resetTabs(); tExm.classList.add('text-primary', 'font-bold', 'border-b-2', 'border-primary'); cExm.classList.remove('hidden'); });
+  tCfg.addEventListener('click', () => { resetTabs(); tCfg.classList.add('text-primary', 'font-bold', 'border-b-2', 'border-primary'); cCfg.classList.remove('hidden'); cCfg.classList.add('flex'); });
+  tSub.addEventListener('click', () => { resetTabs(); tSub.classList.add('text-primary', 'font-bold', 'border-b-2', 'border-primary'); cSub.classList.remove('hidden'); cSub.classList.add('flex'); });
+  tExm.addEventListener('click', () => { resetTabs(); tExm.classList.add('text-primary', 'font-bold', 'border-b-2', 'border-primary'); cExm.classList.remove('hidden'); cExm.classList.add('flex'); });
+
+  // Sub-tabs Logic
+  const stSubjAdd = document.getElementById('subtab-subj-add')!;
+  const stSubjHist = document.getElementById('subtab-subj-hist')!;
+  const subjFormArea = document.getElementById('subj-form-area')!;
+  const subjListArea = document.getElementById('subj-list-area')!;
+
+  const setSubjTab = (mode: 'add' | 'hist') => {
+    if(mode === 'add') {
+      stSubjAdd.className = 'px-3 py-1 bg-primary text-on-secondary rounded-full text-xs font-bold transition-colors';
+      stSubjHist.className = 'px-3 py-1 bg-surface border border-outline-variant/30 text-on-surface-variant hover:text-on-surface rounded-full text-xs font-bold transition-colors';
+      subjFormArea.classList.remove('hidden');
+      subjListArea.classList.add('hidden');
+    } else {
+      stSubjHist.className = 'px-3 py-1 bg-primary text-on-secondary rounded-full text-xs font-bold transition-colors';
+      stSubjAdd.className = 'px-3 py-1 bg-surface border border-outline-variant/30 text-on-surface-variant hover:text-on-surface rounded-full text-xs font-bold transition-colors';
+      subjFormArea.classList.add('hidden');
+      subjListArea.classList.remove('hidden');
+    }
+  };
+  stSubjAdd.addEventListener('click', () => setSubjTab('add'));
+  stSubjHist.addEventListener('click', () => setSubjTab('hist'));
+
+  const stExamAdd = document.getElementById('subtab-exam-add')!;
+  const stExamHist = document.getElementById('subtab-exam-hist')!;
+  const examFormArea = document.getElementById('exam-form-area')!;
+  const examListArea = document.getElementById('exam-list-area')!;
+
+  const setExamTab = (mode: 'add' | 'hist') => {
+    if(mode === 'add') {
+      stExamAdd.className = 'px-3 py-1 bg-primary text-on-secondary rounded-full text-xs font-bold transition-colors';
+      stExamHist.className = 'px-3 py-1 bg-surface border border-outline-variant/30 text-on-surface-variant hover:text-on-surface rounded-full text-xs font-bold transition-colors';
+      examFormArea.classList.remove('hidden');
+      examListArea.classList.add('hidden');
+    } else {
+      stExamHist.className = 'px-3 py-1 bg-primary text-on-secondary rounded-full text-xs font-bold transition-colors';
+      stExamAdd.className = 'px-3 py-1 bg-surface border border-outline-variant/30 text-on-surface-variant hover:text-on-surface rounded-full text-xs font-bold transition-colors';
+      examFormArea.classList.add('hidden');
+      examListArea.classList.remove('hidden');
+    }
+  };
+  stExamAdd.addEventListener('click', () => setExamTab('add'));
+  stExamHist.addEventListener('click', () => setExamTab('hist'));
 
   // Status Change Logic
   const stSel = document.getElementById('subj-status') as HTMLSelectElement;
