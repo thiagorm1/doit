@@ -96,11 +96,13 @@ export const CollegeCard = () => `
         <div class="bg-surface-container-highest p-3 rounded border border-outline-variant/20">
           <h4 class="text-on-surface text-body-sm font-bold mb-2">Nova Matéria</h4>
           <input type="text" id="subj-name" placeholder="Nome da Matéria" class="w-full bg-surface border border-outline-variant/50 rounded p-1 mb-2 text-on-surface text-sm" />
+          <input type="text" id="subj-prof" placeholder="Nome do Professor (Opcional)" class="w-full bg-surface border border-outline-variant/50 rounded p-1 mb-2 text-on-surface text-sm" />
           <select id="subj-status" class="w-full bg-surface border border-outline-variant/50 rounded p-1 mb-2 text-on-surface text-sm">
             <option value="ENROLLED">Matriculado Atualmente</option>
             <option value="COMPLETED">Concluída</option>
             <option value="PENDING">Pendente</option>
           </select>
+          <input type="text" id="subj-schedule" placeholder="Horário (Ex: 19:00 - 20:40)" class="w-full bg-surface border border-outline-variant/50 rounded p-1 mb-2 text-on-surface text-sm" />
           <div id="subj-completed-fields" class="hidden flex gap-2 mb-2">
             <select id="subj-grade" class="flex-1 bg-surface border border-outline-variant/50 rounded p-1 text-on-surface text-sm">
               <option value="E">Excelente (E)</option>
@@ -162,9 +164,12 @@ export const initCollegeCard = async () => {
       viewEnrolled.innerHTML = `<div class="text-center text-body-sm text-on-surface-variant py-2">Nenhuma matéria matriculada</div>`;
     } else {
       viewEnrolled.innerHTML = enrolled.map((s:any) => `
-        <div class="flex justify-between items-center">
-          <span class="text-body-sm text-on-surface">${s.name}</span>
-          <span class="text-[10px] text-primary">Cursando</span>
+        <div class="flex justify-between items-center border-b border-outline-variant/5 pb-1 last:border-0 last:pb-0">
+          <div class="flex flex-col">
+             <span class="text-body-sm text-on-surface">${s.name}</span>
+             ${s.professor ? `<span class="text-[10px] text-on-surface-variant">Prof. ${s.professor}</span>` : ''}
+          </div>
+          <span class="text-[10px] text-primary">${s.schedule || 'Cursando'}</span>
         </div>
       `).join('');
     }
@@ -176,7 +181,10 @@ export const initCollegeCard = async () => {
     } else {
       viewHistorySubj.innerHTML = completed.map((s:any) => `
         <div class="flex justify-between items-center border-b border-outline-variant/10 pb-1">
-          <span class="text-body-sm text-on-surface-variant">${s.name} (Sem ${s.semesterTaken})</span>
+          <div class="flex flex-col">
+            <span class="text-body-sm text-on-surface-variant">${s.name} (Sem ${s.semesterTaken})</span>
+            ${s.professor ? `<span class="text-[10px] text-outline">Prof. ${s.professor}</span>` : ''}
+          </div>
           <span class="text-xs font-bold text-on-surface bg-surface-container p-1 rounded">${s.grade}</span>
         </div>
       `).join('');
@@ -222,7 +230,8 @@ export const initCollegeCard = async () => {
       <div class="bg-surface-container p-2 rounded flex justify-between items-center">
         <div>
           <span class="block text-sm text-on-surface">${s.name}</span>
-          <span class="block text-xs text-on-surface-variant">${s.status} ${s.status === 'COMPLETED' ? `- Nota ${s.grade} (Sem ${s.semesterTaken})` : ''}</span>
+          ${s.professor ? `<span class="block text-[10px] text-on-surface-variant">Prof. ${s.professor}</span>` : ''}
+          <span class="block text-xs text-on-surface-variant">${s.status} ${s.status === 'COMPLETED' ? `- Nota ${s.grade} (Sem ${s.semesterTaken})` : (s.schedule ? `- ${s.schedule}` : '')}</span>
         </div>
         <button class="delete-subj text-error hover:text-error/80 cursor-pointer" data-id="${s.id}"><span class="material-symbols-outlined text-[16px]">delete</span></button>
       </div>
@@ -304,9 +313,18 @@ export const initCollegeCard = async () => {
   // Status Change Logic
   const stSel = document.getElementById('subj-status') as HTMLSelectElement;
   const cmpFlds = document.getElementById('subj-completed-fields')!;
+  const schFld = document.getElementById('subj-schedule')!;
   stSel.addEventListener('change', () => {
-    if (stSel.value === 'COMPLETED') cmpFlds.classList.remove('hidden');
-    else cmpFlds.classList.add('hidden');
+    if (stSel.value === 'COMPLETED') {
+      cmpFlds.classList.remove('hidden');
+      schFld.classList.add('hidden');
+    } else if (stSel.value === 'ENROLLED') {
+      cmpFlds.classList.add('hidden');
+      schFld.classList.remove('hidden');
+    } else {
+      cmpFlds.classList.add('hidden');
+      schFld.classList.add('hidden');
+    }
   });
 
   // Save Actions
@@ -324,8 +342,12 @@ export const initCollegeCard = async () => {
   const subjAddBtn = document.getElementById('subj-add-btn') as HTMLButtonElement;
   subjAddBtn.addEventListener('click', async () => {
     const nameInput = document.getElementById('subj-name') as HTMLInputElement;
+    const profInput = document.getElementById('subj-prof') as HTMLInputElement;
     const semInput = document.getElementById('subj-semester') as HTMLInputElement;
+    const schInput = document.getElementById('subj-schedule') as HTMLInputElement;
     const name = nameInput.value;
+    const prof = profInput.value;
+    const sch = schInput.value;
     const status = stSel.value;
     const grade = (document.getElementById('subj-grade') as HTMLSelectElement).value;
     const sem = parseInt(semInput.value);
@@ -346,6 +368,8 @@ export const initCollegeCard = async () => {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ 
           name, status, 
+          professor: prof,
+          schedule: status === 'ENROLLED' ? sch : null,
           grade: status === 'COMPLETED' ? grade : null, 
           semesterTaken: status === 'COMPLETED' ? sem : null 
         })
@@ -357,6 +381,8 @@ export const initCollegeCard = async () => {
       subjAddBtn.classList.add('bg-[#4CAF50]', 'text-white');
       
       nameInput.value = '';
+      profInput.value = '';
+      schInput.value = '';
       if(status === 'COMPLETED') semInput.value = '';
       
       await fetchState();

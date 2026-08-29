@@ -42,6 +42,8 @@ public class CollegeService {
             dto.setStatus(s.getStatus());
             dto.setGrade(s.getGrade());
             dto.setSemesterTaken(s.getSemesterTaken());
+            dto.setProfessor(s.getProfessor());
+            dto.setSchedule(s.getSchedule());
             return dto;
         }).collect(Collectors.toList());
 
@@ -74,6 +76,8 @@ public class CollegeService {
         subject.setStatus(dto.getStatus());
         subject.setGrade(dto.getGrade());
         subject.setSemesterTaken(dto.getSemesterTaken());
+        subject.setProfessor(dto.getProfessor());
+        subject.setSchedule(dto.getSchedule());
         subject = subjectRepository.save(subject);
         
         dto.setId(subject.getId());

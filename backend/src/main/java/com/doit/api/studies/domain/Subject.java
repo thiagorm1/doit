@@ -24,13 +24,19 @@ public class Subject {
 
     private Integer semesterTaken; // Only for COMPLETED
 
+    private String professor;
+
+    private String schedule; // e.g. 19:00 - 20:40
+
     public Subject() {}
 
-    public Subject(String name, SubjectStatus status, SubjectGrade grade, Integer semesterTaken) {
+    public Subject(String name, SubjectStatus status, SubjectGrade grade, Integer semesterTaken, String professor, String schedule) {
         this.name = name;
         this.status = status;
         this.grade = grade;
         this.semesterTaken = semesterTaken;
+        this.professor = professor;
+        this.schedule = schedule;
     }
 
     public Long getId() { return id; }
@@ -42,4 +48,8 @@ public class Subject {
     public void setGrade(SubjectGrade grade) { this.grade = grade; }
     public Integer getSemesterTaken() { return semesterTaken; }
     public void setSemesterTaken(Integer semesterTaken) { this.semesterTaken = semesterTaken; }
+    public String getProfessor() { return professor; }
+    public void setProfessor(String professor) { this.professor = professor; }
+    public String getSchedule() { return schedule; }
+    public void setSchedule(String schedule) { this.schedule = schedule; }
 }
