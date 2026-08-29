@@ -62,21 +62,18 @@ export const CollegeCard = () => `
     </div>
   </div>
 
-</section>
-
-<!-- Modal de Configuração Faculdade -->
-<div id="college-modal" class="hidden fixed inset-0 z-[100] items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-  <div class="bg-surface-container w-full max-w-xl max-h-[90vh] flex flex-col rounded-xl border border-outline-variant/30 shadow-2xl">
-    <div class="p-4 border-b border-outline-variant/20 flex justify-between items-center bg-surface-container-highest rounded-t-xl">
+  <!-- Modal de Configuração Faculdade -->
+  <div id="college-modal" class="hidden absolute inset-0 bg-surface-container/95 z-50 flex flex-col rounded-xl backdrop-blur-sm border border-outline-variant/30">
+    <div class="p-4 border-b border-outline-variant/20 flex justify-between items-center">
       <h3 class="font-headline-md text-on-surface text-[18px]">Gestão Acadêmica</h3>
       <button id="college-modal-close" class="text-on-surface-variant hover:text-primary cursor-pointer"><span class="material-symbols-outlined">close</span></button>
     </div>
     
     <!-- Tabs -->
-    <div class="flex border-b border-outline-variant/20 bg-surface-container-highest">
-      <button id="tab-config" class="flex-1 py-3 text-primary font-bold border-b-2 border-primary text-body-sm">Config</button>
-      <button id="tab-subjects" class="flex-1 py-3 text-on-surface-variant hover:text-on-surface text-body-sm">Matérias</button>
-      <button id="tab-exams" class="flex-1 py-3 text-on-surface-variant hover:text-on-surface text-body-sm">Provas</button>
+    <div class="flex border-b border-outline-variant/20">
+      <button id="tab-config" class="flex-1 py-2 text-primary font-bold border-b-2 border-primary text-body-sm">Config</button>
+      <button id="tab-subjects" class="flex-1 py-2 text-on-surface-variant hover:text-on-surface text-body-sm">Matérias</button>
+      <button id="tab-exams" class="flex-1 py-2 text-on-surface-variant hover:text-on-surface text-body-sm">Provas</button>
     </div>
 
     <div class="flex-1 overflow-y-auto p-4 custom-scrollbar">
@@ -153,7 +150,7 @@ export const CollegeCard = () => `
 
     </div>
   </div>
-</div>
+</section>
 `;
 
 export const initCollegeCard = async () => {
@@ -305,13 +302,9 @@ export const initCollegeCard = async () => {
   const modal = document.getElementById('college-modal')!;
   document.getElementById('college-edit-btn')!.addEventListener('click', () => {
     modal.classList.remove('hidden');
-    modal.classList.add('flex');
     fetchState();
   });
-  document.getElementById('college-modal-close')!.addEventListener('click', () => {
-    modal.classList.remove('flex');
-    modal.classList.add('hidden');
-  });
+  document.getElementById('college-modal-close')!.addEventListener('click', () => modal.classList.add('hidden'));
 
   // Tabs
   const tCfg = document.getElementById('tab-config')!;
