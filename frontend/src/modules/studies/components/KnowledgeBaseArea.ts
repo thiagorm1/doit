@@ -63,76 +63,63 @@ export const KnowledgeBaseArea = () => `
     <div class="flex-1 flex flex-col md:flex-row gap-md overflow-hidden">
       <!-- Left: Written Notes -->
       <div id="kb-container-notes" class="flex-1 bg-surface-container rounded-lg border border-outline-variant/10 p-md overflow-y-auto custom-scrollbar relative flex flex-col">
-        <div class="mb-md bg-surface-container-high border border-outline-variant/20 rounded-lg p-sm flex items-center justify-between group cursor-pointer hover:border-primary/50 transition-all">
-          <button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
-            <span class="material-symbols-outlined text-[20px]">chevron_left</span>
-          </button>
-          <div class="flex items-center gap-xs">
-            <span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Tópico:</span>
-            <span class="font-body-md text-on-surface font-bold" id="kb-current-topic-title">Nenhum selecionado</span>
+        <!-- Topic Navigation Bar (Pill Bar as in Image) -->
+        <div class="relative mb-md">
+          <div class="bg-surface-container-high/80 border border-outline-variant/20 hover:border-primary/40 rounded-xl px-3 py-2 flex items-center justify-between transition-all shadow-sm">
+            <!-- Left Chevron Arrow -->
+            <button id="kb-prev-topic" class="w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container-highest transition-all disabled:opacity-20 disabled:pointer-events-none cursor-pointer" title="Tópico Anterior">
+              <span class="material-symbols-outlined text-[24px]">chevron_left</span>
+            </button>
+
+            <!-- Center Clickable Trigger for Dropdown -->
+            <button id="kb-topic-dropdown-trigger" class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg hover:bg-surface-container-highest transition-all cursor-pointer group max-w-[80%] min-w-0" title="Clique para selecionar ou ver todos os tópicos">
+              <span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest text-xs md:text-sm font-bold shrink-0">TÓPICO:</span>
+              <span id="kb-current-topic-display" class="font-headline-md text-on-surface font-bold text-base md:text-lg lg:text-xl truncate group-hover:text-primary transition-colors tracking-tight">Nenhum selecionado</span>
+              <span id="kb-topic-dropdown-chevron" class="material-symbols-outlined text-[24px] text-on-surface-variant group-hover:text-primary transition-transform shrink-0">arrow_drop_down</span>
+            </button>
+
+            <!-- Right Chevron Arrow -->
+            <button id="kb-next-topic" class="w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container-highest transition-all disabled:opacity-20 disabled:pointer-events-none cursor-pointer" title="Próximo Tópico">
+              <span class="material-symbols-outlined text-[24px]">chevron_right</span>
+            </button>
           </div>
-          <button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
-            <span class="material-symbols-outlined text-[20px]">chevron_right</span>
-          </button>
+
+          <!-- Custom Dropdown Menu -->
+          <div id="kb-topic-dropdown-menu" class="hidden absolute top-full left-1/2 transform -translate-x-1/2 mt-2 w-80 max-w-[95vw] bg-surface-container-highest border border-outline-variant/30 rounded-xl shadow-2xl z-50 p-2 max-h-64 overflow-y-auto custom-scrollbar backdrop-blur-md">
+            <!-- Dynamic list injected by JS -->
+          </div>
         </div>
+
         <div class="sticky top-0 bg-surface-container pb-sm border-b border-outline-variant/10 mb-sm flex justify-between items-center z-10">
           <h4 class="font-headline-md text-[18px] text-on-surface flex items-center gap-sm">
             <span class="material-symbols-outlined text-primary text-[20px]">edit_note</span>
-            Anotações Escritas
+            <span id="kb-current-topic-title">Anotações Escritas</span>
           </h4>
           <div class="flex items-center gap-sm">
             <button id="kb-btn-save-notes" class="text-on-surface-variant hover:text-primary transition-colors hidden" title="Salvar Anotações">
               <span class="material-symbols-outlined text-[18px]">save</span>
             </button>
+            <button id="kb-btn-fullscreen-notes" class="text-on-surface-variant hover:text-primary transition-colors ml-2" title="Tela Cheia (Folha Única)">
+              <span class="material-symbols-outlined text-[18px]">fullscreen</span>
+            </button>
           </div>
-          <button id="kb-btn-fullscreen-notes" class="text-on-surface-variant hover:text-primary transition-colors ml-2" title="Tela Cheia">
-            <span class="material-symbols-outlined text-[18px]">fullscreen</span>
-          </button>
         </div>
         <div class="flex-1 flex flex-col">
-           <div id="kb-current-topic-notes" contenteditable="true" spellcheck="false" class="rich-text-content flex-1 w-full bg-transparent border-none outline-none resize-none prose prose-invert prose-sm max-w-none font-body-md text-on-surface-variant custom-scrollbar overflow-y-auto" placeholder="Escreva suas anotações aqui..."></div>
+           <div id="kb-current-topic-notes" contenteditable="true" spellcheck="false" class="rich-text-content flex-1 w-full bg-transparent border-none outline-none resize-none prose prose-invert prose-sm max-w-none font-body-md text-on-surface-variant custom-scrollbar overflow-y-auto"></div>
         </div>
       </div>
       <!-- Right: Mind Map View -->
-      <div id="kb-container-map" class="flex-1 bg-surface-container rounded-lg border border-outline-variant/10 relative overflow-hidden flex items-center justify-center group">
-        <div class="absolute top-md left-md right-md flex justify-between items-center z-10">
-          <h4 class="font-headline-md text-[18px] text-on-surface flex items-center gap-sm bg-surface-container-highest px-sm py-xs rounded">
-            <span class="material-symbols-outlined text-primary text-[20px]">account_tree</span>
-            Visão Estrutural
+      <div id="kb-container-map" class="flex-1 bg-surface-container rounded-lg border border-outline-variant/10 relative overflow-hidden flex flex-col group">
+        <div class="p-sm flex justify-between items-center z-10 bg-surface-container-highest border-b border-outline-variant/10">
+          <h4 class="font-headline-md text-sm text-on-surface flex items-center gap-xs">
+            <span class="material-symbols-outlined text-primary text-[18px]">account_tree</span>
+            Visão Estrutural (Tópicos H1)
           </h4>
-          <div class="flex gap-xs">
-            <button class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-primary border border-outline-variant/20"><span class="material-symbols-outlined text-[16px]">zoom_in</span></button>
-            <button class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-primary border border-outline-variant/20"><span class="material-symbols-outlined text-[16px]">zoom_out</span></button>
-          </div>
+          <span id="kb-map-topics-count" class="text-xs text-on-surface-variant font-mono">0 tópicos</span>
         </div>
-        <!-- Decorative Map Placeholder -->
-        <div class="w-full h-full p-xl flex items-center justify-center relative">
-          <!-- Central Node -->
-          <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 bg-primary-container border-2 border-primary px-md py-sm rounded-lg shadow-[0_0_15px_rgba(255,82,82,0.2)] text-center w-32">
-            <span class="font-bold text-on-surface text-sm block">Design Patterns</span>
-          </div>
-          <!-- Branch Lines (SVG) -->
-          <svg class="absolute inset-0 w-full h-full opacity-30" pointer-events="none">
-            <!-- Creational Branch -->
-            <path class="text-primary" d="M 50% 50% Q 25% 30% 20% 30%" fill="none" stroke="currentColor" stroke-width="2"></path>
-            <circle class="text-primary" cx="20%" cy="30%" fill="currentColor" r="4"></circle>
-            <!-- Structural Branch -->
-            <path class="text-tertiary" d="M 50% 50% Q 75% 30% 80% 30%" fill="none" stroke="currentColor" stroke-width="2"></path>
-            <circle class="text-tertiary" cx="80%" cy="30%" fill="currentColor" r="4"></circle>
-            <!-- Behavioral Branch -->
-            <path class="text-error" d="M 50% 50% Q 50% 75% 50% 80%" fill="none" stroke="currentColor" stroke-width="2"></path>
-            <circle class="text-error" cx="50%" cy="80%" fill="currentColor" r="4"></circle>
-          </svg>
-          <!-- Sub Nodes -->
-          <div class="absolute top-[30%] left-[20%] transform -translate-x-1/2 -translate-y-1/2 z-10 bg-surface-container border border-primary/50 px-sm py-xs rounded text-center w-24">
-            <span class="text-xs text-on-surface-variant block">Criacionais</span>
-          </div>
-          <div class="absolute top-[30%] left-[80%] transform -translate-x-1/2 -translate-y-1/2 z-10 bg-surface-container border border-tertiary/50 px-sm py-xs rounded text-center w-24">
-            <span class="text-xs text-on-surface-variant block">Estruturais</span>
-          </div>
-          <div class="absolute top-[80%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 z-10 bg-surface-container border border-error/50 px-sm py-xs rounded text-center w-24">
-            <span class="text-xs text-on-surface-variant block">Comportamentais</span>
-          </div>
+        <!-- Dynamic Map Canvas -->
+        <div id="kb-mindmap-canvas" class="w-full flex-1 p-md flex items-center justify-center relative overflow-hidden">
+          <div class="text-center text-body-sm text-on-surface-variant">Selecione um conteúdo para ver sua estrutura</div>
         </div>
       </div>
     </div>
@@ -189,6 +176,57 @@ export const KnowledgeBaseArea = () => `
 </section>
 `;
 
+export interface TopicSection {
+  title: string;
+  html: string;
+}
+
+export function parseTopicsFromHtml(html: string, fallbackTitle: string = 'Tópico 1'): TopicSection[] {
+  if (!html || html.trim() === '') {
+    return [{ title: fallbackTitle, html: '' }];
+  }
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  const nodes = Array.from(doc.body.childNodes);
+
+  const sections: TopicSection[] = [];
+  let currentTitle = '';
+  let currentNodes: Node[] = [];
+  let foundFirstH1 = false;
+
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i];
+    if (node.nodeType === Node.ELEMENT_NODE && (node as Element).tagName.toLowerCase() === 'h1') {
+      if (foundFirstH1 || currentNodes.length > 0) {
+        const tempDiv = document.createElement('div');
+        currentNodes.forEach(n => tempDiv.appendChild(n.cloneNode(true)));
+        sections.push({
+          title: currentTitle || fallbackTitle,
+          html: tempDiv.innerHTML
+        });
+        currentNodes = [];
+      }
+      foundFirstH1 = true;
+      currentTitle = (node as Element).textContent?.trim() || `Tópico ${sections.length + 1}`;
+      currentNodes.push(node);
+    } else {
+      currentNodes.push(node);
+    }
+  }
+
+  if (currentNodes.length > 0) {
+    const tempDiv = document.createElement('div');
+    currentNodes.forEach(n => tempDiv.appendChild(n.cloneNode(true)));
+    sections.push({
+      title: currentTitle || (foundFirstH1 ? `Tópico ${sections.length + 1}` : fallbackTitle),
+      html: tempDiv.innerHTML
+    });
+  }
+
+  return sections.length > 0 ? sections : [{ title: fallbackTitle, html: '' }];
+}
+
 export const initKnowledgeBase = () => {
   // Toggle Sidebar
   const sidebar = document.getElementById('kb-sidebar');
@@ -211,10 +249,231 @@ export const initKnowledgeBase = () => {
   let activeContentId: number | null = null;
   let activeModuleId: number | null = null;
 
+  // Topic & Editor State
+  let currentTopics: TopicSection[] = [];
+  let activeTopicIndex: number = 0;
+  let isViewingAllTopics: boolean = false;
+  let fullNotesHtml: string = '';
+
   const headerLabel = document.getElementById('kb-current-topic-header')!;
   const titleLabel = document.getElementById('kb-current-topic-title')!;
   const notesArea = document.getElementById('kb-current-topic-notes') as HTMLDivElement;
   const btnSaveNotes = document.getElementById('kb-btn-save-notes')!;
+  const btnFullscreen = document.getElementById('kb-btn-fullscreen-notes')!;
+
+  // Topic Navigation Controls (Matching UI Screenshot)
+  const btnPrevTopic = document.getElementById('kb-prev-topic') as HTMLButtonElement;
+  const btnNextTopic = document.getElementById('kb-next-topic') as HTMLButtonElement;
+  const topicDropdownTrigger = document.getElementById('kb-topic-dropdown-trigger') as HTMLButtonElement;
+  const topicDisplay = document.getElementById('kb-current-topic-display')!;
+  const topicChevron = document.getElementById('kb-topic-dropdown-chevron')!;
+  const topicDropdownMenu = document.getElementById('kb-topic-dropdown-menu')!;
+  const canvasMindmap = document.getElementById('kb-mindmap-canvas');
+  const mapTopicsCount = document.getElementById('kb-map-topics-count');
+
+  const closeDropdown = () => {
+    if (!topicDropdownMenu) return;
+    topicDropdownMenu.classList.add('hidden');
+    if (topicChevron) topicChevron.style.transform = 'rotate(0deg)';
+  };
+
+  const toggleDropdown = (e?: MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (!topicDropdownMenu) return;
+    const isHidden = topicDropdownMenu.classList.contains('hidden');
+    if (isHidden) {
+      topicDropdownMenu.classList.remove('hidden');
+      if (topicChevron) topicChevron.style.transform = 'rotate(180deg)';
+    } else {
+      closeDropdown();
+    }
+  };
+
+  if (topicDropdownTrigger) {
+    topicDropdownTrigger.addEventListener('click', toggleDropdown);
+  }
+
+  document.addEventListener('click', (e: MouseEvent) => {
+    if (topicDropdownTrigger && topicDropdownMenu) {
+      if (!topicDropdownTrigger.contains(e.target as Node) && !topicDropdownMenu.contains(e.target as Node)) {
+        closeDropdown();
+      }
+    }
+  });
+
+  const renderDropdownMenu = () => {
+    if (!topicDropdownMenu) return;
+
+    if (currentTopics.length === 0) {
+      topicDropdownMenu.innerHTML = `<div class="p-3 text-xs text-on-surface-variant text-center">Nenhum tópico disponível</div>`;
+      return;
+    }
+
+    const itemsHtml = currentTopics.map((t, idx) => {
+      const isSelected = (!isViewingAllTopics && activeTopicIndex === idx);
+      return `
+        <button class="kb-dropdown-item w-full text-left px-3 py-2 rounded-lg text-xs md:text-sm flex items-center justify-between gap-2 transition-all cursor-pointer ${
+          isSelected 
+            ? 'bg-primary/20 text-primary font-bold border border-primary/30 shadow-sm' 
+            : 'text-on-surface hover:bg-surface-container-high hover:text-primary'
+        }" data-topic-index="${idx}">
+          <span class="truncate">${idx + 1}. ${t.title || `Tópico ${idx + 1}`}</span>
+          ${isSelected ? '<span class="material-symbols-outlined text-[16px] text-primary shrink-0">check</span>' : ''}
+        </button>
+      `;
+    }).join('');
+
+    topicDropdownMenu.innerHTML = `
+      <div class="px-2 py-1 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Tópicos (H1)</div>
+      <div class="space-y-1">
+        ${itemsHtml}
+      </div>
+      <div class="my-1.5 border-t border-outline-variant/20"></div>
+      <button id="kb-dropdown-item-all" class="w-full text-left px-3 py-2 rounded-lg text-xs md:text-sm flex items-center justify-between gap-2 transition-all cursor-pointer ${
+        isViewingAllTopics 
+          ? 'bg-primary/20 text-primary font-bold border border-primary/30 shadow-sm' 
+          : 'text-on-surface hover:bg-surface-container-high hover:text-primary'
+      }">
+        <span class="flex items-center gap-2 truncate">
+          <span class="material-symbols-outlined text-[16px] text-primary shrink-0">view_agenda</span>
+          <span class="truncate">Ver Todos os Tópicos (${currentTopics.length})</span>
+        </span>
+        ${isViewingAllTopics ? '<span class="material-symbols-outlined text-[16px] text-primary shrink-0">check</span>' : ''}
+      </button>
+    `;
+
+    // Dropdown items click listeners
+    topicDropdownMenu.querySelectorAll('.kb-dropdown-item').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = parseInt(btn.getAttribute('data-topic-index') || '0');
+        if (currentTopics[activeTopicIndex] && !isViewingAllTopics) {
+          currentTopics[activeTopicIndex].html = notesArea.innerHTML;
+        } else if (isViewingAllTopics) {
+          fullNotesHtml = notesArea.innerHTML;
+        }
+        activeTopicIndex = idx;
+        isViewingAllTopics = false;
+        closeDropdown();
+        renderCurrentTopicView();
+      });
+    });
+
+    const btnAll = document.getElementById('kb-dropdown-item-all');
+    if (btnAll) {
+      btnAll.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (currentTopics[activeTopicIndex] && !isViewingAllTopics) {
+          currentTopics[activeTopicIndex].html = notesArea.innerHTML;
+          fullNotesHtml = currentTopics.map(t => t.html).join('');
+        }
+        isViewingAllTopics = true;
+        closeDropdown();
+        renderCurrentTopicView();
+      });
+    }
+  };
+
+  const renderMindMap = () => {
+    if (!canvasMindmap) return;
+
+    if (currentTopics.length === 0 || !activeContentId) {
+      canvasMindmap.innerHTML = `<div class="text-center text-body-sm text-on-surface-variant">Selecione um conteúdo para ver sua estrutura</div>`;
+      if (mapTopicsCount) mapTopicsCount.textContent = '0 tópicos';
+      return;
+    }
+
+    if (mapTopicsCount) mapTopicsCount.textContent = `${currentTopics.length} tópico(s)`;
+
+    const mod = modulesData.find(m => m.id === activeModuleId);
+    const content = mod?.contents.find((c: any) => c.id === activeContentId);
+    const mainTitle = content ? content.title : 'Conteúdo';
+
+    const total = currentTopics.length;
+    const radius = total <= 3 ? 32 : (total <= 6 ? 38 : 40);
+
+    let nodesHtml = '';
+    let svgPaths = '';
+
+    currentTopics.forEach((t, i) => {
+      const angle = (2 * Math.PI / total) * i - (Math.PI / 2);
+      const x = 50 + radius * Math.cos(angle);
+      const y = 50 + radius * Math.sin(angle);
+
+      const isSelected = (!isViewingAllTopics && activeTopicIndex === i);
+      const colorClass = isSelected 
+        ? 'bg-primary text-on-secondary font-bold shadow-[0_0_12px_rgba(255,82,82,0.5)] scale-105 border-primary' 
+        : 'bg-surface-container-high border-outline-variant/40 text-on-surface hover:border-primary/60 hover:text-primary';
+
+      svgPaths += `<line x1="50%" y1="50%" x2="${x}%" y2="${y}%" stroke="${isSelected ? '#ff5252' : 'rgba(255,255,255,0.15)'}" stroke-width="${isSelected ? '2.5' : '1.5'}" stroke-dasharray="${isSelected ? 'none' : '3 3'}" />`;
+
+      nodesHtml += `
+        <button class="kb-map-topic-node absolute transform -translate-x-1/2 -translate-y-1/2 z-20 px-3 py-1.5 rounded-lg border text-xs max-w-[140px] truncate transition-all cursor-pointer ${colorClass}" style="left: ${x}%; top: ${y}%;" data-topic-index="${i}" title="${t.title}">
+          ${i + 1}. ${t.title}
+        </button>
+      `;
+    });
+
+    canvasMindmap.innerHTML = `
+      <svg class="absolute inset-0 w-full h-full pointer-events-none">
+        ${svgPaths}
+      </svg>
+      <!-- Central Node -->
+      <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 bg-surface-container-highest border-2 border-primary/80 px-4 py-2 rounded-xl shadow-[0_0_20px_rgba(255,82,82,0.25)] text-center max-w-[160px] truncate">
+        <span class="font-bold text-on-surface text-sm block truncate">${mainTitle}</span>
+        <span class="text-[10px] text-primary font-mono">${total} tópico(s) H1</span>
+      </div>
+      ${nodesHtml}
+    `;
+
+    canvasMindmap.querySelectorAll('.kb-map-topic-node').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.getAttribute('data-topic-index') || '0');
+        if (currentTopics[activeTopicIndex] && !isViewingAllTopics) {
+          currentTopics[activeTopicIndex].html = notesArea.innerHTML;
+        }
+        activeTopicIndex = idx;
+        isViewingAllTopics = false;
+        renderCurrentTopicView();
+      });
+    });
+  };
+
+  const renderCurrentTopicView = () => {
+    if (currentTopics.length === 0) {
+      notesArea.innerHTML = '';
+      titleLabel.textContent = 'Nenhum tópico';
+      if (topicDisplay) topicDisplay.textContent = 'Nenhum selecionado';
+      btnPrevTopic.disabled = true;
+      btnNextTopic.disabled = true;
+      renderDropdownMenu();
+      renderMindMap();
+      return;
+    }
+
+    if (isViewingAllTopics) {
+      notesArea.innerHTML = fullNotesHtml;
+      titleLabel.textContent = `Todos os Tópicos (${currentTopics.length})`;
+      if (topicDisplay) topicDisplay.textContent = `Todos os Tópicos (${currentTopics.length})`;
+      btnPrevTopic.disabled = true;
+      btnNextTopic.disabled = true;
+    } else {
+      if (activeTopicIndex < 0) activeTopicIndex = 0;
+      if (activeTopicIndex >= currentTopics.length) activeTopicIndex = currentTopics.length - 1;
+
+      const topic = currentTopics[activeTopicIndex];
+      notesArea.innerHTML = topic.html;
+      const topicName = topic.title || `Tópico ${activeTopicIndex + 1}`;
+      titleLabel.textContent = topicName;
+      if (topicDisplay) topicDisplay.textContent = topicName;
+      
+      btnPrevTopic.disabled = (activeTopicIndex <= 0);
+      btnNextTopic.disabled = (activeTopicIndex >= currentTopics.length - 1);
+    }
+
+    renderDropdownMenu();
+    renderMindMap();
+  };
 
   const loadContentData = (contentId: number, moduleId: number) => {
     activeContentId = contentId;
@@ -224,10 +483,15 @@ export const initKnowledgeBase = () => {
     const content = mod.contents.find((c: any) => c.id === contentId);
     if (!content) return;
 
-    headerLabel.textContent = `Tópico: ${content.title}`;
-    titleLabel.textContent = content.title;
-    notesArea.innerHTML = content.notes || '<p class="text-on-surface-variant/50">Escreva suas anotações aqui...</p>';
-    btnSaveNotes.classList.add('hidden'); // hide until edited
+    headerLabel.textContent = `Conteúdo: ${content.title}`;
+    fullNotesHtml = (content.notes && !content.notes.includes('Escreva suas anotações aqui...')) ? content.notes : '';
+    
+    currentTopics = parseTopicsFromHtml(fullNotesHtml, content.title);
+    activeTopicIndex = 0;
+    isViewingAllTopics = false;
+
+    renderCurrentTopicView();
+    btnSaveNotes.classList.add('hidden');
 
     // Highlight selected item in sidebar
     document.querySelectorAll('.kb-content-item').forEach(el => {
@@ -238,17 +502,55 @@ export const initKnowledgeBase = () => {
     });
   };
 
+  // Prev / Next Button Listeners
+  btnPrevTopic.addEventListener('click', () => {
+    if (isViewingAllTopics) {
+      isViewingAllTopics = false;
+      activeTopicIndex = 0;
+    } else if (activeTopicIndex > 0) {
+      if (currentTopics[activeTopicIndex]) {
+        currentTopics[activeTopicIndex].html = notesArea.innerHTML;
+      }
+      activeTopicIndex--;
+    }
+    renderCurrentTopicView();
+  });
+
+  btnNextTopic.addEventListener('click', () => {
+    if (isViewingAllTopics) {
+      isViewingAllTopics = false;
+      activeTopicIndex = 0;
+    } else if (activeTopicIndex < currentTopics.length - 1) {
+      if (currentTopics[activeTopicIndex]) {
+        currentTopics[activeTopicIndex].html = notesArea.innerHTML;
+      }
+      activeTopicIndex++;
+    }
+    renderCurrentTopicView();
+  });
+
   notesArea.addEventListener('input', () => {
     if (activeContentId) {
       btnSaveNotes.classList.remove('hidden');
     }
   });
 
-  btnSaveNotes.addEventListener('click', async () => {
+  const saveCurrentNotes = async () => {
     if (!activeContentId || !activeModuleId) return;
     const mod = modulesData.find(m => m.id === activeModuleId);
     const content = mod?.contents.find((c: any) => c.id === activeContentId);
     if (!content) return;
+
+    if (isViewingAllTopics) {
+      fullNotesHtml = notesArea.innerHTML;
+    } else {
+      if (currentTopics.length > 0 && activeTopicIndex >= 0 && activeTopicIndex < currentTopics.length) {
+        currentTopics[activeTopicIndex].html = notesArea.innerHTML;
+        fullNotesHtml = currentTopics.map(t => t.html).join('');
+      } else {
+        fullNotesHtml = notesArea.innerHTML;
+      }
+    }
 
     try {
       btnSaveNotes.innerHTML = `<span class="material-symbols-outlined text-[18px]">sync</span>`;
@@ -259,30 +561,44 @@ export const initKnowledgeBase = () => {
           id: content.id,
           moduleId: content.moduleId,
           title: content.title,
-          notes: notesArea.innerHTML,
+          notes: fullNotesHtml,
           mindmap: content.mindmap
         })
       });
-      content.notes = notesArea.innerHTML;
+      content.notes = fullNotesHtml;
+
+      // Re-parse topics in case new H1s were introduced
+      currentTopics = parseTopicsFromHtml(fullNotesHtml, content.title);
+      renderCurrentTopicView();
+
       btnSaveNotes.classList.add('hidden');
       btnSaveNotes.innerHTML = `<span class="material-symbols-outlined text-[18px]">save</span>`;
     } catch (e) {
       alert("Erro ao salvar anotações");
       btnSaveNotes.innerHTML = `<span class="material-symbols-outlined text-[18px]">save</span>`;
     }
-  });
+  };
 
-  const btnFullscreen = document.getElementById('kb-btn-fullscreen-notes');
+  btnSaveNotes.addEventListener('click', saveCurrentNotes);
+
   if (btnFullscreen) {
     btnFullscreen.addEventListener('click', () => {
       if (!activeContentId || !activeModuleId) {
-        alert('Selecione um tópico primeiro!');
+        alert('Selecione um conteúdo primeiro!');
         return;
       }
       const mod = modulesData.find(m => m.id === activeModuleId);
       const content = mod?.contents.find((c: any) => c.id === activeContentId);
       if (content && mod && typeof (window as any).navigateToEditor === 'function') {
-        (window as any).navigateToEditor(content.id, content.moduleId, mod.name, content.title, content.notes);
+        if (!isViewingAllTopics && currentTopics[activeTopicIndex]) {
+          currentTopics[activeTopicIndex].html = notesArea.innerHTML;
+          fullNotesHtml = currentTopics.map(t => t.html).join('');
+          content.notes = fullNotesHtml;
+        } else if (isViewingAllTopics) {
+          fullNotesHtml = notesArea.innerHTML;
+          content.notes = fullNotesHtml;
+        }
+        (window as any).navigateToEditor(content.id, content.moduleId, mod.name, content.title, fullNotesHtml || content.notes);
       }
     });
   }
