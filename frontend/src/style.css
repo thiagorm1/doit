@@ -33,4 +33,49 @@
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: var(--tw-colors-outline-variant);
   }
+
+  /* Rich Text Editor Styles */
+  .rich-text-content h1 {
+    font-family: 'Hanken Grotesk', sans-serif;
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--tw-colors-on-surface);
+    margin-bottom: 24px;
+  }
+  .rich-text-content h2 {
+    font-family: 'Hanken Grotesk', sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--tw-colors-on-surface);
+    margin-top: 32px;
+    margin-bottom: 16px;
+  }
+  .rich-text-content p {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--tw-colors-on-surface-variant);
+    margin-bottom: 16px;
+  }
+  .rich-text-content ul {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--tw-colors-on-surface-variant);
+    margin-bottom: 16px;
+    padding-left: 24px;
+    list-style-type: disc;
+  }
+  .rich-text-content ol {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--tw-colors-on-surface-variant);
+    margin-bottom: 16px;
+    padding-left: 24px;
+    list-style-type: decimal;
+  }
+  .rich-text-content li {
+    margin-bottom: 8px;
+  }
 }
