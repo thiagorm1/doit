@@ -2,45 +2,65 @@ export const KnowledgeBaseArea = () => `
 <section class="glass-panel rounded-xl p-lg flex flex-col lg:flex-row gap-lg h-[600px] relative z-10">
   <!-- Sidebar: Cursos -->
   <div class="w-full lg:w-64 flex-shrink-0 flex flex-col border-b lg:border-b-0 lg:border-r border-outline-variant/10 pb-md lg:pb-0 lg:pr-md">
-    <div class="flex items-center justify-between mb-md">
+      <div class="flex items-center justify-between mb-md">
       <h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest sidebar-text">Módulos Ativos</h3>
-      <button class="text-on-surface-variant hover:text-primary transition-colors">
-        <span class="material-symbols-outlined text-[20px]">side_navigation</span>
-      </button>
+      <div class="flex gap-1">
+        <button class="text-on-surface-variant hover:text-primary transition-colors w-7 h-7 flex items-center justify-center bg-surface-container rounded" title="Novo Módulo">
+          <span class="material-symbols-outlined text-[16px]">add</span>
+        </button>
+        <button class="text-on-surface-variant hover:text-primary transition-colors w-7 h-7 flex items-center justify-center">
+          <span class="material-symbols-outlined text-[20px]">side_navigation</span>
+        </button>
+      </div>
     </div>
     <div class="flex-1 overflow-y-auto space-y-1 custom-scrollbar pr-xs">
       <div class="space-y-4">
         <div class="space-y-1">
-          <button class="w-full text-left p-sm rounded-lg hover:bg-surface-container-high text-on-surface flex items-center gap-sm transition-all group">
+          <button class="kb-module-btn w-full text-left p-sm rounded-lg hover:bg-surface-container-high text-on-surface flex items-center gap-sm transition-all group">
             <span class="material-symbols-outlined text-[18px] text-primary">folder</span>
             <span class="sidebar-text font-bold">Dev</span>
-            <span class="material-symbols-outlined text-[16px] ml-auto opacity-50">expand_more</span>
+            <span class="kb-module-icon material-symbols-outlined text-[16px] ml-auto opacity-50 transition-transform">expand_more</span>
           </button>
-          <div class="pl-8 space-y-1">
+          <div class="kb-module-content pl-8 space-y-1">
             <button class="w-full text-left p-sm rounded-lg hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center gap-sm transition-all">
               <span class="material-symbols-outlined text-[18px]">description</span>
               <span class="sidebar-text">Java</span>
             </button>
-          </div>
-        </div>
-        <div class="space-y-1">
-          <button class="w-full text-left p-sm rounded-lg hover:bg-surface-container-high text-on-surface flex items-center gap-sm transition-all group">
-            <span class="material-symbols-outlined text-[18px] text-primary">folder</span>
-            <span class="sidebar-text font-bold">Faculdade</span>
-            <span class="material-symbols-outlined text-[16px] ml-auto opacity-50">expand_more</span>
-          </button>
-          <div class="pl-8 space-y-1">
-            <button class="w-full text-left p-sm rounded-lg hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center gap-sm transition-all">
-              <span class="material-symbols-outlined text-[18px]">description</span>
-              <span class="sidebar-text">Sistemas Op.</span>
+            <button class="w-full text-left p-xs rounded-lg hover:bg-surface-container-high text-primary/70 hover:text-primary flex items-center gap-sm transition-all mt-2 border border-dashed border-primary/20">
+              <span class="material-symbols-outlined text-[14px] ml-1">add</span>
+              <span class="sidebar-text text-xs">Novo Conteúdo</span>
             </button>
           </div>
         </div>
         <div class="space-y-1">
-          <button class="w-full text-left p-sm rounded-lg hover:bg-surface-container-high text-on-surface flex items-center gap-sm transition-all group">
+          <button class="kb-module-btn w-full text-left p-sm rounded-lg hover:bg-surface-container-high text-on-surface flex items-center gap-sm transition-all group">
+            <span class="material-symbols-outlined text-[18px] text-primary">folder</span>
+            <span class="sidebar-text font-bold">Faculdade</span>
+            <span class="kb-module-icon material-symbols-outlined text-[16px] ml-auto opacity-50 transition-transform">expand_more</span>
+          </button>
+          <div class="kb-module-content pl-8 space-y-1">
+            <button class="w-full text-left p-sm rounded-lg hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center gap-sm transition-all">
+              <span class="material-symbols-outlined text-[18px]">description</span>
+              <span class="sidebar-text">Sistemas Op.</span>
+            </button>
+            <button class="w-full text-left p-xs rounded-lg hover:bg-surface-container-high text-primary/70 hover:text-primary flex items-center gap-sm transition-all mt-2 border border-dashed border-primary/20">
+              <span class="material-symbols-outlined text-[14px] ml-1">add</span>
+              <span class="sidebar-text text-xs">Novo Conteúdo</span>
+            </button>
+          </div>
+        </div>
+        <div class="space-y-1">
+          <button class="kb-module-btn w-full text-left p-sm rounded-lg hover:bg-surface-container-high text-on-surface flex items-center gap-sm transition-all group">
             <span class="material-symbols-outlined text-[18px] text-primary">folder</span>
             <span class="sidebar-text font-bold">Concurso</span>
+            <span class="kb-module-icon material-symbols-outlined text-[16px] ml-auto opacity-50 transition-transform" style="transform: rotate(180deg)">expand_more</span>
           </button>
+          <div class="kb-module-content hidden pl-8 space-y-1">
+            <button class="w-full text-left p-xs rounded-lg hover:bg-surface-container-high text-primary/70 hover:text-primary flex items-center gap-sm transition-all mt-2 border border-dashed border-primary/20">
+              <span class="material-symbols-outlined text-[14px] ml-1">add</span>
+              <span class="sidebar-text text-xs">Novo Conteúdo</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -50,11 +70,11 @@ export const KnowledgeBaseArea = () => `
     <!-- Controls Header -->
     <div class="flex flex-wrap justify-between items-center mb-md gap-sm bg-surface-container-highest p-sm rounded-lg border border-outline-variant/10">
       <div class="flex gap-sm">
-        <button class="px-md py-xs rounded-md bg-surface border border-outline-variant/30 text-body-sm font-body-sm text-on-surface hover:border-primary hover:text-primary transition-colors flex items-center gap-xs">
+        <button id="kb-toggle-notes" class="px-md py-xs rounded-md bg-surface border border-outline-variant/30 text-body-sm font-body-sm text-on-surface hover:border-primary hover:text-primary transition-colors flex items-center gap-xs">
           <span class="material-symbols-outlined text-[16px]">visibility_off</span>
           Anotações
         </button>
-        <button class="px-md py-xs rounded-md bg-surface border border-outline-variant/30 text-body-sm font-body-sm text-on-surface hover:border-primary hover:text-primary transition-colors flex items-center gap-xs">
+        <button id="kb-toggle-map" class="px-md py-xs rounded-md bg-surface border border-outline-variant/30 text-body-sm font-body-sm text-on-surface hover:border-primary hover:text-primary transition-colors flex items-center gap-xs">
           <span class="material-symbols-outlined text-[16px]">visibility_off</span>
           Mapa Mental
         </button>
@@ -72,7 +92,7 @@ export const KnowledgeBaseArea = () => `
     <!-- Side-by-Side View -->
     <div class="flex-1 flex flex-col md:flex-row gap-md overflow-hidden">
       <!-- Left: Written Notes -->
-      <div class="flex-1 bg-surface-container rounded-lg border border-outline-variant/10 p-md overflow-y-auto custom-scrollbar relative">
+      <div id="kb-container-notes" class="flex-1 bg-surface-container rounded-lg border border-outline-variant/10 p-md overflow-y-auto custom-scrollbar relative">
         <div class="mb-md bg-surface-container-high border border-outline-variant/20 rounded-lg p-sm flex items-center justify-between group cursor-pointer hover:border-primary/50 transition-all">
           <button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
             <span class="material-symbols-outlined text-[20px]">chevron_left</span>
@@ -118,7 +138,7 @@ export const KnowledgeBaseArea = () => `
         </div>
       </div>
       <!-- Right: Mind Map View -->
-      <div class="flex-1 bg-surface-container rounded-lg border border-outline-variant/10 relative overflow-hidden flex items-center justify-center group">
+      <div id="kb-container-map" class="flex-1 bg-surface-container rounded-lg border border-outline-variant/10 relative overflow-hidden flex items-center justify-center group">
         <div class="absolute top-md left-md right-md flex justify-between items-center z-10">
           <h4 class="font-headline-md text-[18px] text-on-surface flex items-center gap-sm bg-surface-container-highest px-sm py-xs rounded">
             <span class="material-symbols-outlined text-primary text-[20px]">account_tree</span>
@@ -163,3 +183,83 @@ export const KnowledgeBaseArea = () => `
   </div>
 </section>
 `;
+
+export const initKnowledgeBase = () => {
+  // Toggle Module Contents (Accordion)
+  const moduleBtns = document.querySelectorAll('.kb-module-btn');
+  moduleBtns.forEach(btn => {
+    btn.addEventListener('click', (ev) => {
+      const content = btn.nextElementSibling as HTMLElement;
+      const icon = btn.querySelector('.kb-module-icon') as HTMLElement;
+      if (content && content.classList.contains('kb-module-content')) {
+        if (content.classList.contains('hidden')) {
+          content.classList.remove('hidden');
+          icon.style.transform = 'rotate(180deg)';
+        } else {
+          content.classList.add('hidden');
+          icon.style.transform = 'rotate(0deg)';
+        }
+      }
+    });
+  });
+
+  // Toggle Visibility of Notes and Mind Map
+  const btnNotes = document.getElementById('kb-toggle-notes')!;
+  const btnMap = document.getElementById('kb-toggle-map')!;
+  const containerNotes = document.getElementById('kb-container-notes')!;
+  const containerMap = document.getElementById('kb-container-map')!;
+
+  let notesVisible = true;
+  let mapVisible = true;
+
+  const updateVisibility = () => {
+    if (notesVisible) {
+      containerNotes.classList.remove('hidden');
+      btnNotes.classList.add('border-primary', 'text-primary');
+      btnNotes.querySelector('span')!.textContent = 'visibility';
+    } else {
+      containerNotes.classList.add('hidden');
+      btnNotes.classList.remove('border-primary', 'text-primary');
+      btnNotes.querySelector('span')!.textContent = 'visibility_off';
+    }
+
+    if (mapVisible) {
+      containerMap.classList.remove('hidden');
+      btnMap.classList.add('border-primary', 'text-primary');
+      btnMap.querySelector('span')!.textContent = 'visibility';
+    } else {
+      containerMap.classList.add('hidden');
+      btnMap.classList.remove('border-primary', 'text-primary');
+      btnMap.querySelector('span')!.textContent = 'visibility_off';
+    }
+
+    // Adjust width if only one is visible
+    if (notesVisible && !mapVisible) {
+      containerNotes.classList.remove('flex-1');
+      containerNotes.classList.add('w-full');
+    } else if (!notesVisible && mapVisible) {
+      containerMap.classList.remove('flex-1');
+      containerMap.classList.add('w-full');
+    } else {
+      containerNotes.classList.add('flex-1');
+      containerNotes.classList.remove('w-full');
+      containerMap.classList.add('flex-1');
+      containerMap.classList.remove('w-full');
+    }
+  };
+
+  btnNotes.addEventListener('click', () => {
+    if (notesVisible && !mapVisible) return; // Prevent hiding both
+    notesVisible = !notesVisible;
+    updateVisibility();
+  });
+
+  btnMap.addEventListener('click', () => {
+    if (!notesVisible && mapVisible) return; // Prevent hiding both
+    mapVisible = !mapVisible;
+    updateVisibility();
+  });
+
+  // Initialize with both visible (highlighted buttons)
+  updateVisibility();
+};

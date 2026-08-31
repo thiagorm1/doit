@@ -2,7 +2,7 @@ import { PomodoroCard, initPomodoro } from './components/PomodoroCard';
 import { MetricsCard, initMetricsCard } from './components/MetricsCard';
 import { CollegeCard, initCollegeCard } from './components/CollegeCard';
 import { ContestCard, initContestCard } from './components/ContestCard';
-import { KnowledgeBaseArea } from './components/KnowledgeBaseArea';
+import { KnowledgeBaseArea, initKnowledgeBase } from './components/KnowledgeBaseArea';
 
 export const StudiesView = () => `
   <div class="flex justify-between items-end mb-lg relative z-10">
@@ -38,4 +38,5 @@ export const initStudiesView = () => {
   initMetricsCard();
   initCollegeCard();
   initContestCard();
+  initKnowledgeBase();
 };
