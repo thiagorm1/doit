@@ -21,11 +21,14 @@ export const ContentEditorView = () => `
 
   <!-- Toolbar -->
   <div class="bg-surface-container-highest border border-white/5 rounded-t-lg p-2 flex flex-wrap items-center gap-2 max-w-6xl mx-auto w-full px-4 sticky top-[64px] z-30 shadow-md">
+    <button class="px-2.5 py-1.5 rounded bg-primary/15 hover:bg-primary/25 text-primary border border-primary/30 text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer" title="Criar Novo Tópico (H1)" onmousedown="event.preventDefault(); document.execCommand('formatBlock', false, 'H1'); document.getElementById('editor-rich-textarea').focus();">
+      <span class="material-symbols-outlined text-[16px]">title</span> + Novo Tópico (H1)
+    </button>
     <select class="bg-surface-container-low text-on-surface text-sm rounded border border-white/5 px-3 py-1.5 outline-none cursor-pointer hover:border-white/10 transition-colors" onchange="document.execCommand('formatBlock', false, this.value); document.getElementById('editor-rich-textarea').focus();">
       <option value="P">Texto Normal</option>
-      <option value="H1">Título 1</option>
-      <option value="H2">Título 2</option>
-      <option value="H3">Título 3</option>
+      <option value="H1">Título 1 (H1 - Tópico)</option>
+      <option value="H2">Título 2 (H2)</option>
+      <option value="H3">Título 3 (H3)</option>
     </select>
     <select class="bg-surface-container-low text-on-surface text-sm rounded border border-white/5 px-3 py-1.5 outline-none cursor-pointer hover:border-white/10 transition-colors" onchange="document.execCommand('fontName', false, this.value); document.getElementById('editor-rich-textarea').focus();">
       <option value="Plus Jakarta Sans">Fonte Principal</option>
@@ -99,6 +102,28 @@ export const ContentEditorView = () => `
     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[200px] h-[200px] bg-secondary/5 blur-[80px] pointer-events-none"></div>
     <!-- Editable Content Area -->
     <div id="editor-rich-textarea" contenteditable="true" spellcheck="false" class="rich-text-content w-full h-full min-h-[500px] outline-none text-on-surface-variant font-body-md leading-relaxed prose prose-invert prose-sm max-w-none">
+    </div>
+  </div>
+
+  <!-- Floating Topic Outline (Listras com menu expansível no hover) -->
+  <div id="editor-floating-outline-container" class="fixed right-4 md:right-8 top-32 z-40 group flex flex-col items-end">
+    <!-- Minimalist Stripes / Listras (Visível por padrão) -->
+    <div class="flex flex-col gap-1.5 items-end p-2 rounded-lg hover:bg-white/5 cursor-pointer transition-all duration-200" title="Tópicos do Documento">
+      <span class="w-6 h-[2.5px] bg-on-surface-variant/70 rounded-full transition-all group-hover:bg-primary"></span>
+      <span class="w-4 h-[2.5px] bg-on-surface-variant/70 rounded-full transition-all group-hover:bg-primary"></span>
+      <span class="w-6 h-[2.5px] bg-on-surface-variant/70 rounded-full transition-all group-hover:bg-primary"></span>
+      <span class="w-5 h-[2.5px] bg-on-surface-variant/70 rounded-full transition-all group-hover:bg-primary"></span>
+    </div>
+
+    <!-- Floating Dropdown Menu (Surge ao aproximar o mouse) -->
+    <div id="editor-outline-panel" class="opacity-0 translate-x-3 scale-95 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 group-hover:scale-100 group-hover:pointer-events-auto transition-all duration-300 ease-out absolute right-0 top-0 bg-[#16161a]/95 backdrop-blur-md border border-white/10 rounded-xl p-2.5 shadow-2xl min-w-[200px] max-w-[280px] max-h-[70vh] overflow-y-auto custom-scrollbar">
+      <div class="px-2 py-1 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest border-b border-white/5 mb-1.5 flex items-center justify-between">
+        <span>Tópicos</span>
+        <span id="editor-outline-count" class="text-primary font-mono text-[11px]">0</span>
+      </div>
+      <div id="editor-outline-list" class="space-y-0.5">
+        <!-- Itens injetados dinamicamente via JS -->
+      </div>
     </div>
   </div>
 
