@@ -62,10 +62,10 @@ export const initApp = () => {
     
     const editorArea = document.getElementById('editor-rich-textarea');
     if (editorArea) {
-      if (htmlContent && htmlContent.trim() !== '') {
+      if (htmlContent && htmlContent.trim() !== '' && !htmlContent.includes('Escreva suas anotações aqui...')) {
         editorArea.innerHTML = htmlContent;
       } else {
-        editorArea.innerHTML = `<h1>${title}</h1><p>Comece a digitar...</p>`;
+        editorArea.innerHTML = `<h1>${title}</h1><p></p>`;
       }
     }
   
@@ -116,6 +116,86 @@ export const initApp = () => {
         autoSaveTimeout = setTimeout(performSave, 1500);
       });
     }
+
+    // Topic Outline / Listras navigation logic in Fullscreen
+    const outlineList = document.getElementById('editor-outline-list');
+    const outlineCount = document.getElementById('editor-outline-count');
+
+    const updateOutline = () => {
+      if (!editorArea || !outlineList) return;
+      const headings = Array.from(editorArea.querySelectorAll('h1'));
+
+      if (outlineCount) {
+        outlineCount.textContent = headings.length.toString();
+      }
+
+      if (headings.length === 0) {
+        outlineList.innerHTML = `<div class="px-2 py-1.5 text-xs text-on-surface-variant/60 italic">Nenhum tópico (H1)</div>`;
+        return;
+      }
+
+      outlineList.innerHTML = headings.map((h, i) => {
+        const anchorId = `editor-topic-h1-${i}`;
+        h.setAttribute('id', anchorId);
+        const headingText = h.textContent?.trim() || 'Sem título';
+        return `
+          <button class="editor-outline-item w-full text-left px-2.5 py-1.5 rounded-lg text-xs md:text-sm transition-all flex items-center justify-between gap-1 text-on-surface-variant hover:text-on-surface hover:bg-white/10 cursor-pointer" data-target="${anchorId}">
+            <span class="truncate">${headingText}</span>
+          </button>
+        `;
+      }).join('');
+
+      outlineList.querySelectorAll('.editor-outline-item').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const targetId = btn.getAttribute('data-target');
+          if (targetId) {
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              const yOffset = -140; // offset for header + toolbar
+              const y = targetEl.getBoundingClientRect().top + window.pageYOffset + yOffset;
+              window.scrollTo({ top: y, behavior: 'smooth' });
+            }
+          }
+        });
+      });
+
+      highlightActiveHeading();
+    };
+
+    const highlightActiveHeading = () => {
+      if (!editorArea || !outlineList) return;
+      const headings = Array.from(editorArea.querySelectorAll('h1'));
+      if (headings.length === 0) return;
+
+      let activeIndex = 0;
+      headings.forEach((h, i) => {
+        const rect = h.getBoundingClientRect();
+        if (rect.top <= 220) {
+          activeIndex = i;
+        }
+      });
+
+      const buttons = outlineList.querySelectorAll('.editor-outline-item');
+      buttons.forEach((btn, i) => {
+        if (i === activeIndex) {
+          btn.classList.add('text-primary', 'font-bold', 'bg-white/5');
+          btn.classList.remove('text-on-surface-variant');
+        } else {
+          btn.classList.remove('text-primary', 'font-bold', 'bg-white/5');
+          btn.classList.add('text-on-surface-variant');
+        }
+      });
+    };
+
+    window.addEventListener('scroll', highlightActiveHeading, { passive: true });
+    
+    if (editorArea) {
+      editorArea.addEventListener('input', updateOutline);
+    }
+
+    // Initial outline generation
+    updateOutline();
   };
 
   const navigateToStudies = () => {
