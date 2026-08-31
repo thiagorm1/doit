@@ -436,7 +436,7 @@ export const initCollegeCard = async () => {
   const styleActiveTab = 'px-4 py-1.5 bg-primary text-on-secondary rounded-full text-xs font-bold transition-colors shadow-sm';
   const styleInactiveTab = 'px-4 py-1.5 bg-surface border border-outline-variant/30 text-on-surface-variant hover:text-on-surface rounded-full text-xs font-bold transition-colors';
 
-  export const setSubjTab = (mode: 'add' | 'active' | 'hist') => {
+  const setSubjTab = (mode: 'add' | 'active' | 'hist') => {
     stSubjAdd.className = mode === 'add' ? styleActiveTab : styleInactiveTab;
     stSubjActive.className = mode === 'active' ? styleActiveTab : styleInactiveTab;
     stSubjHist.className = mode === 'hist' ? styleActiveTab : styleInactiveTab;
@@ -446,7 +446,7 @@ export const initCollegeCard = async () => {
     subjActiveArea.classList.toggle('hidden', mode !== 'active');
     subjHistArea.classList.toggle('hidden', mode !== 'hist');
 
-    // Reset hidden id if changing away from form (optional, let's just leave it so they can continue)
+    // Reset hidden id if changing away from form
     if (mode === 'add' && (document.getElementById('subj-id') as HTMLInputElement).value === '') {
       document.getElementById('subj-add-btn')!.innerHTML = 'Adicionar';
     }
@@ -462,7 +462,7 @@ export const initCollegeCard = async () => {
   const examActiveArea = document.getElementById('exam-active-list-area')!;
   const examHistArea = document.getElementById('exam-hist-list-area')!;
 
-  export const setExamTab = (mode: 'add' | 'active' | 'hist') => {
+  const setExamTab = (mode: 'add' | 'active' | 'hist') => {
     stExamAdd.className = mode === 'add' ? styleActiveTab : styleInactiveTab;
     stExamActive.className = mode === 'active' ? styleActiveTab : styleInactiveTab;
     stExamHist.className = mode === 'hist' ? styleActiveTab : styleInactiveTab;
@@ -529,7 +529,6 @@ export const initCollegeCard = async () => {
     if(!name) return;
 
     // Start animation
-    const originalText = subjAddBtn.innerHTML;
     const originalBg = subjAddBtn.className;
     
     subjAddBtn.disabled = true;
@@ -594,7 +593,6 @@ export const initCollegeCard = async () => {
     if(!title || !date || !sem) return;
 
     // Start animation
-    const originalText = examAddBtn.innerHTML;
     const originalBg = examAddBtn.className;
     
     examAddBtn.disabled = true;
