@@ -1,3 +1,7 @@
+import { API_BASE_URL } from '../../../shared/config';
+import { topicExcalidraw } from './TopicExcalidrawMindMap';
+import type { TopicMindmapState } from './TopicExcalidrawMindMap';
+
 export const KnowledgeBaseArea = () => `
 <style>
 #kb-sidebar {
@@ -20,41 +24,50 @@ export const KnowledgeBaseArea = () => `
   padding-left: 0;
   padding-right: 0;
 }
+
+/* Fullscreen Excalidraw Map */
+#kb-container-map.is-fullscreen {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  z-index: 9999999 !important;
+  margin: 0 !important;
+  padding: 16px !important;
+  border-radius: 0 !important;
+  border: none !important;
+  background-color: #121214 !important;
+  box-shadow: none !important;
+}
 </style>
 <section class="glass-panel rounded-xl p-lg flex flex-col lg:flex-row gap-lg h-[600px] relative z-10">
   <!-- Sidebar: Cursos -->
   <div id="kb-sidebar" class="w-full lg:w-64 flex-shrink-0 flex flex-col border-b lg:border-b-0 lg:border-r border-outline-variant/10 pb-md lg:pb-0 lg:pr-md overflow-hidden">
       <div class="flex items-center justify-between mb-md">
       <h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest sidebar-text">Módulos</h3>
-      <div class="flex gap-1 sidebar-actions">
-        <button id="kb-add-module-btn" class="text-on-surface-variant hover:text-primary transition-colors w-7 h-7 flex items-center justify-center bg-surface-container rounded" title="Novo Módulo">
+      <div class="flex items-center gap-xs">
+        <button id="kb-add-module-btn" class="text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center bg-surface-container-highest rounded-md w-7 h-7 cursor-pointer sidebar-actions shadow-sm" title="Criar Módulo">
           <span class="material-symbols-outlined text-[16px]">add</span>
         </button>
+        <button id="kb-toggle-sidebar" class="text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center bg-surface-container-highest rounded-md w-7 h-7 cursor-pointer shadow-sm" title="Recolher/Expandir Sidebar">
+          <span class="material-symbols-outlined text-[16px]">dock_to_right</span>
+        </button>
       </div>
-      <button id="kb-toggle-sidebar" class="text-on-surface-variant hover:text-primary transition-colors w-7 h-7 flex items-center justify-center ml-auto">
-        <span class="material-symbols-outlined text-[20px]">side_navigation</span>
-      </button>
     </div>
-    <div class="flex-1 overflow-y-auto space-y-1 custom-scrollbar pr-xs">
-      <div class="space-y-4" id="kb-modules-list">
-        <!-- Modulos will be injected here via JS -->
-      </div>
+    <div id="kb-modules-list" class="flex-1 overflow-y-auto space-y-2 pr-xs custom-scrollbar">
+      <!-- Injected by JS -->
     </div>
   </div>
-  <!-- Content Area -->
-  <div class="flex-1 flex flex-col h-full overflow-hidden">
-    <!-- Controls Header -->
-    <div class="flex flex-wrap justify-between items-center mb-md gap-sm bg-surface-container-highest p-sm rounded-lg border border-outline-variant/10">
-      <div class="flex gap-sm">
-        <button id="kb-toggle-notes" class="px-md py-xs rounded-md bg-surface border border-outline-variant/30 text-body-sm font-body-sm text-on-surface hover:border-primary hover:text-primary transition-colors flex items-center gap-xs">
-          <span class="material-symbols-outlined text-[16px]">visibility_off</span>
-          Anotações
-        </button>
-        <button id="kb-toggle-map" class="px-md py-xs rounded-md bg-surface border border-outline-variant/30 text-body-sm font-body-sm text-on-surface hover:border-primary hover:text-primary transition-colors flex items-center gap-xs">
-          <span class="material-symbols-outlined text-[16px]">visibility_off</span>
-          Mapa Mental
-        </button>
-      </div>
+
+  <!-- Main Content Area -->
+  <div class="flex-1 flex flex-col overflow-hidden">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-md border-b border-outline-variant/10 pb-sm">
       <div class="flex items-center gap-sm">
         <span class="font-body-sm text-on-surface-variant mr-2" id="kb-current-topic-header">Selecione um Conteúdo</span>
       </div>
@@ -108,18 +121,23 @@ export const KnowledgeBaseArea = () => `
            <div id="kb-current-topic-notes" contenteditable="true" spellcheck="false" class="rich-text-content flex-1 w-full bg-transparent border-none outline-none resize-none prose prose-invert prose-sm max-w-none font-body-md text-on-surface-variant custom-scrollbar overflow-y-auto"></div>
         </div>
       </div>
-      <!-- Right: Mind Map View -->
-      <div id="kb-container-map" class="flex-1 bg-surface-container rounded-lg border border-outline-variant/10 relative overflow-hidden flex flex-col group">
+      <!-- Right: Mind Map View (Excalidraw) -->
+      <div id="kb-container-map" class="flex-1 bg-surface-container rounded-lg border border-outline-variant/10 relative overflow-hidden flex flex-col group min-h-[350px] transition-all duration-300">
         <div class="p-sm flex justify-between items-center z-10 bg-surface-container-highest border-b border-outline-variant/10">
           <h4 class="font-headline-md text-sm text-on-surface flex items-center gap-xs">
-            <span class="material-symbols-outlined text-primary text-[18px]">account_tree</span>
-            Visão Estrutural (Tópicos H1)
+            <span class="material-symbols-outlined text-primary text-[18px]">draw</span>
+            <span>Mapa Mental</span>
+            <span id="kb-map-topic-badge" class="text-xs text-primary font-bold bg-primary/10 px-2 py-0.5 rounded border border-primary/20 truncate max-w-[180px]">Tópico</span>
           </h4>
-          <span id="kb-map-topics-count" class="text-xs text-on-surface-variant font-mono">0 tópicos</span>
+          <div class="flex items-center gap-2">
+            <span id="kb-map-status" class="text-[11px] text-on-surface-variant font-mono">Excalidraw</span>
+            <button id="kb-btn-fullscreen-map" class="text-on-surface-variant hover:text-primary transition-colors p-1 rounded-lg hover:bg-surface-container-highest cursor-pointer flex items-center justify-center" title="Expandir Mapa Mental em Tela Cheia">
+              <span class="material-symbols-outlined text-[18px]" id="kb-icon-fullscreen-map">fullscreen</span>
+            </button>
+          </div>
         </div>
-        <!-- Dynamic Map Canvas -->
-        <div id="kb-mindmap-canvas" class="w-full flex-1 p-md flex items-center justify-center relative overflow-hidden">
-          <div class="text-center text-body-sm text-on-surface-variant">Selecione um conteúdo para ver sua estrutura</div>
+        <!-- Dynamic Excalidraw Canvas Container -->
+        <div id="kb-mindmap-canvas" class="w-full flex-1 relative overflow-hidden bg-[#121214] theme--dark">
         </div>
       </div>
     </div>
@@ -269,7 +287,47 @@ export const initKnowledgeBase = () => {
   const topicChevron = document.getElementById('kb-topic-dropdown-chevron')!;
   const topicDropdownMenu = document.getElementById('kb-topic-dropdown-menu')!;
   const canvasMindmap = document.getElementById('kb-mindmap-canvas');
-  const mapTopicsCount = document.getElementById('kb-map-topics-count');
+  const mapTopicBadge = document.getElementById('kb-map-topic-badge');
+
+  let contentMindmap: { topics: { [topicKey: string]: TopicMindmapState } } = { topics: {} };
+  let mindmapSaveTimeout: any = null;
+
+  const saveCurrentMindmapDebounced = () => {
+    clearTimeout(mindmapSaveTimeout);
+    mindmapSaveTimeout = setTimeout(async () => {
+      if (!activeContentId || !activeModuleId) return;
+      const mod = modulesData.find(m => m.id === activeModuleId);
+      const content = mod?.contents.find((c: any) => c.id === activeContentId);
+      if (!content) return;
+
+      const serialized = JSON.stringify(contentMindmap);
+      content.mindmap = serialized;
+
+      try {
+        await fetch(`${API_BASE_URL}/api/studies/modules/contents`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: content.id,
+            moduleId: content.moduleId,
+            title: content.title,
+            notes: content.notes || fullNotesHtml,
+            mindmap: serialized
+          })
+        });
+      } catch (e) {
+        console.error('Erro ao salvar mapa mental no backend', e);
+      }
+    }, 1000);
+  };
+
+  if (canvasMindmap) {
+    topicExcalidraw.init(canvasMindmap, (topicKey, data) => {
+      if (!contentMindmap.topics) contentMindmap.topics = {};
+      contentMindmap.topics[topicKey] = data;
+      saveCurrentMindmapDebounced();
+    });
+  }
 
   const closeDropdown = () => {
     if (!topicDropdownMenu) return;
@@ -346,6 +404,13 @@ export const initKnowledgeBase = () => {
     topicDropdownMenu.querySelectorAll('.kb-dropdown-item').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
+        const currentDraw = topicExcalidraw.getCurrentTopicData();
+        if (currentDraw) {
+          const prevKey = isViewingAllTopics ? 'topic_all' : `topic_${activeTopicIndex}`;
+          if (!contentMindmap.topics) contentMindmap.topics = {};
+          contentMindmap.topics[prevKey] = currentDraw;
+        }
+
         const idx = parseInt(btn.getAttribute('data-topic-index') || '0');
         if (currentTopics[activeTopicIndex] && !isViewingAllTopics) {
           currentTopics[activeTopicIndex].html = notesArea.innerHTML;
@@ -363,6 +428,13 @@ export const initKnowledgeBase = () => {
     if (btnAll) {
       btnAll.addEventListener('click', (e) => {
         e.stopPropagation();
+        const currentDraw = topicExcalidraw.getCurrentTopicData();
+        if (currentDraw) {
+          const prevKey = isViewingAllTopics ? 'topic_all' : `topic_${activeTopicIndex}`;
+          if (!contentMindmap.topics) contentMindmap.topics = {};
+          contentMindmap.topics[prevKey] = currentDraw;
+        }
+
         if (currentTopics[activeTopicIndex] && !isViewingAllTopics) {
           currentTopics[activeTopicIndex].html = notesArea.innerHTML;
           fullNotesHtml = currentTopics.map(t => t.html).join('');
@@ -375,68 +447,26 @@ export const initKnowledgeBase = () => {
   };
 
   const renderMindMap = () => {
-    if (!canvasMindmap) return;
-
-    if (currentTopics.length === 0 || !activeContentId) {
-      canvasMindmap.innerHTML = `<div class="text-center text-body-sm text-on-surface-variant">Selecione um conteúdo para ver sua estrutura</div>`;
-      if (mapTopicsCount) mapTopicsCount.textContent = '0 tópicos';
+    if (!activeContentId) {
+      if (mapTopicBadge) mapTopicBadge.textContent = 'Sem tópico';
       return;
     }
 
-    if (mapTopicsCount) mapTopicsCount.textContent = `${currentTopics.length} tópico(s)`;
+    const topicKey = isViewingAllTopics ? 'topic_all' : `topic_${activeTopicIndex}`;
+    const topicTitle = isViewingAllTopics 
+      ? `Todos os Tópicos (${currentTopics.length})` 
+      : (currentTopics[activeTopicIndex]?.title || (currentTopics.length > 0 ? `Tópico ${activeTopicIndex + 1}` : 'Conteúdo'));
 
-    const mod = modulesData.find(m => m.id === activeModuleId);
-    const content = mod?.contents.find((c: any) => c.id === activeContentId);
-    const mainTitle = content ? content.title : 'Conteúdo';
+    if (mapTopicBadge) {
+      mapTopicBadge.textContent = topicTitle;
+    }
 
-    const total = currentTopics.length;
-    const radius = total <= 3 ? 32 : (total <= 6 ? 38 : 40);
+    if (!contentMindmap.topics) {
+      contentMindmap.topics = {};
+    }
 
-    let nodesHtml = '';
-    let svgPaths = '';
-
-    currentTopics.forEach((t, i) => {
-      const angle = (2 * Math.PI / total) * i - (Math.PI / 2);
-      const x = 50 + radius * Math.cos(angle);
-      const y = 50 + radius * Math.sin(angle);
-
-      const isSelected = (!isViewingAllTopics && activeTopicIndex === i);
-      const colorClass = isSelected 
-        ? 'bg-primary text-on-secondary font-bold shadow-[0_0_12px_rgba(255,82,82,0.5)] scale-105 border-primary' 
-        : 'bg-surface-container-high border-outline-variant/40 text-on-surface hover:border-primary/60 hover:text-primary';
-
-      svgPaths += `<line x1="50%" y1="50%" x2="${x}%" y2="${y}%" stroke="${isSelected ? '#ff5252' : 'rgba(255,255,255,0.15)'}" stroke-width="${isSelected ? '2.5' : '1.5'}" stroke-dasharray="${isSelected ? 'none' : '3 3'}" />`;
-
-      nodesHtml += `
-        <button class="kb-map-topic-node absolute transform -translate-x-1/2 -translate-y-1/2 z-20 px-3 py-1.5 rounded-lg border text-xs max-w-[140px] truncate transition-all cursor-pointer ${colorClass}" style="left: ${x}%; top: ${y}%;" data-topic-index="${i}" title="${t.title}">
-          ${i + 1}. ${t.title}
-        </button>
-      `;
-    });
-
-    canvasMindmap.innerHTML = `
-      <svg class="absolute inset-0 w-full h-full pointer-events-none">
-        ${svgPaths}
-      </svg>
-      <!-- Central Node -->
-      <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 bg-surface-container-highest border-2 border-primary/80 px-4 py-2 rounded-xl shadow-[0_0_20px_rgba(255,82,82,0.25)] text-center max-w-[160px] truncate">
-        <span class="font-bold text-on-surface text-sm block truncate">${mainTitle}</span>
-        <span class="text-[10px] text-primary font-mono">${total} tópico(s) H1</span>
-      </div>
-      ${nodesHtml}
-    `;
-
-    canvasMindmap.querySelectorAll('.kb-map-topic-node').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const idx = parseInt(btn.getAttribute('data-topic-index') || '0');
-        if (currentTopics[activeTopicIndex] && !isViewingAllTopics) {
-          currentTopics[activeTopicIndex].html = notesArea.innerHTML;
-        }
-        activeTopicIndex = idx;
-        isViewingAllTopics = false;
-        renderCurrentTopicView();
-      });
-    });
+    const savedData = contentMindmap.topics[topicKey] || null;
+    topicExcalidraw.loadTopic(topicKey, topicTitle, savedData);
   };
 
   const renderCurrentTopicView = () => {
@@ -486,6 +516,22 @@ export const initKnowledgeBase = () => {
     headerLabel.textContent = `Conteúdo: ${content.title}`;
     fullNotesHtml = (content.notes && !content.notes.includes('Escreva suas anotações aqui...')) ? content.notes : '';
     
+    // Parse content.mindmap
+    try {
+      if (content.mindmap && content.mindmap.trim() !== '') {
+        const parsed = JSON.parse(content.mindmap);
+        if (parsed && typeof parsed === 'object') {
+          contentMindmap = parsed.topics ? parsed : { topics: parsed };
+        } else {
+          contentMindmap = { topics: {} };
+        }
+      } else {
+        contentMindmap = { topics: {} };
+      }
+    } catch (e) {
+      contentMindmap = { topics: {} };
+    }
+
     currentTopics = parseTopicsFromHtml(fullNotesHtml, content.title);
     activeTopicIndex = 0;
     isViewingAllTopics = false;
@@ -504,6 +550,14 @@ export const initKnowledgeBase = () => {
 
   // Prev / Next Button Listeners
   btnPrevTopic.addEventListener('click', () => {
+    // Save current Excalidraw topic drawing before switching
+    const currentDraw = topicExcalidraw.getCurrentTopicData();
+    if (currentDraw) {
+      const prevKey = isViewingAllTopics ? 'topic_all' : `topic_${activeTopicIndex}`;
+      if (!contentMindmap.topics) contentMindmap.topics = {};
+      contentMindmap.topics[prevKey] = currentDraw;
+    }
+
     if (isViewingAllTopics) {
       isViewingAllTopics = false;
       activeTopicIndex = 0;
@@ -517,6 +571,14 @@ export const initKnowledgeBase = () => {
   });
 
   btnNextTopic.addEventListener('click', () => {
+    // Save current Excalidraw topic drawing before switching
+    const currentDraw = topicExcalidraw.getCurrentTopicData();
+    if (currentDraw) {
+      const prevKey = isViewingAllTopics ? 'topic_all' : `topic_${activeTopicIndex}`;
+      if (!contentMindmap.topics) contentMindmap.topics = {};
+      contentMindmap.topics[prevKey] = currentDraw;
+    }
+
     if (isViewingAllTopics) {
       isViewingAllTopics = false;
       activeTopicIndex = 0;
@@ -552,9 +614,19 @@ export const initKnowledgeBase = () => {
       }
     }
 
+    // Save current active Excalidraw drawing
+    const currentDraw = topicExcalidraw.getCurrentTopicData();
+    if (currentDraw) {
+      const topicKey = isViewingAllTopics ? 'topic_all' : `topic_${activeTopicIndex}`;
+      if (!contentMindmap.topics) contentMindmap.topics = {};
+      contentMindmap.topics[topicKey] = currentDraw;
+    }
+    const serializedMindmap = JSON.stringify(contentMindmap);
+    content.mindmap = serializedMindmap;
+
     try {
       btnSaveNotes.innerHTML = `<span class="material-symbols-outlined text-[18px]">sync</span>`;
-      await fetch('http://localhost:8080/api/studies/modules/contents', {
+      await fetch(`${API_BASE_URL}/api/studies/modules/contents`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -562,7 +634,7 @@ export const initKnowledgeBase = () => {
           moduleId: content.moduleId,
           title: content.title,
           notes: fullNotesHtml,
-          mindmap: content.mindmap
+          mindmap: serializedMindmap
         })
       });
       content.notes = fullNotesHtml;
@@ -603,16 +675,70 @@ export const initKnowledgeBase = () => {
     });
   }
 
+  // Fullscreen for Excalidraw Map (Body Portal)
+  const btnFullscreenMap = document.getElementById('kb-btn-fullscreen-map');
+  const iconFullscreenMap = document.getElementById('kb-icon-fullscreen-map');
+  const containerMap = document.getElementById('kb-container-map');
+  let mapPlaceholder: HTMLElement | null = null;
 
+  let isMapFullscreen = false;
+  const toggleMapFullscreen = () => {
+    if (!containerMap) return;
+    isMapFullscreen = !isMapFullscreen;
 
+    if (isMapFullscreen) {
+      // Create DOM placeholder before moving to body
+      if (!mapPlaceholder) {
+        mapPlaceholder = document.createElement('div');
+        mapPlaceholder.id = 'kb-map-placeholder';
+        mapPlaceholder.style.display = 'none';
+      }
+      containerMap.parentNode?.insertBefore(mapPlaceholder, containerMap);
 
-  // Fetch and Render Modules
+      // Append directly to body so no parent overflow or backdrop-filter traps it
+      document.body.appendChild(containerMap);
+
+      containerMap.classList.remove('relative', 'flex-1', 'min-h-[350px]', 'rounded-lg');
+      containerMap.classList.add('is-fullscreen');
+      document.body.style.overflow = 'hidden';
+
+      if (iconFullscreenMap) iconFullscreenMap.textContent = 'fullscreen_exit';
+      if (btnFullscreenMap) btnFullscreenMap.setAttribute('title', 'Sair da Tela Cheia (Esc)');
+    } else {
+      containerMap.classList.remove('is-fullscreen');
+      containerMap.classList.add('relative', 'flex-1', 'min-h-[350px]', 'rounded-lg');
+      document.body.style.overflow = '';
+
+      // Restore back into the original place
+      if (mapPlaceholder && mapPlaceholder.parentNode) {
+        mapPlaceholder.parentNode.insertBefore(containerMap, mapPlaceholder);
+        mapPlaceholder.remove();
+        mapPlaceholder = null;
+      }
+      if (iconFullscreenMap) iconFullscreenMap.textContent = 'fullscreen';
+      if (btnFullscreenMap) btnFullscreenMap.setAttribute('title', 'Expandir Mapa Mental em Tela Cheia');
+    }
+
+    setTimeout(() => {
+      topicExcalidraw.refresh();
+    }, 80);
+  };
+
+  if (btnFullscreenMap) {
+    btnFullscreenMap.addEventListener('click', toggleMapFullscreen);
+  }
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isMapFullscreen) {
+      toggleMapFullscreen();
+    }
+  });
   const renderModules = async () => {
     const list = document.getElementById('kb-modules-list');
     if (!list) return;
 
     try {
-      const res = await fetch('http://localhost:8080/api/studies/modules');
+      const res = await fetch(`${API_BASE_URL}/api/studies/modules`);
       modulesData = await res.json();
       const data = modulesData;
       
@@ -746,7 +872,7 @@ export const initKnowledgeBase = () => {
     btnSave.disabled = true;
     btnSave.textContent = 'Salvando...';
     try {
-      await fetch('http://localhost:8080/api/studies/modules', {
+      await fetch(`${API_BASE_URL}/api/studies/modules`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -772,7 +898,7 @@ export const initKnowledgeBase = () => {
     btnDelete.disabled = true;
     btnDelete.textContent = 'Excluindo...';
     try {
-      await fetch(`http://localhost:8080/api/studies/modules/${iId.value}`, {
+      await fetch(`${API_BASE_URL}/api/studies/modules/${iId.value}`, {
         method: 'DELETE'
       });
       modal.classList.add('hidden');
@@ -818,7 +944,7 @@ export const initKnowledgeBase = () => {
     }
   };
 
-  const openContentModal = window.openContentModal;
+  const openContentModal = (window as any).openContentModal;
 
   btnCloseC.addEventListener('click', () => {
     cModal.classList.add('hidden');
@@ -829,7 +955,7 @@ export const initKnowledgeBase = () => {
     btnSaveC.disabled = true;
     btnSaveC.textContent = 'Salvando...';
     try {
-      await fetch('http://localhost:8080/api/studies/modules/contents', {
+      await fetch(`${API_BASE_URL}/api/studies/modules/contents`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -857,7 +983,7 @@ export const initKnowledgeBase = () => {
     btnDeleteC.disabled = true;
     btnDeleteC.textContent = 'Excluindo...';
     try {
-      await fetch(`http://localhost:8080/api/studies/modules/contents/${iCId.value}`, {
+      await fetch(`${API_BASE_URL}/api/studies/modules/contents/${iCId.value}`, {
         method: 'DELETE'
       });
       cModal.classList.add('hidden');
@@ -870,63 +996,58 @@ export const initKnowledgeBase = () => {
     btnDeleteC.textContent = 'Excluir';
   });
 
-  // Toggle Visibility of Notes and Mind Map
-  const btnNotes = document.getElementById('kb-toggle-notes')!;
-  const btnMap = document.getElementById('kb-toggle-map')!;
-  const containerNotes = document.getElementById('kb-container-notes')!;
-  const containerMap = document.getElementById('kb-container-map')!;
+  // Toggle Visibility of Notes and Mind Map (if present)
+  const btnNotes = document.getElementById('kb-toggle-notes');
+  const btnMap = document.getElementById('kb-toggle-map');
+  const containerNotes = document.getElementById('kb-container-notes');
 
   let notesVisible = true;
   let mapVisible = true;
 
   const updateVisibility = () => {
-    if (notesVisible) {
-      containerNotes.classList.remove('hidden');
-      btnNotes.classList.add('border-primary', 'text-primary');
-      btnNotes.querySelector('span')!.textContent = 'visibility';
-    } else {
-      containerNotes.classList.add('hidden');
-      btnNotes.classList.remove('border-primary', 'text-primary');
-      btnNotes.querySelector('span')!.textContent = 'visibility_off';
+    if (!containerNotes || !containerMap) return;
+    if (btnNotes) {
+      if (notesVisible) {
+        containerNotes.classList.remove('hidden');
+        btnNotes.classList.add('border-primary', 'text-primary');
+        const sp = btnNotes.querySelector('span');
+        if (sp) sp.textContent = 'visibility';
+      } else {
+        containerNotes.classList.add('hidden');
+        btnNotes.classList.remove('border-primary', 'text-primary');
+        const sp = btnNotes.querySelector('span');
+        if (sp) sp.textContent = 'visibility_off';
+      }
     }
 
-    if (mapVisible) {
-      containerMap.classList.remove('hidden');
-      btnMap.classList.add('border-primary', 'text-primary');
-      btnMap.querySelector('span')!.textContent = 'visibility';
-    } else {
-      containerMap.classList.add('hidden');
-      btnMap.classList.remove('border-primary', 'text-primary');
-      btnMap.querySelector('span')!.textContent = 'visibility_off';
-    }
-
-    // Adjust width if only one is visible
-    if (notesVisible && !mapVisible) {
-      containerNotes.classList.remove('flex-1');
-      containerNotes.classList.add('w-full');
-    } else if (!notesVisible && mapVisible) {
-      containerMap.classList.remove('flex-1');
-      containerMap.classList.add('w-full');
-    } else {
-      containerNotes.classList.add('flex-1');
-      containerNotes.classList.remove('w-full');
-      containerMap.classList.add('flex-1');
-      containerMap.classList.remove('w-full');
+    if (btnMap) {
+      if (mapVisible) {
+        containerMap.classList.remove('hidden');
+        btnMap.classList.add('border-primary', 'text-primary');
+        const sp = btnMap.querySelector('span');
+        if (sp) sp.textContent = 'visibility';
+      } else {
+        containerMap.classList.add('hidden');
+        btnMap.classList.remove('border-primary', 'text-primary');
+        const sp = btnMap.querySelector('span');
+        if (sp) sp.textContent = 'visibility_off';
+      }
     }
   };
 
-  btnNotes.addEventListener('click', () => {
-    if (notesVisible && !mapVisible) return; // Prevent hiding both
-    notesVisible = !notesVisible;
-    updateVisibility();
-  });
+  if (btnNotes) {
+    btnNotes.addEventListener('click', () => {
+      if (notesVisible && !mapVisible) return;
+      notesVisible = !notesVisible;
+      updateVisibility();
+    });
+  }
 
-  btnMap.addEventListener('click', () => {
-    if (!notesVisible && mapVisible) return; // Prevent hiding both
-    mapVisible = !mapVisible;
-    updateVisibility();
-  });
-
-  // Initialize with both visible (highlighted buttons)
-  updateVisibility();
+  if (btnMap) {
+    btnMap.addEventListener('click', () => {
+      if (!notesVisible && mapVisible) return;
+      mapVisible = !mapVisible;
+      updateVisibility();
+    });
+  }
 };
