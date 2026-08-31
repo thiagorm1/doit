@@ -1,3 +1,5 @@
+import { RichTextContextMenu } from '../components/RichTextContextMenu';
+
 export const Header = () => `
 <header class="fixed top-0 left-0 w-full h-16 z-50 bg-surface-container/90 backdrop-blur-md flex justify-between items-center px-lg border-b border-outline-variant/10">
   <!-- Logo -->
@@ -29,4 +31,5 @@ export const MainLayout = (children: string) => `
   <main class="pt-24 pb-12 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full relative z-0">
     ${children}
   </main>
+  ${RichTextContextMenu()}
 `;
