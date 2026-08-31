@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../../../shared/config';
 export const ContestCard = () => `
 <style>
 @keyframes flipPlate {
@@ -221,7 +222,7 @@ export const initContestCard = () => {
 
   const fetchState = async () => {
     try {
-      const res = await fetch('http://localhost:8080/api/studies/contest');
+      const res = await fetch(`${API_BASE_URL}/api/studies/contest`);
       if (res.ok) {
         const data = await res.json();
         renderCard(data);
@@ -247,7 +248,7 @@ export const initContestCard = () => {
     btnSave.innerHTML = '<span class="material-symbols-outlined animate-spin text-[16px]">sync</span>';
     
     try {
-      await fetch('http://localhost:8080/api/studies/contest', {
+      await fetch(`${API_BASE_URL}/api/studies/contest`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

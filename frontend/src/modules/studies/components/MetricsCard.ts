@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../../../shared/config';
 export const MetricsCard = () => `
 <section class="glass-panel rounded-xl p-lg col-span-1 lg:col-span-4 flex flex-col glow-hover transition-all duration-300">
   <div class="flex justify-between items-start mb-lg">
@@ -59,7 +60,7 @@ export const initMetricsCard = async () => {
 
   const fetchMetrics = async () => {
     try {
-      const res = await fetch('http://localhost:8080/api/studies/pomodoro/metrics');
+      const res = await fetch(`${API_BASE_URL}/api/studies/pomodoro/metrics`);
       if (!res.ok) throw new Error('API falhou');
       
       const data = await res.json();

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../../../shared/config';
 export const PomodoroCard = () => `
 <section class="glass-panel rounded-xl p-lg col-span-1 lg:col-span-4 flex flex-col justify-between relative overflow-hidden group glow-hover transition-all duration-300">
   <div class="absolute -right-12 -top-12 w-40 h-40 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors pointer-events-none"></div>
@@ -225,7 +226,7 @@ export const initPomodoro = () => {
 
   el.completeBtn.addEventListener('click', async () => {
     try {
-      await fetch('http://localhost:8080/api/studies/pomodoro', {
+      await fetch(`${API_BASE_URL}/api/studies/pomodoro`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

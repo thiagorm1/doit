@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../../../shared/config';
 export const CollegeCard = () => `
 <section class="glass-panel rounded-xl p-lg col-span-1 lg:col-span-4 flex flex-col glow-hover transition-all duration-300 relative overflow-hidden">
   <div class="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary via-transparent to-transparent pointer-events-none"></div>
@@ -199,7 +200,7 @@ export const initCollegeCard = async () => {
 
   const fetchState = async () => {
     try {
-      const res = await fetch('http://localhost:8080/api/studies/college');
+      const res = await fetch(`${API_BASE_URL}/api/studies/college`);
       if (res.ok) {
         const data = await res.json();
         renderCard(data);
@@ -326,14 +327,14 @@ export const initCollegeCard = async () => {
     document.querySelectorAll('.delete-subj').forEach(btn => {
       btn.addEventListener('click', async (ev) => {
         const id = (ev.currentTarget as HTMLElement).getAttribute('data-id');
-        await fetch(`http://localhost:8080/api/studies/college/subjects/${id}`, { method: 'DELETE' });
+        await fetch(`${API_BASE_URL}/api/studies/college/subjects/${id}`, { method: 'DELETE' });
         fetchState();
       });
     });
     document.querySelectorAll('.delete-exam').forEach(btn => {
       btn.addEventListener('click', async (ev) => {
         const id = (ev.currentTarget as HTMLElement).getAttribute('data-id');
-        await fetch(`http://localhost:8080/api/studies/college/exams/${id}`, { method: 'DELETE' });
+        await fetch(`${API_BASE_URL}/api/studies/college/exams/${id}`, { method: 'DELETE' });
         fetchState();
       });
     });
@@ -501,7 +502,7 @@ export const initCollegeCard = async () => {
   document.getElementById('cfg-save-btn')!.addEventListener('click', async () => {
     const cur = parseInt((document.getElementById('cfg-sem-atual') as HTMLInputElement).value);
     const grad = parseInt((document.getElementById('cfg-sem-conclusao') as HTMLInputElement).value);
-    await fetch('http://localhost:8080/api/studies/college/config', {
+    await fetch(`${API_BASE_URL}/api/studies/college/config`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ currentSemester: cur, graduationSemester: grad })
@@ -536,7 +537,7 @@ export const initCollegeCard = async () => {
     subjAddBtn.classList.add('opacity-80', 'cursor-not-allowed');
 
     try {
-      await fetch('http://localhost:8080/api/studies/college/subjects', {
+      await fetch(`${API_BASE_URL}/api/studies/college/subjects`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ 
@@ -600,7 +601,7 @@ export const initCollegeCard = async () => {
     examAddBtn.classList.add('opacity-80', 'cursor-not-allowed');
 
     try {
-      await fetch('http://localhost:8080/api/studies/college/exams', {
+      await fetch(`${API_BASE_URL}/api/studies/college/exams`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ 

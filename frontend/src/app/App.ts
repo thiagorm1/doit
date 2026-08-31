@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../shared/config';
 import { MainLayout } from '../shared/layouts/MainLayout';
 import { StudiesView, initStudiesView } from '../modules/studies/StudiesView';
 import { ContentEditorView } from '../modules/studies/ContentEditorView';
@@ -29,7 +30,7 @@ export const initApp = () => {
       } else {
         // Direct link load: Fetch modules from API to resolve names to IDs
         try {
-          const res = await fetch('http://localhost:8080/api/studies/modules');
+          const res = await fetch(`${API_BASE_URL}/api/studies/modules`);
           const modules = await res.json();
           const mod = modules.find((m: any) => m.name.toLowerCase().replace(/\\s+/g, '-') === modName);
           if (mod) {
@@ -81,7 +82,7 @@ export const initApp = () => {
       if (!editorArea) return;
       if (saveBtn) saveBtn.textContent = 'Salvando...';
       try {
-        await fetch('http://localhost:8080/api/studies/modules/contents', {
+        await fetch(`${API_BASE_URL}/api/studies/modules/contents`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
