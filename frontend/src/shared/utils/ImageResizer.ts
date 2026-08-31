@@ -71,7 +71,7 @@ export const initImageResizer = () => {
   });
 
   // Keep overlay attached during any scroll or resize
-  window.addEventListener('scroll', (e) => {
+  window.addEventListener('scroll', () => {
     if (activeImage && !isResizing) updateOverlay();
   }, { passive: true, capture: true }); // Capture true catches all internal scrolls
   
