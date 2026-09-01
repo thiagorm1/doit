@@ -105,9 +105,12 @@ class PomodoroService {
 
   private nextPhase() {
     if (this.state.mode === 'focus') {
-      // Are we at the end of the entire Pomodoro?
+      // Check if we should take a long break (every 4th focus session)
+      const isLongBreakTime = this.state.longBreakEnabled && (this.state.currentCycle % 4 === 0);
+      
+      // Are we at the end of the entire Pomodoro goal?
       if (this.state.currentCycle >= this.state.totalCycles) {
-        if (this.state.longBreakEnabled) {
+        if (isLongBreakTime) {
           this.state.mode = 'long';
           this.state.timeLeft = this.state.longMin * 60;
         } else {
@@ -117,8 +120,8 @@ class PomodoroService {
           clearInterval(this.intervalId);
         }
       } else {
-        // Not at the end. Should we take a long break? (Every 2 cycles)
-        if (this.state.longBreakEnabled && this.state.currentCycle % 2 === 0) {
+        // Not at the end. Take a break and continue.
+        if (isLongBreakTime) {
           this.state.mode = 'long';
           this.state.timeLeft = this.state.longMin * 60;
         } else {
@@ -127,7 +130,7 @@ class PomodoroService {
         }
       }
     } else if (this.state.mode === 'short' || this.state.mode === 'long') {
-      // If we just finished the final long break (at the end of totalCycles), we are done
+      // If we just finished a break, we need to check if that break was the end of the Pomodoro
       if (this.state.currentCycle >= this.state.totalCycles) {
         this.state.mode = 'done';
         this.state.timeLeft = 0;

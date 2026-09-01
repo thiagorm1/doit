@@ -151,7 +151,7 @@ export const ContentEditorView = () => `
             <input type="number" id="f-cfg-long" class="w-16 bg-surface-container-highest border border-outline-variant/50 rounded text-center text-on-surface py-0.5" value="15" />
           </div>
           <div class="flex justify-between items-center gap-2">
-            <label class="text-on-surface-variant flex-1 truncate">Ciclos</label>
+            <label class="text-on-surface-variant flex-1 truncate">Sessões (Focos)</label>
             <input type="number" id="f-cfg-cycles" class="w-16 bg-surface-container-highest border border-outline-variant/50 rounded text-center text-on-surface py-0.5" value="4" />
           </div>
         </div>

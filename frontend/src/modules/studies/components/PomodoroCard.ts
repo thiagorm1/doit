@@ -24,7 +24,7 @@ export const PomodoroCard = () => `
         <input type="number" id="cfg-long" class="w-16 bg-surface-container-highest border border-outline-variant/50 rounded text-center text-on-surface" value="15" />
       </div>
       <div class="flex justify-between items-center">
-        <label class="text-on-surface-variant">Ciclos</label>
+        <label class="text-on-surface-variant">Sessões (Focos)</label>
         <input type="number" id="cfg-cycles" class="w-16 bg-surface-container-highest border border-outline-variant/50 rounded text-center text-on-surface" value="4" />
       </div>
     </div>
