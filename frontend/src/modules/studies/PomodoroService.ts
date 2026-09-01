@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '../../../shared/config';
+import { API_BASE_URL } from '../../shared/config';
 
 type PomodoroMode = 'focus' | 'short' | 'long' | 'done';
 
@@ -122,7 +122,7 @@ class PomodoroService {
 
   public async completePomodoro() {
     try {
-      await fetch(${API_BASE_URL}/api/studies/pomodoro, {
+      await fetch(`${API_BASE_URL}/api/studies/pomodoro`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
