@@ -4,15 +4,22 @@ import { StudiesView, initStudiesView } from '../modules/studies/StudiesView';
 import { ContentEditorView } from '../modules/studies/ContentEditorView';
 import { initRichTextContextMenu } from '../shared/components/RichTextContextMenu';
 import { initImageResizer } from '../shared/utils/ImageResizer';
+import { YoutubeFloatingPlayer, initYoutubeFloatingPlayer } from '../modules/studies/components/YoutubeFloatingPlayer';
+import { ytService } from '../modules/studies/YoutubeService';
 import { pomodoroGlobal } from '../modules/studies/PomodoroService';
 
 export const App = () => {
-  return `<div id="app-root"></div>`;
+  return `
+    <div id="app-root"></div>
+    ${YoutubeFloatingPlayer()}
+  `;
 };
 
 export const initApp = () => {
   const root = document.getElementById('app-root');
   if (!root) return;
+  
+  initYoutubeFloatingPlayer();
   
   initRichTextContextMenu();
   initImageResizer();
@@ -49,6 +56,7 @@ export const initApp = () => {
     } else {
       renderStudies();
     }
+    ytService.notify(); // Force UI update for floating player visibility
   };
 
   const renderStudies = () => {

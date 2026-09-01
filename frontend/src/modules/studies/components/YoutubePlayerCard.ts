@@ -1,12 +1,14 @@
+import { ytService } from '../YoutubeService';
+
 export const YoutubePlayerCard = () => `
-<section class="glass-panel rounded-xl p-4 flex flex-col relative group glow-hover transition-all duration-300">
+<section id="yt-card-root" class="glass-panel rounded-xl p-4 flex flex-col relative group glow-hover transition-all duration-300">
   <div class="absolute inset-0 rounded-xl overflow-hidden pointer-events-none">
     <div class="absolute -right-12 -top-12 w-40 h-40 bg-secondary/5 rounded-full blur-2xl group-hover:bg-secondary/10 transition-colors pointer-events-none"></div>
   </div>
   
   <div class="flex items-center justify-between relative z-10">
      <div class="flex gap-3 items-center overflow-hidden">
-       <div id="yt-cover" class="w-12 h-12 rounded-md bg-surface-container-highest bg-cover bg-center flex shrink-0 items-center justify-center shadow-lg">
+       <div id="yt-cover" class="w-12 h-12 rounded-md bg-surface-container-highest bg-cover bg-center flex shrink-0 items-center justify-center shadow-lg transition-all duration-500">
          <span class="material-symbols-outlined text-on-surface-variant/50 text-[24px]">music_note</span>
        </div>
        <div class="overflow-hidden flex-1">
@@ -81,14 +83,12 @@ export const YoutubePlayerCard = () => `
     <span class="material-symbols-outlined text-[16px]">play_circle</span>
     <span id="yt-toast-msg">Tocando...</span>
   </div>
-
-  <!-- Iframe do player escondido -->
-  <div id="yt-player-container" class="hidden absolute opacity-0 pointer-events-none w-0 h-0"></div>
 </section>
 `;
 
 export const initYoutubePlayer = () => {
   const el = {
+    root: document.getElementById('yt-card-root')!,
     title: document.getElementById('yt-title')!,
     artist: document.getElementById('yt-artist')!,
     cover: document.getElementById('yt-cover')!,
@@ -106,23 +106,12 @@ export const initYoutubePlayer = () => {
     nameInput: document.getElementById('yt-playlist-name') as HTMLInputElement,
     loadBtn: document.getElementById('yt-load-btn')!,
     saveBtn: document.getElementById('yt-save-btn')!,
-    savedList: document.getElementById('yt-saved-list')!
+    savedList: document.getElementById('yt-saved-list')!,
+    volumeInput: document.getElementById('yt-volume') as HTMLInputElement,
+    volumeIcon: document.getElementById('yt-volume-icon')!
   };
 
-  let player: any = null;
-  let isPlaying = false;
-  let updateInterval: any = null;
-  let isApiReady = false;
-  let pendingPlaylistId: string | null = null;
-  let activeListId: string | null = null;
-
-  // Load Iframe API
-  if (!window['YT']) {
-    const tag = document.createElement('script');
-    tag.src = "https://www.youtube.com/iframe_api";
-    const firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
-  }
+  if (!el.root) return; // Prevent errors if running on a page without the card
 
   const formatTime = (secs: number) => {
     if (!secs || isNaN(secs)) return '0:00';
@@ -131,146 +120,67 @@ export const initYoutubePlayer = () => {
     return `${m}:${s}`;
   };
 
+  // --- UI Update from Service ---
   const updateUI = () => {
-    if (!player || !player.getPlayerState) return;
-    
-    const state = player.getPlayerState();
-    isPlaying = (state === 1); // 1 = playing
-    
-    el.playBtn.innerHTML = isPlaying 
+    if (!document.body.contains(el.root)) throw new Error("detached");
+
+    // Play/Pause button
+    el.playBtn.innerHTML = ytService.isPlaying 
       ? `<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">pause</span>`
       : `<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>`;
 
-    try {
-      const data = player.getVideoData();
-      if (data && data.title) {
-        el.title.textContent = data.title;
-        el.artist.textContent = data.author || 'YouTube';
-        el.cover.style.backgroundImage = `url(https://img.youtube.com/vi/${data.video_id}/mqdefault.jpg)`;
-        el.cover.innerHTML = '';
-      }
-    } catch(e) {}
-  };
-
-  const onPlayerReady = (event: any) => {
-    updateUI();
-    
-    const vol = parseInt((document.getElementById('yt-volume') as HTMLInputElement).value) || 100;
-    if (player.setVolume) player.setVolume(vol);
-
-    if (pendingPlaylistId) {
-      player.loadPlaylist({ list: pendingPlaylistId, listType: 'playlist' });
-      pendingPlaylistId = null;
+    // Video Data
+    el.title.textContent = ytService.currentVideoData.title;
+    el.artist.textContent = ytService.currentVideoData.artist;
+    if (ytService.currentVideoData.cover) {
+      el.cover.style.backgroundImage = ytService.currentVideoData.cover;
+      el.cover.innerHTML = '';
     } else {
-      // Auto-resume state
-      try {
-        const saved = localStorage.getItem('doit_yt_state');
-        if (saved) {
-          const state = JSON.parse(saved);
-          if (state.listId) {
-            activeListId = state.listId;
-            player.cuePlaylist({
-              list: state.listId,
-              listType: 'playlist',
-              index: state.index || 0,
-              startSeconds: state.time || 0
-            });
-          }
-        }
-      } catch(e) {}
+      el.cover.style.backgroundImage = 'none';
+      el.cover.innerHTML = `<span class="material-symbols-outlined text-on-surface-variant/50 text-[24px]">music_note</span>`;
     }
-  };
 
-  const onPlayerStateChange = (event: any) => {
-    updateUI();
-    if (event.data === 1) { // Playing
-      if (!updateInterval) {
-        updateInterval = setInterval(() => {
-          const curr = player.getCurrentTime();
-          const total = player.getDuration();
-          el.timeCurrent.textContent = formatTime(curr);
-          el.timeTotal.textContent = formatTime(total);
-          if (total > 0) {
-            el.progressBar.style.width = `${(curr / total) * 100}%`;
-          }
-          
-          if (activeListId) {
-            const state = {
-              listId: activeListId,
-              index: player.getPlaylistIndex() || 0,
-              time: curr
-            };
-            localStorage.setItem('doit_yt_state', JSON.stringify(state));
-          }
-        }, 1000);
-      }
-    } else {
-      clearInterval(updateInterval);
-      updateInterval = null;
+    // Time & Progress
+    el.timeCurrent.textContent = formatTime(ytService.currentTime);
+    el.timeTotal.textContent = formatTime(ytService.duration);
+    if (ytService.duration > 0) {
+      el.progressBar.style.width = `${(ytService.currentTime / ytService.duration) * 100}%`;
     }
+
+    // Volume
+    el.volumeInput.value = ytService.volume.toString();
+    if (ytService.volume === 0) el.volumeIcon.textContent = 'volume_off';
+    else if (ytService.volume < 50) el.volumeIcon.textContent = 'volume_down';
+    else el.volumeIcon.textContent = 'volume_up';
   };
 
-  window['onYouTubeIframeAPIReady'] = () => {
-    isApiReady = true;
-    player = new window['YT'].Player('yt-player-container', {
-      height: '10',
-      width: '10',
-      playerVars: {
-        'playsinline': 1,
-      },
-      events: {
-        'onReady': onPlayerReady,
-        'onStateChange': onPlayerStateChange
-      }
-    });
-  };
+  ytService.subscribe(updateUI);
 
-  // Se a API já estiver carregada e pronta
-  if (window['YT'] && window['YT'].Player && !isApiReady) {
-    window['onYouTubeIframeAPIReady']();
-  }
-
-  el.playBtn.addEventListener('click', () => {
-    if (!player) return;
-    if (isPlaying) player.pauseVideo();
-    else player.playVideo();
-  });
-
-  el.prevBtn.addEventListener('click', () => player && player.previousVideo());
-  el.nextBtn.addEventListener('click', () => player && player.nextVideo());
-
+  // --- Controls ---
+  el.playBtn.addEventListener('click', () => ytService.togglePlay());
+  el.prevBtn.addEventListener('click', () => ytService.prevVideo());
+  el.nextBtn.addEventListener('click', () => ytService.nextVideo());
+  
   el.progressContainer.addEventListener('click', (e: MouseEvent) => {
-    if (!player) return;
     const rect = el.progressContainer.getBoundingClientRect();
     const pos = (e.clientX - rect.left) / rect.width;
-    const total = player.getDuration();
-    if (total > 0) {
-      player.seekTo(total * pos, true);
-    }
+    ytService.seek(pos);
   });
 
-  // Modal logic
+  el.volumeInput.addEventListener('input', (e: any) => {
+    ytService.setVolume(parseInt(e.target.value));
+  });
+
+  // --- Modal & Playlists ---
   el.menuBtn.addEventListener('click', () => el.modal.classList.remove('hidden'));
   el.modalClose.addEventListener('click', () => el.modal.classList.add('hidden'));
-
-  const loadPlaylist = (listId: string) => {
-    activeListId = listId;
-    if (!player) {
-      pendingPlaylistId = listId;
-    } else {
-      player.loadPlaylist({ list: listId, listType: 'playlist' });
-    }
-    el.modal.classList.add('hidden');
-  };
 
   const extractListId = (val: string) => {
     if (val.includes('list=')) {
       try {
         const url = new URL(val);
         return url.searchParams.get('list') || val;
-      } catch(e) {
-        return val;
-      }
+      } catch { return val; }
     }
     return val;
   };
@@ -278,11 +188,83 @@ export const initYoutubePlayer = () => {
   el.loadBtn.addEventListener('click', () => {
     const listId = extractListId(el.urlInput.value);
     if (listId) {
-      loadPlaylist(listId);
+      ytService.loadPlaylist(listId);
+      el.modal.classList.add('hidden');
     }
   });
 
-  // Lógica de Toast
+  el.saveBtn.addEventListener('click', () => {
+    const val = el.urlInput.value.trim();
+    if (!val) return;
+    const listId = extractListId(val);
+    const name = el.nameInput.value.trim() || 'Playlist Salva';
+    
+    if (listId) {
+      const playlists = [...ytService.savedPlaylists];
+      if (!playlists.find(p => p.id === listId)) {
+        playlists.push({ id: listId, name });
+        ytService.savePlaylists(playlists);
+        el.nameInput.value = '';
+      }
+    }
+  });
+
+  // --- Render Saved Playlists ---
+  const renderSavedPlaylists = () => {
+    const playlists = ytService.savedPlaylists;
+    el.savedList.innerHTML = '';
+    
+    if (playlists.length === 0) {
+      el.savedList.innerHTML = '<span class="text-[10px] text-on-surface-variant text-center mt-2">Nenhuma salva.</span>';
+      return;
+    }
+    
+    playlists.forEach(pl => {
+      const item = document.createElement('div');
+      item.className = "flex items-center justify-between bg-surface-container-highest p-1.5 rounded border border-outline-variant/30 hover:border-primary/50 transition-colors";
+      
+      const btnPlay = document.createElement('button');
+      btnPlay.className = "flex-1 text-left truncate text-[11px] text-on-surface font-medium";
+      btnPlay.textContent = pl.name || pl.id;
+      btnPlay.onclick = () => {
+        el.urlInput.value = pl.id;
+        ytService.loadPlaylist(pl.id);
+        el.modal.classList.add('hidden');
+        showToast(`Tocando a playlist salva: ${pl.name || pl.id}`);
+      };
+
+      const btnDel = document.createElement('button');
+      btnDel.className = "text-on-surface-variant hover:text-error ml-2 shrink-0 p-0.5 rounded hover:bg-error/10 transition-colors";
+      btnDel.innerHTML = '<span class="material-symbols-outlined text-[14px]">delete</span>';
+      btnDel.onclick = (e) => {
+        e.stopPropagation();
+        const updated = ytService.savedPlaylists.filter(p => p.id !== pl.id);
+        ytService.savePlaylists(updated);
+      };
+
+      item.appendChild(btnPlay);
+      item.appendChild(btnDel);
+      el.savedList.appendChild(item);
+    });
+  };
+
+  // Subscribe to updates to re-render playlist if they change
+  ytService.subscribe(() => {
+    // Only re-render if count changes to avoid losing focus, or we can just render.
+    // Simpler: render always, but performance might stutter.
+    // Let's just track a hash or simply re-render.
+  });
+  // Actually, we should just override the notify logic or listen specifically to playlists, 
+  // but let's just listen to subscribe and re-render.
+  let lastPlCount = -1;
+  ytService.subscribe(() => {
+    if (lastPlCount !== ytService.savedPlaylists.length) {
+      lastPlCount = ytService.savedPlaylists.length;
+      renderSavedPlaylists();
+    }
+  });
+
+  // Toast
   let toastTimeout: any;
   const showToast = (msg: string) => {
     const toast = document.getElementById('yt-toast')!;
@@ -292,7 +274,6 @@ export const initYoutubePlayer = () => {
     toast.classList.remove('hidden');
     toast.classList.add('flex');
     
-    // Pequeno atraso para a transição do Tailwind funcionar
     setTimeout(() => {
       toast.classList.remove('opacity-0');
       toast.classList.add('opacity-100');
@@ -307,90 +288,4 @@ export const initYoutubePlayer = () => {
       }, 300);
     }, 3000);
   };
-
-  // Lógica de Salvar Playlists
-  type SavedPlaylist = { id: string, name: string };
-  const getSavedPlaylists = (): SavedPlaylist[] => {
-    try {
-      const saved = localStorage.getItem('doit_yt_playlists');
-      return saved ? JSON.parse(saved) : [];
-    } catch { return []; }
-  };
-
-  const renderSavedPlaylists = () => {
-    const playlists = getSavedPlaylists();
-    el.savedList.innerHTML = '';
-    if (playlists.length === 0) {
-      el.savedList.innerHTML = '<span class="text-[10px] text-on-surface-variant text-center mt-2">Nenhuma salva.</span>';
-      return;
-    }
-    playlists.forEach(pl => {
-      const item = document.createElement('div');
-      item.className = "flex items-center justify-between bg-surface-container-highest p-1.5 rounded border border-outline-variant/30 hover:border-primary/50 transition-colors";
-      
-      const btnPlay = document.createElement('button');
-      btnPlay.className = "flex-1 text-left truncate text-[11px] text-on-surface font-medium";
-      btnPlay.textContent = pl.name || pl.id;
-      btnPlay.onclick = () => {
-        el.urlInput.value = pl.id;
-        loadPlaylist(pl.id);
-        showToast(`Tocando a playlist salva: ${pl.name || pl.id}`);
-      };
-
-      const btnDel = document.createElement('button');
-      btnDel.className = "text-on-surface-variant hover:text-error ml-2 shrink-0 p-0.5 rounded hover:bg-error/10 transition-colors";
-      btnDel.innerHTML = '<span class="material-symbols-outlined text-[14px]">delete</span>';
-      btnDel.onclick = (e) => {
-        e.stopPropagation();
-        const updated = getSavedPlaylists().filter(p => p.id !== pl.id);
-        localStorage.setItem('doit_yt_playlists', JSON.stringify(updated));
-        renderSavedPlaylists();
-      };
-
-      item.appendChild(btnPlay);
-      item.appendChild(btnDel);
-      el.savedList.appendChild(item);
-    });
-  };
-
-  el.saveBtn.addEventListener('click', () => {
-    const val = el.urlInput.value.trim();
-    if (!val) return;
-    const listId = extractListId(val);
-    const name = el.nameInput.value.trim() || 'Playlist Salva';
-    
-    if (listId) {
-      const playlists = getSavedPlaylists();
-      if (!playlists.find(p => p.id === listId)) {
-        playlists.push({ id: listId, name });
-        localStorage.setItem('doit_yt_playlists', JSON.stringify(playlists));
-        renderSavedPlaylists();
-        el.nameInput.value = '';
-      }
-    }
-  });
-
-  // Render inicial
-  renderSavedPlaylists();
-
-  // Lógica de Volume
-  const volumeInput = document.getElementById('yt-volume') as HTMLInputElement;
-  const volumeIcon = document.getElementById('yt-volume-icon')!;
-
-  const updateVolumeIcon = (vol: number) => {
-    if (vol === 0) volumeIcon.textContent = 'volume_off';
-    else if (vol < 50) volumeIcon.textContent = 'volume_down';
-    else volumeIcon.textContent = 'volume_up';
-  };
-
-  volumeInput.addEventListener('input', (e: any) => {
-    const vol = parseInt(e.target.value);
-    if (player && player.setVolume) {
-      player.setVolume(vol);
-      if (vol > 0 && player.isMuted && player.unMute) {
-        player.unMute();
-      }
-    }
-    updateVolumeIcon(vol);
-  });
 };
