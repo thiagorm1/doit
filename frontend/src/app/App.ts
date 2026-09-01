@@ -26,17 +26,17 @@ export const initApp = () => {
       const contentName = decodeURIComponent(parts[2]);
       
       if (history.state && history.state.contentId) {
-        renderEditor(history.state.contentId, history.state.moduleId, history.state.title, history.state.notes);
+        renderEditor(history.state.contentId, history.state.moduleId, history.state.title, history.state.notes, history.state.mindmap);
       } else {
         // Direct link load: Fetch modules from API to resolve names to IDs
         try {
           const res = await fetch(`${API_BASE_URL}/api/studies/modules`);
           const modules = await res.json();
-          const mod = modules.find((m: any) => m.name.toLowerCase().replace(/\\s+/g, '-') === modName);
+          const mod = modules.find((m: any) => m.name.toLowerCase().replace(/\s+/g, '-') === modName);
           if (mod) {
-            const content = mod.contents.find((c: any) => c.title.toLowerCase().replace(/\\s+/g, '-') === contentName);
+            const content = mod.contents.find((c: any) => c.title.toLowerCase().replace(/\s+/g, '-') === contentName);
             if (content) {
-              renderEditor(content.id, mod.id, content.title, content.notes);
+              renderEditor(content.id, mod.id, content.title, content.notes, content.mindmap);
               return;
             }
           }
@@ -55,7 +55,7 @@ export const initApp = () => {
     initStudiesView();
   };
 
-  const renderEditor = (contentId: number, moduleId: number, title: string, htmlContent: string) => {
+  const renderEditor = (contentId: number, moduleId: number, title: string, htmlContent: string, mindmapContent: string = '') => {
     root.innerHTML = MainLayout(ContentEditorView());
     
     const titleEl = document.getElementById('editor-topic-title');
@@ -90,7 +90,7 @@ export const initApp = () => {
             moduleId: moduleId,
             title: title,
             notes: editorArea.innerHTML,
-            mindmap: ''
+            mindmap: mindmapContent
           })
         });
         if (lastSaved) {
@@ -221,11 +221,11 @@ export const initApp = () => {
   };
 
   // Exposed globally for KnowledgeBaseArea
-  (window as any).navigateToEditor = (contentId: number, moduleId: number, moduleName: string, title: string, htmlContent: string) => {
-    const cleanMod = encodeURIComponent(moduleName.toLowerCase().replace(/\\s+/g, '-'));
-    const cleanTitle = encodeURIComponent(title.toLowerCase().replace(/\\s+/g, '-'));
-    history.pushState({ contentId, moduleId, title, notes: htmlContent }, '', `/estudos/${cleanMod}/${cleanTitle}`);
-    renderEditor(contentId, moduleId, title, htmlContent);
+  (window as any).navigateToEditor = (contentId: number, moduleId: number, moduleName: string, title: string, htmlContent: string, mindmapContent: string = '') => {
+    const cleanMod = encodeURIComponent(moduleName.toLowerCase().replace(/\s+/g, '-'));
+    const cleanTitle = encodeURIComponent(title.toLowerCase().replace(/\s+/g, '-'));
+    history.pushState({ contentId, moduleId, title, notes: htmlContent, mindmap: mindmapContent }, '', `/estudos/${cleanMod}/${cleanTitle}`);
+    renderEditor(contentId, moduleId, title, htmlContent, mindmapContent);
   };
 
   window.addEventListener('popstate', renderCurrentRoute);

@@ -686,7 +686,9 @@ export const initKnowledgeBase = () => {
           fullNotesHtml = notesArea.innerHTML;
           content.notes = fullNotesHtml;
         }
-        (window as any).navigateToEditor(content.id, content.moduleId, mod.name, content.title, fullNotesHtml || content.notes);
+        if (typeof (window as any).navigateToEditor === 'function') {
+          (window as any).navigateToEditor(content.id, content.moduleId, mod.name, content.title, fullNotesHtml || content.notes, content.mindmap);
+        }
       }
     });
   }
