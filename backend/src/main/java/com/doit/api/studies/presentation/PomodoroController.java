@@ -29,4 +29,15 @@ public class PomodoroController {
         PomodoroMetricsResponseDTO metrics = pomodoroService.getMetrics();
         return ResponseEntity.ok(metrics);
     }
+
+    @GetMapping("/metrics/detailed")
+    public ResponseEntity<com.doit.api.studies.application.dto.PomodoroDetailedMetricsResponseDTO> getDetailedMetrics(
+            @RequestParam(defaultValue = "week") String filter,
+            @RequestParam(defaultValue = "0") int weeklyGoalHours) {
+        
+        com.doit.api.studies.application.dto.PomodoroDetailedMetricsResponseDTO metrics = 
+            pomodoroService.getDetailedMetrics(filter, weeklyGoalHours);
+            
+        return ResponseEntity.ok(metrics);
+    }
 }
