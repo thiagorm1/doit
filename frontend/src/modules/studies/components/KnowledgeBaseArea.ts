@@ -435,6 +435,12 @@ export const initKnowledgeBase = () => {
         }
         activeTopicIndex = idx;
         isViewingAllTopics = false;
+        
+        if (activeContentId) {
+          sessionStorage.setItem(`kb_last_topic_${activeContentId}`, activeTopicIndex.toString());
+          sessionStorage.setItem(`kb_last_viewall_${activeContentId}`, 'false');
+        }
+        
         closeDropdown();
         renderCurrentTopicView();
       });
@@ -456,6 +462,11 @@ export const initKnowledgeBase = () => {
           fullNotesHtml = currentTopics.map(t => t.html).join('');
         }
         isViewingAllTopics = true;
+        
+        if (activeContentId) {
+          sessionStorage.setItem(`kb_last_viewall_${activeContentId}`, 'true');
+        }
+
         closeDropdown();
         renderCurrentTopicView();
       });
@@ -524,6 +535,9 @@ export const initKnowledgeBase = () => {
   const loadContentData = (contentId: number, moduleId: number) => {
     activeContentId = contentId;
     activeModuleId = moduleId;
+    sessionStorage.setItem('kb_last_content', contentId.toString());
+    sessionStorage.setItem('kb_last_module', moduleId.toString());
+
     const mod = modulesData.find(m => m.id === moduleId);
     if (!mod) return;
     const content = mod.contents.find((c: any) => c.id === contentId);
@@ -549,8 +563,22 @@ export const initKnowledgeBase = () => {
     }
 
     currentTopics = parseTopicsFromHtml(fullNotesHtml, content.title);
-    activeTopicIndex = 0;
-    isViewingAllTopics = false;
+    
+    // Check if there is a saved topic index
+    const savedTopic = sessionStorage.getItem(`kb_last_topic_${contentId}`);
+    const savedViewAll = sessionStorage.getItem(`kb_last_viewall_${contentId}`);
+    
+    if (savedViewAll === 'true') {
+      isViewingAllTopics = true;
+      activeTopicIndex = 0;
+    } else if (savedTopic !== null) {
+      activeTopicIndex = parseInt(savedTopic);
+      if (activeTopicIndex >= currentTopics.length) activeTopicIndex = 0;
+      isViewingAllTopics = false;
+    } else {
+      activeTopicIndex = 0;
+      isViewingAllTopics = false;
+    }
 
     renderCurrentTopicView();
     btnSaveNotes.classList.add('hidden');
@@ -583,6 +611,10 @@ export const initKnowledgeBase = () => {
       }
       activeTopicIndex--;
     }
+    if (activeContentId) {
+      sessionStorage.setItem(`kb_last_topic_${activeContentId}`, activeTopicIndex.toString());
+      sessionStorage.setItem(`kb_last_viewall_${activeContentId}`, 'false');
+    }
     renderCurrentTopicView();
   });
 
@@ -603,6 +635,10 @@ export const initKnowledgeBase = () => {
         currentTopics[activeTopicIndex].html = notesArea.innerHTML;
       }
       activeTopicIndex++;
+    }
+    if (activeContentId) {
+      sessionStorage.setItem(`kb_last_topic_${activeContentId}`, activeTopicIndex.toString());
+      sessionStorage.setItem(`kb_last_viewall_${activeContentId}`, 'false');
     }
     renderCurrentTopicView();
   });
@@ -852,6 +888,23 @@ export const initKnowledgeBase = () => {
         });
       });
       
+      // Restore last session state
+      const lastContentId = sessionStorage.getItem('kb_last_content');
+      const lastModuleId = sessionStorage.getItem('kb_last_module');
+      if (lastContentId && lastModuleId) {
+        const modBtn = document.querySelector(`.kb-module-btn[data-id="${lastModuleId}"]`);
+        if (modBtn) {
+          const contentList = modBtn.nextElementSibling;
+          const icon = modBtn.querySelector('.kb-module-icon') as HTMLElement;
+          if (contentList) {
+            contentList.classList.remove('hidden');
+            if (icon) icon.style.transform = 'rotate(180deg)';
+          }
+        }
+        // Use a short timeout to let the DOM settle before loading content
+        setTimeout(() => loadContentData(parseInt(lastContentId), parseInt(lastModuleId)), 10);
+      }
+
       // If there's an active content, keep it highlighted
       if (activeContentId && activeModuleId) {
         loadContentData(activeContentId, activeModuleId);
