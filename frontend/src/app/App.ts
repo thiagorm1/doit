@@ -204,6 +204,7 @@ export const initApp = () => {
       
       const iFocus = document.getElementById('f-cfg-focus') as HTMLInputElement;
       const iShort = document.getElementById('f-cfg-short') as HTMLInputElement;
+      const iLong = document.getElementById('f-cfg-long') as HTMLInputElement;
       const iCycles = document.getElementById('f-cfg-cycles') as HTMLInputElement;
 
       const formatTime = (secs: number) => {
@@ -255,16 +256,16 @@ export const initApp = () => {
         const s = pomodoroGlobal.getState();
         iFocus.value = s.focusMin.toString();
         iShort.value = s.shortMin.toString();
+        iLong.value = s.longMin.toString();
         iCycles.value = s.totalCycles.toString();
         fCfgModal.classList.remove('hidden');
       });
       fCfgCancel.addEventListener('click', () => fCfgModal.classList.add('hidden'));
       fCfgSave.addEventListener('click', () => {
-        const s = pomodoroGlobal.getState();
         pomodoroGlobal.setConfig(
           parseInt(iFocus.value) || 25,
           parseInt(iShort.value) || 5,
-          s.longMin,
+          parseInt(iLong.value) || 15,
           parseInt(iCycles.value) || 4
         );
         fCfgModal.classList.add('hidden');

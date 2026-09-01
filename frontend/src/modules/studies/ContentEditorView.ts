@@ -128,28 +128,34 @@ export const ContentEditorView = () => `
   </div>
 
   <!-- Floating Pomodoro -->
-  <div class="fixed bottom-8 right-8 z-50 min-w-[16rem] min-h-[12rem] bg-surface-container-high border border-white/10 rounded-xl shadow-2xl overflow-hidden flex flex-col resize" style="width: 16rem; height: 13rem;" id="editor-floating-pomodoro">
+  <div class="fixed bottom-8 right-8 z-50 min-w-[16rem] min-h-[14rem] glass-panel border border-primary/20 rounded-xl shadow-[0_0_20px_rgba(255,82,82,0.15)] overflow-hidden flex flex-col resize" style="width: 16rem; height: 14rem;" id="editor-floating-pomodoro">
     
     <!-- Config Modal Overlay -->
-    <div id="float-pomodoro-config-modal" class="hidden absolute inset-0 bg-surface-container/95 z-50 p-4 flex flex-col justify-center backdrop-blur-sm">
-      <h3 class="font-headline-sm text-on-surface mb-2 text-sm">Configurações</h3>
-      <div class="space-y-2 font-body-sm text-xs">
-        <div class="flex justify-between items-center">
-          <label class="text-on-surface-variant">Foco (min)</label>
-          <input type="number" id="f-cfg-focus" class="w-12 bg-surface-container-highest border border-outline-variant/50 rounded text-center text-on-surface" value="25" />
+    <div id="float-pomodoro-config-modal" class="hidden absolute inset-0 bg-surface-container/95 z-50 p-4 flex flex-col backdrop-blur-sm overflow-y-auto custom-scrollbar">
+      <div class="flex flex-col min-h-full justify-center">
+        <h3 class="font-headline-sm text-on-surface mb-3 text-sm font-bold">Configurações</h3>
+        <div class="space-y-2.5 font-body-sm text-xs flex-1">
+          <div class="flex justify-between items-center gap-2">
+            <label class="text-on-surface-variant flex-1 truncate">Foco (min)</label>
+            <input type="number" id="f-cfg-focus" class="w-16 bg-surface-container-highest border border-outline-variant/50 rounded text-center text-on-surface py-0.5" value="25" />
+          </div>
+          <div class="flex justify-between items-center gap-2">
+            <label class="text-on-surface-variant flex-1 truncate">Curto (min)</label>
+            <input type="number" id="f-cfg-short" class="w-16 bg-surface-container-highest border border-outline-variant/50 rounded text-center text-on-surface py-0.5" value="5" />
+          </div>
+          <div class="flex justify-between items-center gap-2">
+            <label class="text-on-surface-variant flex-1 truncate">Longo (min)</label>
+            <input type="number" id="f-cfg-long" class="w-16 bg-surface-container-highest border border-outline-variant/50 rounded text-center text-on-surface py-0.5" value="15" />
+          </div>
+          <div class="flex justify-between items-center gap-2">
+            <label class="text-on-surface-variant flex-1 truncate">Ciclos</label>
+            <input type="number" id="f-cfg-cycles" class="w-16 bg-surface-container-highest border border-outline-variant/50 rounded text-center text-on-surface py-0.5" value="4" />
+          </div>
         </div>
-        <div class="flex justify-between items-center">
-          <label class="text-on-surface-variant">Descanso (min)</label>
-          <input type="number" id="f-cfg-short" class="w-12 bg-surface-container-highest border border-outline-variant/50 rounded text-center text-on-surface" value="5" />
+        <div class="flex gap-2 mt-4 text-xs pt-2 border-t border-white/5">
+          <button id="f-pomo-cfg-cancel" class="flex-1 py-1.5 rounded border border-outline-variant/50 text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-colors">Cancelar</button>
+          <button id="f-pomo-cfg-save" class="flex-1 py-1.5 rounded bg-primary text-on-secondary font-bold hover:bg-primary-fixed transition-colors">Salvar</button>
         </div>
-        <div class="flex justify-between items-center">
-          <label class="text-on-surface-variant">Ciclos</label>
-          <input type="number" id="f-cfg-cycles" class="w-12 bg-surface-container-highest border border-outline-variant/50 rounded text-center text-on-surface" value="4" />
-        </div>
-      </div>
-      <div class="flex gap-2 mt-4 text-xs">
-        <button id="f-pomo-cfg-cancel" class="flex-1 py-1 rounded border border-outline-variant/50 text-on-surface-variant hover:text-on-surface transition-colors">Cancelar</button>
-        <button id="f-pomo-cfg-save" class="flex-1 py-1 rounded bg-primary text-on-secondary font-bold hover:bg-primary-fixed transition-colors">Salvar</button>
       </div>
     </div>
 
@@ -167,7 +173,7 @@ export const ContentEditorView = () => `
     </div>
     
     <div class="p-4 flex flex-col items-center justify-center flex-1 gap-2 relative">
-      <div class="absolute inset-0 bg-secondary/5 blur-2xl pointer-events-none"></div>
+      <div class="absolute inset-0 bg-primary/5 blur-2xl pointer-events-none"></div>
       
       <div class="text-center relative z-10">
         <div id="f-pomo-time" class="font-headline-md text-[40px] font-bold text-on-surface leading-none">25:00</div>
