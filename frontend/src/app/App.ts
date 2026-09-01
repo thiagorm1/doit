@@ -213,6 +213,7 @@ export const initApp = () => {
       const iFocus = document.getElementById('f-cfg-focus') as HTMLInputElement;
       const iShort = document.getElementById('f-cfg-short') as HTMLInputElement;
       const iLong = document.getElementById('f-cfg-long') as HTMLInputElement;
+      const iLongEnabled = document.getElementById('f-cfg-long-enabled') as HTMLInputElement;
       const iCycles = document.getElementById('f-cfg-cycles') as HTMLInputElement;
 
       const formatTime = (secs: number) => {
@@ -227,13 +228,13 @@ export const initApp = () => {
           fCycle.textContent = "CONCLUÍDO";
           fBadge.textContent = "DONE";
           fBadge.className = "px-sm py-xs bg-tertiary/15 text-tertiary text-[10px] font-bold rounded-md uppercase";
-          fControls.classList.add('hidden');
-          fCompleteArea.classList.remove('hidden');
+          if (fControls) fControls.classList.add('hidden');
+          if (fCompleteArea) fCompleteArea.classList.remove('hidden');
           return;
         }
 
-        fControls.classList.remove('hidden');
-        fCompleteArea.classList.add('hidden');
+        if (fControls) fControls.classList.remove('hidden');
+        if (fCompleteArea) fCompleteArea.classList.add('hidden');
 
         fTime.textContent = formatTime(state.timeLeft);
         fCycle.textContent = `Sessão ${state.currentCycle}/${state.totalCycles}`;
@@ -266,6 +267,7 @@ export const initApp = () => {
         iShort.value = s.shortMin.toString();
         iLong.value = s.longMin.toString();
         iCycles.value = s.totalCycles.toString();
+        iLongEnabled.checked = s.longBreakEnabled;
         fCfgModal.classList.remove('hidden');
       });
       fCfgCancel.addEventListener('click', () => fCfgModal.classList.add('hidden'));
@@ -274,7 +276,8 @@ export const initApp = () => {
           parseInt(iFocus.value) || 25,
           parseInt(iShort.value) || 5,
           parseInt(iLong.value) || 15,
-          parseInt(iCycles.value) || 4
+          parseInt(iCycles.value) || 4,
+          iLongEnabled.checked
         );
         fCfgModal.classList.add('hidden');
       });

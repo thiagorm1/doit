@@ -17,7 +17,10 @@ export const PomodoroCard = () => `
         <input type="number" id="cfg-short" class="w-16 bg-surface-container-highest border border-outline-variant/50 rounded text-center text-on-surface" value="5" />
       </div>
       <div class="flex justify-between items-center">
-        <label class="text-on-surface-variant">Pausa Longa (min)</label>
+        <label class="text-on-surface-variant flex items-center gap-2 cursor-pointer">
+          <input type="checkbox" id="cfg-long-enabled" class="accent-primary" />
+          <span>Pausa Longa (min)</span>
+        </label>
         <input type="number" id="cfg-long" class="w-16 bg-surface-container-highest border border-outline-variant/50 rounded text-center text-on-surface" value="15" />
       </div>
       <div class="flex justify-between items-center">
@@ -45,7 +48,7 @@ export const PomodoroCard = () => `
   </div>
   <div class="flex-1 flex flex-col items-center justify-center py-md relative z-10">
     <div class="relative w-48 h-48 flex items-center justify-center mb-md">
-      <svg class="absolute inset-0 w-full h-full transform -rotate-90">
+      <svg class="absolute inset-0 w-full h-full">
         <circle class="text-surface-container-highest" cx="96" cy="96" fill="transparent" r="88" stroke="currentColor" stroke-width="4"></circle>
         <circle id="pomo-ring" class="text-primary drop-shadow-[0_0_10px_rgba(255,82,82,0.5)] progress-ring__circle transition-all duration-1000 ease-linear" cx="96" cy="96" fill="transparent" r="88" stroke="currentColor" stroke-dasharray="552.92" stroke-dashoffset="0" stroke-linecap="round" stroke-width="8"></circle>
       </svg>
@@ -67,9 +70,9 @@ export const PomodoroCard = () => `
       </button>
     </div>
 
-    <div id="pomo-complete-area" class="hidden w-full flex justify-center mt-2">
-      <button id="pomo-complete-btn" class="w-full py-3 rounded-lg bg-tertiary text-on-primary font-bold hover:brightness-110 shadow-[0_0_15px_rgba(78,222,163,0.3)] transition-all flex items-center justify-center gap-2">
-        <span class="material-symbols-outlined">done_all</span> Concluir Pomodoro
+    <div id="pomo-complete-area" class="hidden w-full flex justify-center mt-4 px-4">
+      <button id="pomo-complete-btn" class="w-full py-2 rounded-lg bg-surface-container-highest border border-tertiary/30 text-tertiary hover:bg-tertiary hover:text-on-primary font-bold shadow-[0_0_15px_rgba(78,222,163,0.1)] transition-all flex items-center justify-center gap-2 text-sm">
+        <span class="material-symbols-outlined text-[18px]">done_all</span> Concluir Pomodoro
       </button>
     </div>
   </div>
@@ -100,6 +103,7 @@ export const initPomodoro = () => {
     iFocus: document.getElementById('cfg-focus') as HTMLInputElement,
     iShort: document.getElementById('cfg-short') as HTMLInputElement,
     iLong: document.getElementById('cfg-long') as HTMLInputElement,
+    iLongEnabled: document.getElementById('cfg-long-enabled') as HTMLInputElement,
     iCycles: document.getElementById('cfg-cycles') as HTMLInputElement,
   };
 
@@ -118,13 +122,13 @@ export const initPomodoro = () => {
       el.badge.className = "px-sm py-xs bg-tertiary/15 text-tertiary text-label-caps font-label-caps rounded-md transition-colors";
       el.ring.style.strokeDashoffset = "0";
       
-      el.controls.classList.add('hidden');
-      el.completeArea.classList.remove('hidden');
+      if (el.controls) el.controls.classList.add('hidden');
+      if (el.completeArea) el.completeArea.classList.remove('hidden');
       return;
     }
 
-    el.controls.classList.remove('hidden');
-    el.completeArea.classList.add('hidden');
+    if (el.controls) el.controls.classList.remove('hidden');
+    if (el.completeArea) el.completeArea.classList.add('hidden');
 
     el.time.textContent = formatTime(state.timeLeft);
     el.cycleText.textContent = `Sessão ${state.currentCycle}/${state.totalCycles}`;
@@ -178,6 +182,7 @@ export const initPomodoro = () => {
     el.iShort.value = s.shortMin.toString();
     el.iLong.value = s.longMin.toString();
     el.iCycles.value = s.totalCycles.toString();
+    el.iLongEnabled.checked = s.longBreakEnabled;
     el.cfgModal.classList.remove('hidden');
   });
   
@@ -188,7 +193,8 @@ export const initPomodoro = () => {
       parseInt(el.iFocus.value) || 25,
       parseInt(el.iShort.value) || 5,
       parseInt(el.iLong.value) || 15,
-      parseInt(el.iCycles.value) || 4
+      parseInt(el.iCycles.value) || 4,
+      el.iLongEnabled.checked
     );
     el.cfgModal.classList.add('hidden');
   });

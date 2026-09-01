@@ -6,10 +6,12 @@ export interface PomodoroState {
   focusMin: number;
   shortMin: number;
   longMin: number;
-  totalCycles: number;
+  totalCycles: number; // Used as 'cycles before long break'
+  longBreakEnabled: boolean;
 
   mode: PomodoroMode;
-  currentCycle: number;
+  currentCycle: number; // 1 to totalCycles
+  completedCycles: number; // Total focus cycles completed in this session
   timeLeft: number;
   isRunning: boolean;
 }
@@ -18,13 +20,15 @@ type Subscriber = (state: PomodoroState) => void;
 
 class PomodoroService {
   private state: PomodoroState = {
-    focusMin: 25,
-    shortMin: 5,
-    longMin: 15,
-    totalCycles: 4,
+    focusMin: parseInt(localStorage.getItem('doit_pomo_focus') || '25'),
+    shortMin: parseInt(localStorage.getItem('doit_pomo_short') || '5'),
+    longMin: parseInt(localStorage.getItem('doit_pomo_long') || '15'),
+    totalCycles: parseInt(localStorage.getItem('doit_pomo_cycles') || '4'),
+    longBreakEnabled: localStorage.getItem('doit_pomo_long_enabled') === 'true',
     mode: 'focus',
     currentCycle: 1,
-    timeLeft: 25 * 60,
+    completedCycles: 0,
+    timeLeft: parseInt(localStorage.getItem('doit_pomo_focus') || '25') * 60,
     isRunning: false,
   };
 
@@ -51,11 +55,18 @@ class PomodoroService {
     return this.state.longMin * 60;
   }
 
-  public setConfig(focusMin: number, shortMin: number, longMin: number, totalCycles: number) {
+  public setConfig(focusMin: number, shortMin: number, longMin: number, totalCycles: number, longBreakEnabled: boolean = false) {
     this.state.focusMin = focusMin;
     this.state.shortMin = shortMin;
     this.state.longMin = longMin;
     this.state.totalCycles = totalCycles;
+    this.state.longBreakEnabled = longBreakEnabled;
+    
+    localStorage.setItem('doit_pomo_focus', focusMin.toString());
+    localStorage.setItem('doit_pomo_short', shortMin.toString());
+    localStorage.setItem('doit_pomo_long', longMin.toString());
+    localStorage.setItem('doit_pomo_cycles', totalCycles.toString());
+    localStorage.setItem('doit_pomo_long_enabled', longBreakEnabled ? 'true' : 'false');
     
     this.reset();
   }
@@ -94,20 +105,41 @@ class PomodoroService {
 
   private nextPhase() {
     if (this.state.mode === 'focus') {
+      // Are we at the end of the entire Pomodoro?
+      if (this.state.currentCycle >= this.state.totalCycles) {
+        if (this.state.longBreakEnabled) {
+          this.state.mode = 'long';
+          this.state.timeLeft = this.state.longMin * 60;
+        } else {
+          this.state.mode = 'done';
+          this.state.timeLeft = 0;
+          this.state.isRunning = false;
+          clearInterval(this.intervalId);
+        }
+      } else {
+        // Not at the end. Should we take a long break? (Every 2 cycles)
+        if (this.state.longBreakEnabled && this.state.currentCycle % 2 === 0) {
+          this.state.mode = 'long';
+          this.state.timeLeft = this.state.longMin * 60;
+        } else {
+          this.state.mode = 'short';
+          this.state.timeLeft = this.state.shortMin * 60;
+        }
+      }
+    } else if (this.state.mode === 'short' || this.state.mode === 'long') {
+      // If we just finished the final long break (at the end of totalCycles), we are done
       if (this.state.currentCycle >= this.state.totalCycles) {
         this.state.mode = 'done';
         this.state.timeLeft = 0;
         this.state.isRunning = false;
         clearInterval(this.intervalId);
       } else {
-        this.state.mode = 'short';
-        this.state.timeLeft = this.state.shortMin * 60;
+        this.state.currentCycle++;
+        this.state.mode = 'focus';
+        this.state.timeLeft = this.state.focusMin * 60;
       }
-    } else {
-      this.state.currentCycle++;
-      this.state.mode = 'focus';
-      this.state.timeLeft = this.state.focusMin * 60;
     }
+    
     this.notify();
   }
 

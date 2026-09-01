@@ -144,7 +144,10 @@ export const ContentEditorView = () => `
             <input type="number" id="f-cfg-short" class="w-16 bg-surface-container-highest border border-outline-variant/50 rounded text-center text-on-surface py-0.5" value="5" />
           </div>
           <div class="flex justify-between items-center gap-2">
-            <label class="text-on-surface-variant flex-1 truncate">Longo (min)</label>
+            <label class="text-on-surface-variant flex-1 truncate flex items-center gap-1 cursor-pointer">
+              <input type="checkbox" id="f-cfg-long-enabled" class="accent-primary w-3 h-3" />
+              <span>Longo (min)</span>
+            </label>
             <input type="number" id="f-cfg-long" class="w-16 bg-surface-container-highest border border-outline-variant/50 rounded text-center text-on-surface py-0.5" value="15" />
           </div>
           <div class="flex justify-between items-center gap-2">
@@ -193,8 +196,8 @@ export const ContentEditorView = () => `
       </div>
       
       <div id="f-pomo-complete-area" class="hidden w-full relative z-10 mt-2 px-2">
-        <button id="f-pomo-complete-btn" class="w-full py-1.5 text-xs rounded-lg bg-tertiary text-on-primary font-bold hover:brightness-110 shadow-lg shadow-tertiary/20 transition-all flex items-center justify-center gap-1">
-          <span class="material-symbols-outlined text-[14px]">done_all</span> Concluir
+        <button id="f-pomo-complete-btn" class="w-full py-1.5 text-xs rounded-lg bg-surface-container-highest border border-tertiary/30 text-tertiary font-bold hover:bg-tertiary hover:text-on-primary shadow-lg shadow-tertiary/20 transition-all flex items-center justify-center gap-1">
+          <span class="material-symbols-outlined text-[14px]">done_all</span> Concluir Pomodoro
         </button>
       </div>
     </div>
