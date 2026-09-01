@@ -128,8 +128,8 @@ export const ContentEditorView = () => `
   </div>
 
   <!-- Floating Pomodoro (Optional based on design) -->
-  <div class="fixed bottom-8 right-8 z-50 w-64 bg-surface-container-high border border-white/10 rounded-xl shadow-2xl overflow-hidden flex flex-col hidden" id="editor-floating-pomodoro">
-    <div class="flex items-center justify-between px-4 py-2 bg-white/5 cursor-move">
+  <div class="fixed bottom-8 right-8 z-50 min-w-[16rem] min-h-[12rem] bg-surface-container-high border border-white/10 rounded-xl shadow-2xl overflow-hidden flex flex-col resize" style="width: 16rem; height: 12rem;" id="editor-floating-pomodoro">
+    <div class="flex items-center justify-between px-4 py-2 bg-white/5 cursor-move" id="editor-floating-pomodoro-header">
       <div class="flex items-center gap-2">
         <span class="material-symbols-outlined text-on-surface-variant text-[18px]">drag_handle</span>
         <span class="font-label-caps text-label-caps text-on-surface-variant">POMODORO</span>
@@ -139,7 +139,7 @@ export const ContentEditorView = () => `
         <span class="text-[10px] font-medium text-tertiary uppercase tracking-wider">Focus</span>
       </div>
     </div>
-    <div class="p-6 flex flex-col items-center gap-4 relative">
+    <div class="p-6 flex flex-col items-center justify-center flex-1 gap-4 relative">
       <div class="absolute inset-0 bg-secondary/5 blur-2xl pointer-events-none"></div>
       <div class="font-headline-md text-[40px] font-bold text-on-surface leading-none relative z-10">25:00</div>
       <div class="flex items-center gap-4 relative z-10">

@@ -134,6 +134,54 @@ export const initApp = () => {
       });
     }
 
+    // Draggable Floating Pomodoro
+    const pomodoroWin = document.getElementById('editor-floating-pomodoro');
+    const pomodoroHeader = document.getElementById('editor-floating-pomodoro-header');
+    
+    if (pomodoroWin && pomodoroHeader) {
+      let isDragging = false;
+      let startX = 0, startY = 0;
+      let startRect: DOMRect;
+
+      pomodoroHeader.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        startRect = pomodoroWin.getBoundingClientRect();
+        
+        pomodoroWin.style.transition = 'none';
+        pomodoroWin.style.bottom = 'auto';
+        pomodoroWin.style.right = 'auto';
+        
+        pomodoroWin.style.left = `${startRect.left}px`;
+        pomodoroWin.style.top = `${startRect.top}px`;
+      });
+
+      const onMouseMove = (e: MouseEvent) => {
+        if (!isDragging) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        pomodoroWin.style.left = `${startRect.left + dx}px`;
+        pomodoroWin.style.top = `${startRect.top + dy}px`;
+      };
+
+      const onMouseUp = () => {
+        isDragging = false;
+      };
+
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+
+      // Limpar listeners ao sair da tela
+      const closeBtn = document.getElementById('editor-close-btn');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+          document.removeEventListener('mousemove', onMouseMove);
+          document.removeEventListener('mouseup', onMouseUp);
+        });
+      }
+    }
+
     // Topic Outline / Listras navigation logic in Fullscreen
     const outlineList = document.getElementById('editor-outline-list');
     const outlineCount = document.getElementById('editor-outline-count');
