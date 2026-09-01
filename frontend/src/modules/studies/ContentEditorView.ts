@@ -127,27 +127,68 @@ export const ContentEditorView = () => `
     </div>
   </div>
 
-  <!-- Floating Pomodoro (Optional based on design) -->
-  <div class="fixed bottom-8 right-8 z-50 min-w-[16rem] min-h-[12rem] bg-surface-container-high border border-white/10 rounded-xl shadow-2xl overflow-hidden flex flex-col resize" style="width: 16rem; height: 12rem;" id="editor-floating-pomodoro">
-    <div class="flex items-center justify-between px-4 py-2 bg-white/5 cursor-move" id="editor-floating-pomodoro-header">
-      <div class="flex items-center gap-2">
-        <span class="material-symbols-outlined text-on-surface-variant text-[18px]">drag_handle</span>
-        <span class="font-label-caps text-label-caps text-on-surface-variant">POMODORO</span>
+  <!-- Floating Pomodoro -->
+  <div class="fixed bottom-8 right-8 z-50 min-w-[16rem] min-h-[12rem] bg-surface-container-high border border-white/10 rounded-xl shadow-2xl overflow-hidden flex flex-col resize" style="width: 16rem; height: 13rem;" id="editor-floating-pomodoro">
+    
+    <!-- Config Modal Overlay -->
+    <div id="float-pomodoro-config-modal" class="hidden absolute inset-0 bg-surface-container/95 z-50 p-4 flex flex-col justify-center backdrop-blur-sm">
+      <h3 class="font-headline-sm text-on-surface mb-2 text-sm">Configurações</h3>
+      <div class="space-y-2 font-body-sm text-xs">
+        <div class="flex justify-between items-center">
+          <label class="text-on-surface-variant">Foco (min)</label>
+          <input type="number" id="f-cfg-focus" class="w-12 bg-surface-container-highest border border-outline-variant/50 rounded text-center text-on-surface" value="25" />
+        </div>
+        <div class="flex justify-between items-center">
+          <label class="text-on-surface-variant">Descanso (min)</label>
+          <input type="number" id="f-cfg-short" class="w-12 bg-surface-container-highest border border-outline-variant/50 rounded text-center text-on-surface" value="5" />
+        </div>
+        <div class="flex justify-between items-center">
+          <label class="text-on-surface-variant">Ciclos</label>
+          <input type="number" id="f-cfg-cycles" class="w-12 bg-surface-container-highest border border-outline-variant/50 rounded text-center text-on-surface" value="4" />
+        </div>
       </div>
-      <div class="flex items-center gap-1">
-        <div class="w-2 h-2 rounded-full bg-tertiary"></div>
-        <span class="text-[10px] font-medium text-tertiary uppercase tracking-wider">Focus</span>
+      <div class="flex gap-2 mt-4 text-xs">
+        <button id="f-pomo-cfg-cancel" class="flex-1 py-1 rounded border border-outline-variant/50 text-on-surface-variant hover:text-on-surface transition-colors">Cancelar</button>
+        <button id="f-pomo-cfg-save" class="flex-1 py-1 rounded bg-primary text-on-secondary font-bold hover:bg-primary-fixed transition-colors">Salvar</button>
       </div>
     </div>
-    <div class="p-6 flex flex-col items-center justify-center flex-1 gap-4 relative">
-      <div class="absolute inset-0 bg-secondary/5 blur-2xl pointer-events-none"></div>
-      <div class="font-headline-md text-[40px] font-bold text-on-surface leading-none relative z-10">25:00</div>
-      <div class="flex items-center gap-4 relative z-10">
-        <button class="p-2 rounded-full bg-secondary text-on-secondary hover:bg-secondary-fixed transition-colors active:scale-95">
-          <span class="material-symbols-outlined text-[24px]" data-icon="play_arrow">play_arrow</span>
+
+    <div class="flex items-center justify-between px-4 py-2 bg-white/5 cursor-move" id="editor-floating-pomodoro-header">
+      <div class="flex items-center gap-2 pointer-events-none">
+        <span class="material-symbols-outlined text-on-surface-variant text-[18px]">drag_handle</span>
+        <span class="font-label-caps text-label-caps text-on-surface-variant" id="f-pomo-title">POMODORO</span>
+      </div>
+      <div class="flex items-center gap-1">
+        <button id="f-pomo-cfg-btn" class="text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center">
+          <span class="material-symbols-outlined text-[16px]">settings</span>
         </button>
-        <button class="p-2 rounded-full hover:bg-white/5 text-on-surface-variant hover:text-on-surface transition-colors">
-          <span class="material-symbols-outlined text-[20px]" data-icon="replay">replay</span>
+        <span id="f-pomo-badge" class="px-sm py-xs bg-primary/15 text-primary text-[10px] font-bold rounded-md transition-colors uppercase">ESTUDO</span>
+      </div>
+    </div>
+    
+    <div class="p-4 flex flex-col items-center justify-center flex-1 gap-2 relative">
+      <div class="absolute inset-0 bg-secondary/5 blur-2xl pointer-events-none"></div>
+      
+      <div class="text-center relative z-10">
+        <div id="f-pomo-time" class="font-headline-md text-[40px] font-bold text-on-surface leading-none">25:00</div>
+        <div id="f-pomo-cycle-text" class="text-[10px] text-on-surface-variant uppercase tracking-widest mt-1">Sessão 1/4</div>
+      </div>
+      
+      <div id="f-pomo-controls" class="flex items-center gap-4 relative z-10 mt-2">
+        <button id="f-pomo-reset" class="p-1.5 rounded-full hover:bg-white/5 text-on-surface-variant hover:text-on-surface transition-colors">
+          <span class="material-symbols-outlined text-[20px]">restart_alt</span>
+        </button>
+        <button id="f-pomo-play" class="p-2.5 rounded-full bg-primary text-on-secondary hover:bg-primary-fixed transition-colors active:scale-95 shadow-lg shadow-primary/20">
+          <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+        </button>
+        <button id="f-pomo-skip" class="p-1.5 rounded-full hover:bg-white/5 text-on-surface-variant hover:text-on-surface transition-colors">
+          <span class="material-symbols-outlined text-[20px]">skip_next</span>
+        </button>
+      </div>
+      
+      <div id="f-pomo-complete-area" class="hidden w-full relative z-10 mt-2 px-2">
+        <button id="f-pomo-complete-btn" class="w-full py-1.5 text-xs rounded-lg bg-tertiary text-on-primary font-bold hover:brightness-110 shadow-lg shadow-tertiary/20 transition-all flex items-center justify-center gap-1">
+          <span class="material-symbols-outlined text-[14px]">done_all</span> Concluir
         </button>
       </div>
     </div>

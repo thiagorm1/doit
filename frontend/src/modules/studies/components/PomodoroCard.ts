@@ -1,4 +1,5 @@
 import { API_BASE_URL } from '../../../shared/config';
+import { pomodoroGlobal } from '../PomodoroService';
 export const PomodoroCard = () => `
 <section class="glass-panel rounded-xl p-lg col-span-1 lg:col-span-4 flex flex-col justify-between relative overflow-hidden group glow-hover transition-all duration-300">
   <div class="absolute -right-12 -top-12 w-40 h-40 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors pointer-events-none"></div>
@@ -76,19 +77,6 @@ export const PomodoroCard = () => `
 `;
 
 export const initPomodoro = () => {
-  const state = {
-    focusMin: 25,
-    shortMin: 5,
-    longMin: 15,
-    totalCycles: 4,
-
-    mode: 'focus' as 'focus' | 'short' | 'long' | 'done',
-    currentCycle: 1,
-    timeLeft: 25 * 60,
-    isRunning: false,
-    intervalId: null as any
-  };
-
   const el = {
     time: document.getElementById('pomo-time')!,
     cycleText: document.getElementById('pomo-cycle-text')!,
@@ -121,13 +109,7 @@ export const initPomodoro = () => {
     return `${m}:${s}`;
   };
 
-  const getTotalTimeForMode = () => {
-    if (state.mode === 'focus') return state.focusMin * 60;
-    if (state.mode === 'short') return state.shortMin * 60;
-    return state.longMin * 60;
-  };
-
-  const updateUI = () => {
+  const updateUI = (state: any) => {
     if (state.mode === 'done') {
       el.time.textContent = "00:00";
       el.cycleText.textContent = "CICLOS CONCLUÍDOS";
@@ -160,7 +142,7 @@ export const initPomodoro = () => {
     }
 
     // Update ring
-    const total = getTotalTimeForMode();
+    const total = pomodoroGlobal.getTotalTimeForMode();
     const progress = state.timeLeft / total;
     const offset = 552.92 - (progress * 552.92);
     el.ring.style.strokeDashoffset = offset.toString();
@@ -171,102 +153,43 @@ export const initPomodoro = () => {
       : `<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>`;
   };
 
-  const nextPhase = () => {
-    if (state.mode === 'focus') {
-      if (state.currentCycle >= state.totalCycles) {
-        state.mode = 'done';
-        state.timeLeft = 0;
-        state.isRunning = false;
-        clearInterval(state.intervalId);
-      } else {
-        // Not last cycle, short break
-        state.mode = 'short';
-        state.timeLeft = state.shortMin * 60;
-      }
-    } else {
-      // Coming from short/long break
-      state.currentCycle++;
-      state.mode = 'focus';
-      state.timeLeft = state.focusMin * 60;
-    }
-    updateUI();
-  };
-
-  const tick = () => {
-    if (state.timeLeft > 0) {
-      state.timeLeft--;
-      updateUI();
-    } else {
-      nextPhase();
-    }
-  };
+  pomodoroGlobal.subscribe(updateUI);
 
   el.playBtn.addEventListener('click', () => {
-    state.isRunning = !state.isRunning;
-    if (state.isRunning) {
-      state.intervalId = setInterval(tick, 1000);
-    } else {
-      clearInterval(state.intervalId);
-    }
-    updateUI();
+    pomodoroGlobal.togglePlay();
   });
 
   el.resetBtn.addEventListener('click', () => {
-    state.isRunning = false;
-    clearInterval(state.intervalId);
-    state.timeLeft = getTotalTimeForMode();
-    updateUI();
+    pomodoroGlobal.resetCurrent();
   });
 
   el.skipBtn.addEventListener('click', () => {
-    state.isRunning = false;
-    clearInterval(state.intervalId);
-    nextPhase();
+    pomodoroGlobal.skip();
   });
 
   el.completeBtn.addEventListener('click', async () => {
-    try {
-      await fetch(`${API_BASE_URL}/api/studies/pomodoro`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          focusTime: state.focusMin,
-          shortBreak: state.shortMin,
-          longBreak: state.longMin,
-          cycles: state.totalCycles
-        })
-      });
-      // Optionally notify other components to refresh
-      window.dispatchEvent(new Event('pomodoro-completed'));
-    } catch (err) {
-      console.error('Failed to save session', err);
-    }
-    // Reset full pomodoro
-    state.mode = 'focus';
-    state.currentCycle = 1;
-    state.timeLeft = state.focusMin * 60;
-    updateUI();
+    await pomodoroGlobal.completePomodoro();
   });
 
   // Settings Modal
-  el.cfgBtn.addEventListener('click', () => el.cfgModal.classList.remove('hidden'));
+  el.cfgBtn.addEventListener('click', () => {
+    const s = pomodoroGlobal.getState();
+    el.iFocus.value = s.focusMin.toString();
+    el.iShort.value = s.shortMin.toString();
+    el.iLong.value = s.longMin.toString();
+    el.iCycles.value = s.totalCycles.toString();
+    el.cfgModal.classList.remove('hidden');
+  });
+  
   el.cfgCancel.addEventListener('click', () => el.cfgModal.classList.add('hidden'));
   
   el.cfgSave.addEventListener('click', () => {
-    state.focusMin = parseInt(el.iFocus.value) || 25;
-    state.shortMin = parseInt(el.iShort.value) || 5;
-    state.longMin = parseInt(el.iLong.value) || 15;
-    state.totalCycles = parseInt(el.iCycles.value) || 4;
-    
-    state.isRunning = false;
-    clearInterval(state.intervalId);
-    state.mode = 'focus';
-    state.currentCycle = 1;
-    state.timeLeft = state.focusMin * 60;
-    
+    pomodoroGlobal.setConfig(
+      parseInt(el.iFocus.value) || 25,
+      parseInt(el.iShort.value) || 5,
+      parseInt(el.iLong.value) || 15,
+      parseInt(el.iCycles.value) || 4
+    );
     el.cfgModal.classList.add('hidden');
-    updateUI();
   });
-
-  updateUI();
 };

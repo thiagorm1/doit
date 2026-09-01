@@ -4,6 +4,7 @@ import { StudiesView, initStudiesView } from '../modules/studies/StudiesView';
 import { ContentEditorView } from '../modules/studies/ContentEditorView';
 import { initRichTextContextMenu } from '../shared/components/RichTextContextMenu';
 import { initImageResizer } from '../shared/utils/ImageResizer';
+import { pomodoroGlobal } from '../modules/studies/PomodoroService';
 
 export const App = () => {
   return `<div id="app-root"></div>`;
@@ -178,6 +179,100 @@ export const initApp = () => {
         closeBtn.addEventListener('click', () => {
           document.removeEventListener('mousemove', onMouseMove);
           document.removeEventListener('mouseup', onMouseUp);
+        });
+      }
+
+      // -----------------------------------------------------
+      // Bind to PomodoroGlobal
+      // -----------------------------------------------------
+      const fTime = document.getElementById('f-pomo-time')!;
+      const fCycle = document.getElementById('f-pomo-cycle-text')!;
+      const fTitle = document.getElementById('f-pomo-title')!;
+      const fBadge = document.getElementById('f-pomo-badge')!;
+      const fControls = document.getElementById('f-pomo-controls')!;
+      const fCompleteArea = document.getElementById('f-pomo-complete-area')!;
+      
+      const fPlay = document.getElementById('f-pomo-play')!;
+      const fReset = document.getElementById('f-pomo-reset')!;
+      const fSkip = document.getElementById('f-pomo-skip')!;
+      const fComplete = document.getElementById('f-pomo-complete-btn')!;
+
+      const fCfgBtn = document.getElementById('f-pomo-cfg-btn')!;
+      const fCfgModal = document.getElementById('float-pomodoro-config-modal')!;
+      const fCfgSave = document.getElementById('f-pomo-cfg-save')!;
+      const fCfgCancel = document.getElementById('f-pomo-cfg-cancel')!;
+      
+      const iFocus = document.getElementById('f-cfg-focus') as HTMLInputElement;
+      const iShort = document.getElementById('f-cfg-short') as HTMLInputElement;
+      const iCycles = document.getElementById('f-cfg-cycles') as HTMLInputElement;
+
+      const formatTime = (secs: number) => {
+        const m = Math.floor(secs / 60).toString().padStart(2, '0');
+        const s = (secs % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
+      };
+
+      const updateFloatUI = (state: any) => {
+        if (state.mode === 'done') {
+          fTime.textContent = "00:00";
+          fCycle.textContent = "CONCLUÍDO";
+          fBadge.textContent = "DONE";
+          fBadge.className = "px-sm py-xs bg-tertiary/15 text-tertiary text-[10px] font-bold rounded-md uppercase";
+          fControls.classList.add('hidden');
+          fCompleteArea.classList.remove('hidden');
+          return;
+        }
+
+        fControls.classList.remove('hidden');
+        fCompleteArea.classList.add('hidden');
+
+        fTime.textContent = formatTime(state.timeLeft);
+        fCycle.textContent = `Sessão ${state.currentCycle}/${state.totalCycles}`;
+        
+        if (state.mode === 'focus') {
+          fTitle.textContent = "POMODORO";
+          fBadge.textContent = "ESTUDO";
+          fBadge.className = "px-sm py-xs bg-primary/15 text-primary text-[10px] font-bold rounded-md uppercase";
+        } else {
+          fTitle.textContent = "DESCANSO";
+          fBadge.textContent = state.mode === 'short' ? "CURTO" : "LONGO";
+          fBadge.className = "px-sm py-xs bg-secondary/15 text-secondary text-[10px] font-bold rounded-md uppercase";
+        }
+
+        fPlay.innerHTML = state.isRunning 
+          ? `<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">pause</span>`
+          : `<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>`;
+      };
+
+      const unsub = pomodoroGlobal.subscribe(updateFloatUI);
+
+      fPlay.addEventListener('click', () => pomodoroGlobal.togglePlay());
+      fReset.addEventListener('click', () => pomodoroGlobal.resetCurrent());
+      fSkip.addEventListener('click', () => pomodoroGlobal.skip());
+      fComplete.addEventListener('click', async () => await pomodoroGlobal.completePomodoro());
+
+      fCfgBtn.addEventListener('click', () => {
+        const s = pomodoroGlobal.getState();
+        iFocus.value = s.focusMin.toString();
+        iShort.value = s.shortMin.toString();
+        iCycles.value = s.totalCycles.toString();
+        fCfgModal.classList.remove('hidden');
+      });
+      fCfgCancel.addEventListener('click', () => fCfgModal.classList.add('hidden'));
+      fCfgSave.addEventListener('click', () => {
+        const s = pomodoroGlobal.getState();
+        pomodoroGlobal.setConfig(
+          parseInt(iFocus.value) || 25,
+          parseInt(iShort.value) || 5,
+          s.longMin,
+          parseInt(iCycles.value) || 4
+        );
+        fCfgModal.classList.add('hidden');
+      });
+
+      if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+          unsub();
         });
       }
     }
