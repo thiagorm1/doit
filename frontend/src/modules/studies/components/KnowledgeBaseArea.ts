@@ -275,6 +275,23 @@ export const initKnowledgeBase = () => {
   const headerLabel = document.getElementById('kb-current-topic-header')!;
   const titleLabel = document.getElementById('kb-current-topic-title')!;
   const notesArea = document.getElementById('kb-current-topic-notes') as HTMLDivElement;
+  
+  if (notesArea) {
+    notesArea.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.shiftKey) {
+        if (e.key === '1' || e.code === 'Digit1') {
+          e.preventDefault();
+          document.execCommand('formatBlock', false, 'H1');
+        } else if (e.key === '2' || e.code === 'Digit2') {
+          e.preventDefault();
+          document.execCommand('formatBlock', false, 'H2');
+        } else if (e.key === '3' || e.code === 'Digit3') {
+          e.preventDefault();
+          document.execCommand('formatBlock', false, 'H3');
+        }
+      }
+    });
+  }
   const btnSaveNotes = document.getElementById('kb-btn-save-notes')!;
   const btnFullscreen = document.getElementById('kb-btn-fullscreen-notes')!;
 

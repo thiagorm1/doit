@@ -116,6 +116,22 @@ export const initApp = () => {
         clearTimeout(autoSaveTimeout);
         autoSaveTimeout = setTimeout(performSave, 1500);
       });
+
+      // Keyboard shortcuts
+      editorArea.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.shiftKey) {
+          if (e.key === '1' || e.code === 'Digit1') {
+            e.preventDefault();
+            document.execCommand('formatBlock', false, 'H1');
+          } else if (e.key === '2' || e.code === 'Digit2') {
+            e.preventDefault();
+            document.execCommand('formatBlock', false, 'H2');
+          } else if (e.key === '3' || e.code === 'Digit3') {
+            e.preventDefault();
+            document.execCommand('formatBlock', false, 'H3');
+          }
+        }
+      });
     }
 
     // Topic Outline / Listras navigation logic in Fullscreen
