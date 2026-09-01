@@ -47,7 +47,7 @@ export const KnowledgeBaseArea = () => `
 </style>
 <section class="glass-panel rounded-xl p-lg flex flex-col lg:flex-row gap-lg h-[600px] relative z-10">
   <!-- Sidebar: Cursos -->
-  <div id="kb-sidebar" class="w-full lg:w-64 flex-shrink-0 flex flex-col border-b lg:border-b-0 lg:border-r border-outline-variant/10 pb-md lg:pb-0 lg:pr-md overflow-hidden">
+  <div id="kb-sidebar" class="relative w-full lg:w-64 flex-shrink-0 flex flex-col border-b lg:border-b-0 lg:border-r border-outline-variant/10 pb-md lg:pb-0 lg:pr-md overflow-hidden">
       <div class="flex items-center justify-between mb-md">
       <h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest sidebar-text">Módulos</h3>
       <div class="flex items-center gap-xs">
@@ -61,6 +61,55 @@ export const KnowledgeBaseArea = () => `
     </div>
     <div id="kb-modules-list" class="flex-1 overflow-y-auto space-y-2 pr-xs custom-scrollbar">
       <!-- Injected by JS -->
+    </div>
+
+    <!-- Modal Config Module -->
+    <div id="kb-module-modal" class="hidden absolute inset-0 z-50 bg-surface/95 backdrop-blur-md flex-col p-lg rounded-xl">
+      <div class="flex justify-between items-center mb-6">
+        <h3 id="kb-module-modal-title" class="text-title-md font-bold text-on-surface">Novo Módulo</h3>
+        <button id="kb-module-modal-close" class="text-on-surface-variant hover:text-error transition-colors flex items-center justify-center bg-surface-container-highest rounded-full w-8 h-8 cursor-pointer shadow-sm">
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+      </div>
+      
+      <div class="flex-1 overflow-y-auto space-y-4">
+        <input type="hidden" id="kb-module-id" />
+        <div class="flex flex-col gap-1.5">
+          <label class="text-on-surface-variant text-body-sm font-medium">Nome do Módulo</label>
+          <input type="text" id="kb-module-name" placeholder="Ex: Backend" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2.5 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-on-surface-variant text-body-sm font-medium">Ícone (Material Symbols)</label>
+          <input type="text" id="kb-module-icon" placeholder="Ex: folder, terminal, code" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2.5 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" value="folder" />
+        </div>
+        <div class="flex gap-2 mt-4">
+          <button id="kb-module-delete" class="hidden flex-1 py-2.5 rounded-lg bg-error/20 text-error font-bold hover:bg-error hover:text-on-error transition-colors shadow-sm">Excluir</button>
+          <button id="kb-module-save" class="flex-1 py-2.5 rounded-lg bg-primary text-on-secondary font-bold hover:bg-primary-fixed transition-colors shadow-md">Salvar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Config Content -->
+    <div id="kb-content-modal" class="hidden absolute inset-0 z-50 bg-surface/95 backdrop-blur-md flex-col p-lg rounded-xl">
+      <div class="flex justify-between items-center mb-6">
+        <h3 id="kb-content-modal-title" class="text-title-md font-bold text-on-surface">Novo Conteúdo</h3>
+        <button id="kb-content-modal-close" class="text-on-surface-variant hover:text-error transition-colors flex items-center justify-center bg-surface-container-highest rounded-full w-8 h-8 cursor-pointer shadow-sm">
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+      </div>
+      
+      <div class="flex-1 overflow-y-auto space-y-4">
+        <input type="hidden" id="kb-content-id" />
+        <input type="hidden" id="kb-content-module-id" />
+        <div class="flex flex-col gap-1.5">
+          <label class="text-on-surface-variant text-body-sm font-medium">Tópico</label>
+          <input type="text" id="kb-content-title" placeholder="Ex: Padrões de Projeto" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2.5 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
+        </div>
+        <div class="flex gap-2 mt-4">
+          <button id="kb-content-delete" class="hidden flex-1 py-2.5 rounded-lg bg-error/20 text-error font-bold hover:bg-error hover:text-on-error transition-colors shadow-sm">Excluir</button>
+          <button id="kb-content-save" class="flex-1 py-2.5 rounded-lg bg-primary text-on-secondary font-bold hover:bg-primary-fixed transition-colors shadow-md">Salvar</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -141,57 +190,7 @@ export const KnowledgeBaseArea = () => `
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- Modal Config Module -->
-  <div id="kb-module-modal" class="hidden absolute inset-0 z-50 bg-surface/95 backdrop-blur-md flex-col p-lg rounded-xl">
-    <div class="flex justify-between items-center mb-6">
-      <h3 id="kb-module-modal-title" class="text-title-md font-bold text-on-surface">Novo Módulo</h3>
-      <button id="kb-module-modal-close" class="text-on-surface-variant hover:text-error transition-colors flex items-center justify-center bg-surface-container-highest rounded-full w-8 h-8 cursor-pointer shadow-sm">
-        <span class="material-symbols-outlined text-[18px]">close</span>
-      </button>
-    </div>
-    
-    <div class="flex-1 overflow-y-auto space-y-4">
-      <input type="hidden" id="kb-module-id" />
-      <div class="flex flex-col gap-1.5">
-        <label class="text-on-surface-variant text-body-sm font-medium">Nome do Módulo</label>
-        <input type="text" id="kb-module-name" placeholder="Ex: Backend" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2.5 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
-      </div>
-      <div class="flex flex-col gap-1.5">
-        <label class="text-on-surface-variant text-body-sm font-medium">Ícone (Material Symbols)</label>
-        <input type="text" id="kb-module-icon" placeholder="Ex: folder, terminal, code" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2.5 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" value="folder" />
-      </div>
-      <div class="flex gap-2 mt-4">
-        <button id="kb-module-delete" class="hidden flex-1 py-2.5 rounded-lg bg-error/20 text-error font-bold hover:bg-error hover:text-on-error transition-colors shadow-sm">Excluir</button>
-        <button id="kb-module-save" class="flex-1 py-2.5 rounded-lg bg-primary text-on-secondary font-bold hover:bg-primary-fixed transition-colors shadow-md">Salvar</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Config Content -->
-  <div id="kb-content-modal" class="hidden absolute inset-0 z-50 bg-surface/95 backdrop-blur-md flex-col p-lg rounded-xl">
-    <div class="flex justify-between items-center mb-6">
-      <h3 id="kb-content-modal-title" class="text-title-md font-bold text-on-surface">Novo Conteúdo</h3>
-      <button id="kb-content-modal-close" class="text-on-surface-variant hover:text-error transition-colors flex items-center justify-center bg-surface-container-highest rounded-full w-8 h-8 cursor-pointer shadow-sm">
-        <span class="material-symbols-outlined text-[18px]">close</span>
-      </button>
-    </div>
-    
-    <div class="flex-1 overflow-y-auto space-y-4">
-      <input type="hidden" id="kb-content-id" />
-      <input type="hidden" id="kb-content-module-id" />
-      <div class="flex flex-col gap-1.5">
-        <label class="text-on-surface-variant text-body-sm font-medium">Tópico</label>
-        <input type="text" id="kb-content-title" placeholder="Ex: Padrões de Projeto" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2.5 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
-      </div>
-      <div class="flex gap-2 mt-4">
-        <button id="kb-content-delete" class="hidden flex-1 py-2.5 rounded-lg bg-error/20 text-error font-bold hover:bg-error hover:text-on-error transition-colors shadow-sm">Excluir</button>
-        <button id="kb-content-save" class="flex-1 py-2.5 rounded-lg bg-primary text-on-secondary font-bold hover:bg-primary-fixed transition-colors shadow-md">Salvar</button>
-      </div>
-    </div>
-  </div>
-</section>
+  </div></section>
 `;
 
 export interface TopicSection {
@@ -749,17 +748,19 @@ export const initKnowledgeBase = () => {
 
       list.innerHTML = data.map((mod: any) => `
         <div class="space-y-1">
-          <button class="kb-module-btn w-full text-left p-sm rounded-lg hover:bg-surface-container-high text-on-surface flex items-center gap-sm transition-all group" data-id="${mod.id}">
-            <span class="material-symbols-outlined text-[18px] text-primary">${mod.icon || 'folder'}</span>
-            <span class="sidebar-text font-bold">${mod.name}</span>
-            <span class="kb-module-icon material-symbols-outlined text-[16px] ml-auto opacity-50 transition-transform">expand_more</span>
-          </button>
+          <div class="kb-module-btn w-full text-left p-sm rounded-lg hover:bg-surface-container-high text-on-surface flex items-center gap-sm transition-all group cursor-pointer" data-id="${mod.id}">
+            <span class="material-symbols-outlined text-[18px] text-primary pointer-events-none">${mod.icon || 'folder'}</span>
+            <span class="sidebar-text font-bold flex-1 pointer-events-none">${mod.name}</span>
+            <button class="kb-module-edit-btn material-symbols-outlined text-[16px] opacity-0 group-hover:opacity-100 transition-opacity hover:text-primary z-10" data-id="${mod.id}" data-name="${mod.name}" data-icon="${mod.icon || 'folder'}" title="Configurações do Módulo">settings</button>
+            <span class="kb-module-icon material-symbols-outlined text-[16px] ml-auto opacity-50 transition-transform pointer-events-none">expand_more</span>
+          </div>
           <div class="kb-module-content pl-8 space-y-1 hidden">
             ${mod.contents && mod.contents.length > 0 ? mod.contents.map((c: any) => `
-              <button class="kb-content-item w-full text-left p-sm rounded-lg hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center gap-sm transition-all" data-id="${c.id}" data-module="${mod.id}">
-                <span class="material-symbols-outlined text-[18px]">description</span>
-                <span class="sidebar-text truncate">${c.title}</span>
-              </button>
+              <div class="kb-content-item w-full text-left p-sm rounded-lg hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center gap-sm transition-all group cursor-pointer" data-id="${c.id}" data-module="${mod.id}">
+                <span class="material-symbols-outlined text-[18px] pointer-events-none">description</span>
+                <span class="sidebar-text truncate flex-1 pointer-events-none">${c.title}</span>
+                <button class="kb-content-edit-btn material-symbols-outlined text-[16px] opacity-0 group-hover:opacity-100 transition-opacity hover:text-primary z-10" data-id="${c.id}" data-module="${mod.id}" data-title="${c.title}" title="Configurações do Conteúdo">settings</button>
+              </div>
             `).join('') : ''}
             <button class="kb-add-content-btn w-full text-left p-xs rounded-lg hover:bg-surface-container-high text-primary/70 hover:text-primary flex items-center gap-sm transition-all mt-2 border border-dashed border-primary/20" data-module="${mod.id}">
               <span class="material-symbols-outlined text-[14px] ml-1">add</span>
@@ -772,7 +773,10 @@ export const initKnowledgeBase = () => {
       // Re-attach Accordion Listeners
       const moduleBtns = document.querySelectorAll('.kb-module-btn');
       moduleBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (ev) => {
+          // Prevent expanding if clicked on edit button
+          if ((ev.target as HTMLElement).classList.contains('kb-module-edit-btn')) return;
+          
           const content = btn.nextElementSibling as HTMLElement;
           const icon = btn.querySelector('.kb-module-icon') as HTMLElement;
           if (content && content.classList.contains('kb-module-content')) {
@@ -785,13 +789,15 @@ export const initKnowledgeBase = () => {
             }
           }
         });
-        
-        // Add context menu to edit module
-        btn.addEventListener('contextmenu', (ev) => {
-          ev.preventDefault();
+      });
+
+      const editBtns = document.querySelectorAll('.kb-module-edit-btn');
+      editBtns.forEach(btn => {
+        btn.addEventListener('click', (ev) => {
+          ev.stopPropagation();
           const id = btn.getAttribute('data-id');
-          const name = btn.querySelector('.sidebar-text')?.textContent || '';
-          const icon = btn.querySelector('.text-primary')?.textContent || '';
+          const name = btn.getAttribute('data-name') || '';
+          const icon = btn.getAttribute('data-icon') || '';
           openModal(id, name, icon);
         });
       });
@@ -808,17 +814,21 @@ export const initKnowledgeBase = () => {
       // Add listeners for Content Edit / Select
       const contentItems = document.querySelectorAll('.kb-content-item');
       contentItems.forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (ev) => {
+          if ((ev.target as HTMLElement).classList.contains('kb-content-edit-btn')) return;
           const id = btn.getAttribute('data-id');
           const modId = btn.getAttribute('data-module');
           if (id && modId) loadContentData(parseInt(id), parseInt(modId));
         });
+      });
 
-        btn.addEventListener('contextmenu', (ev) => {
-          ev.preventDefault();
+      const contentEditBtns = document.querySelectorAll('.kb-content-edit-btn');
+      contentEditBtns.forEach(btn => {
+        btn.addEventListener('click', (ev) => {
+          ev.stopPropagation();
           const id = btn.getAttribute('data-id');
           const modId = btn.getAttribute('data-module');
-          const title = btn.querySelector('.sidebar-text')?.textContent || '';
+          const title = btn.getAttribute('data-title') || '';
           if (id && modId) openContentModal(id, modId, title);
         });
       });
