@@ -11,6 +11,7 @@ export interface TopicMindmapState {
 
 export class TopicExcalidrawManager {
   private root: Root | null = null;
+  private container: HTMLElement | null = null;
   private api: any = null;
   private currentTopicKey: string = '';
   private currentTopicTitle: string = '';
@@ -20,8 +21,18 @@ export class TopicExcalidrawManager {
 
   public init(container: HTMLElement, onSave: (topicKey: string, data: TopicMindmapState) => void) {
     this.onSaveCallback = onSave;
+    
+    // Se o container mudou (ex: troca de página), desmonta a raiz antiga
+    if (this.root && this.container !== container) {
+      try {
+        this.root.unmount();
+      } catch(e) {}
+      this.root = null;
+    }
+    
     if (!this.root) {
       this.root = createRoot(container);
+      this.container = container;
     }
 
     const ExcalidrawWrapper = () => {
