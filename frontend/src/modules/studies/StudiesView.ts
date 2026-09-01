@@ -1,4 +1,5 @@
 import { PomodoroCard, initPomodoro } from './components/PomodoroCard';
+import { YoutubePlayerCard, initYoutubePlayer } from './components/YoutubePlayerCard';
 import { MetricsCard, initMetricsCard } from './components/MetricsCard';
 import { CollegeCard, initCollegeCard } from './components/CollegeCard';
 import { ContestCard, initContestCard } from './components/ContestCard';
@@ -16,9 +17,10 @@ export const StudiesView = () => `
   </div>
   
   <!-- Top Grid: Bento Style -->
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter mb-gutter relative z-10">
-    <div class="flex flex-col">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter mb-gutter relative z-40">
+    <div class="flex flex-col gap-gutter">
       ${PomodoroCard()}
+      ${YoutubePlayerCard()}
     </div>
     <div class="flex flex-col gap-gutter">
       ${ContestCard()}
@@ -35,6 +37,7 @@ export const StudiesView = () => `
 
 export const initStudiesView = () => {
   initPomodoro();
+  initYoutubePlayer();
   initMetricsCard();
   initCollegeCard();
   initContestCard();
