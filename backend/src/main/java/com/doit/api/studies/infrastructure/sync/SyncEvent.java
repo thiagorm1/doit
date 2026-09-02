@@ -2,7 +2,9 @@ package com.doit.api.studies.infrastructure.sync;
 
 import java.time.Instant;
 import java.util.UUID;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SyncEvent {
     private UUID id;
     @com.fasterxml.jackson.annotation.JsonProperty("entity_name")
