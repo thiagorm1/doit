@@ -14,7 +14,8 @@ export const ContestCard = () => `
   perspective: 1000px;
 }
 </style>
-<section class="glass-panel rounded-xl p-md flex flex-col glow-hover transition-all duration-300 relative overflow-hidden group">
+<div class="h-full flex flex-col">
+<section class="glass-panel rounded-xl p-md flex flex-col glow-hover transition-all duration-300 relative overflow-hidden group h-full">
   <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none"></div>
   
   <div class="flex justify-between items-center z-10 mb-2">
@@ -78,30 +79,33 @@ export const ContestCard = () => `
       </div>
     </div>
   </div>
+</section>
 
   <!-- Modal Config -->
-  <div id="contest-modal" class="hidden absolute inset-0 z-50 bg-surface/95 backdrop-blur-md flex-col p-lg">
-    <div class="flex justify-between items-center mb-6">
-      <h3 class="text-title-md font-bold text-on-surface">Configurar Concurso</h3>
-      <button id="contest-modal-close" class="text-on-surface-variant hover:text-error transition-colors flex items-center justify-center bg-surface-container-highest rounded-full w-8 h-8 cursor-pointer shadow-sm">
-        <span class="material-symbols-outlined text-[18px]">close</span>
-      </button>
-    </div>
-    
-    <div class="flex-1 overflow-y-auto space-y-4">
-      <div class="flex flex-col gap-1.5">
-        <label class="text-on-surface-variant text-body-sm font-medium">Nome do Concurso</label>
-        <input type="text" id="cfg-contest-name" placeholder="Ex: Polícia Federal" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2.5 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
+  <div id="contest-modal" class="hidden fixed inset-0 z-[100] bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-surface border border-outline-variant/30 rounded-2xl shadow-2xl p-6 w-full max-w-sm flex flex-col">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-title-md font-bold text-on-surface">Configurar Concurso</h3>
+        <button id="contest-modal-close" class="text-on-surface-variant hover:text-error transition-colors flex items-center justify-center bg-surface-container-highest rounded-full w-8 h-8 cursor-pointer shadow-sm">
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
       </div>
-      <div class="flex flex-col gap-1.5">
-        <label class="text-on-surface-variant text-body-sm font-medium">Cargo Almejado</label>
-        <input type="text" id="cfg-contest-position" placeholder="Ex: Agente" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2.5 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
+      
+      <div class="flex-1 overflow-y-auto space-y-4">
+        <div class="flex flex-col gap-1.5">
+          <label class="text-on-surface-variant text-body-sm font-medium">Nome do Concurso</label>
+          <input type="text" id="cfg-contest-name" placeholder="Ex: Polícia Federal" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2.5 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-on-surface-variant text-body-sm font-medium">Cargo Almejado</label>
+          <input type="text" id="cfg-contest-position" placeholder="Ex: Agente" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2.5 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-on-surface-variant text-body-sm font-medium">Data da Prova</label>
+          <input type="date" id="cfg-contest-date" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2.5 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
+        </div>
+        <button id="cfg-contest-save" class="w-full py-2.5 rounded-lg bg-primary text-on-secondary font-bold hover:bg-primary-fixed transition-colors mt-4 shadow-md">Salvar</button>
       </div>
-      <div class="flex flex-col gap-1.5">
-        <label class="text-on-surface-variant text-body-sm font-medium">Data da Prova</label>
-        <input type="date" id="cfg-contest-date" class="w-full bg-surface-container border border-outline-variant/50 rounded-lg p-2.5 text-on-surface text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" />
-      </div>
-      <button id="cfg-contest-save" class="w-full py-2.5 rounded-lg bg-primary text-on-secondary font-bold hover:bg-primary-fixed transition-colors mt-4 shadow-md">Salvar</button>
     </div>
   </div>
   
@@ -110,7 +114,7 @@ export const ContestCard = () => `
     <span class="material-symbols-outlined text-[18px]">check_circle</span>
     <span id="contest-toast-msg">Salvo com sucesso!</span>
   </div>
-</section>
+</div>
 `;
 
 export const initContestCard = () => {
