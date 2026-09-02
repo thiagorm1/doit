@@ -2,9 +2,10 @@ package com.doit.api.studies.application.dto.college;
 
 import com.doit.api.studies.domain.enums.SubjectGrade;
 import com.doit.api.studies.domain.enums.SubjectStatus;
+import java.util.UUID;
 
 public class SubjectDTO {
-    private Long id;
+    private UUID id;
     private String name;
     private SubjectStatus status;
     private SubjectGrade grade;
@@ -14,8 +15,8 @@ public class SubjectDTO {
     private String days;
 
     // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     public SubjectStatus getStatus() { return status; }

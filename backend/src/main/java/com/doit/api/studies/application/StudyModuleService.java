@@ -8,6 +8,7 @@ import com.doit.api.studies.application.dto.module.StudyModuleDTO;
 import com.doit.api.studies.application.dto.module.StudyContentDTO;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,7 +56,7 @@ public class StudyModuleService {
         return dto;
     }
 
-    public void delete(Long id) {
+    public void delete(UUID id) {
         repository.deleteById(id);
     }
     
@@ -73,7 +74,7 @@ public class StudyModuleService {
         return dto;
     }
     
-    public void deleteContent(Long id) {
+    public void deleteContent(UUID id) {
         contentRepository.deleteById(id);
     }
 }

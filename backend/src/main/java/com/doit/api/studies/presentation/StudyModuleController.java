@@ -5,6 +5,8 @@ import com.doit.api.studies.application.dto.module.StudyModuleDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.UUID;
+import com.doit.api.studies.application.dto.module.StudyContentDTO;
 
 @RestController
 @RequestMapping("/api/studies/modules")
@@ -27,18 +29,18 @@ public class StudyModuleController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
         service.delete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/contents")
-    public ResponseEntity<com.doit.api.studies.application.dto.module.StudyContentDTO> saveContent(@RequestBody com.doit.api.studies.application.dto.module.StudyContentDTO dto) {
+    public ResponseEntity<StudyContentDTO> saveContent(@RequestBody StudyContentDTO dto) {
         return ResponseEntity.ok(service.saveContent(dto));
     }
 
     @DeleteMapping("/contents/{id}")
-    public ResponseEntity<Void> deleteContent(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteContent(@PathVariable UUID id) {
         service.deleteContent(id);
         return ResponseEntity.ok().build();
     }

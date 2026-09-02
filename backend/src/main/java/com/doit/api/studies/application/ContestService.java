@@ -14,7 +14,7 @@ public class ContestService {
     }
 
     public ContestConfigDTO getConfig() {
-        ContestConfig config = repository.findById(1L).orElse(new ContestConfig());
+        ContestConfig config = repository.findAll().stream().findFirst().orElse(new ContestConfig());
         ContestConfigDTO dto = new ContestConfigDTO();
         dto.setContestName(config.getContestName());
         dto.setTargetPosition(config.getTargetPosition());
@@ -23,8 +23,7 @@ public class ContestService {
     }
 
     public void updateConfig(ContestConfigDTO dto) {
-        ContestConfig config = repository.findById(1L).orElse(new ContestConfig());
-        config.setId(1L);
+        ContestConfig config = repository.findAll().stream().findFirst().orElse(new ContestConfig());
         config.setContestName(dto.getContestName());
         config.setTargetPosition(dto.getTargetPosition());
         config.setExamDate(dto.getExamDate());

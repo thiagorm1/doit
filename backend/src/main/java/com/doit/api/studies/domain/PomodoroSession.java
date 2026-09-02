@@ -1,15 +1,18 @@
 package com.doit.api.studies.domain;
 
 import jakarta.persistence.*;
+import jakarta.persistence.EntityListeners;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "pomodoro_sessions")
+@EntityListeners(com.doit.api.studies.infrastructure.sync.EntitySyncListener.class)
 public class PomodoroSession {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(nullable = false)
     private int focusTime; // in minutes
@@ -37,7 +40,7 @@ public class PomodoroSession {
         this.createdAt = createdAt;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 

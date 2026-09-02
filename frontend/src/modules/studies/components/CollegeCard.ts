@@ -525,7 +525,7 @@ export const initCollegeCard = async () => {
     const grade = (document.getElementById('subj-grade') as HTMLSelectElement).value;
     const sem = parseInt(semInput.value);
     const subjIdVal = (document.getElementById('subj-id') as HTMLInputElement).value;
-    const subjId = subjIdVal ? parseInt(subjIdVal) : null;
+    const subjId = subjIdVal ? subjIdVal : null;
     
     if(!name) return;
 
@@ -589,7 +589,7 @@ export const initCollegeCard = async () => {
     const sem = parseInt(semInput.value);
     const gradeRaw = gradeInput.value;
     const examIdVal = (document.getElementById('exam-id') as HTMLInputElement).value;
-    const examId = examIdVal ? parseInt(examIdVal) : null;
+    const examId = examIdVal ? examIdVal : null;
     
     if(!title || !date || !sem) return;
 

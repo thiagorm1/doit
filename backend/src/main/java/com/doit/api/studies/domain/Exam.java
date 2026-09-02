@@ -1,15 +1,18 @@
 package com.doit.api.studies.domain;
 
 import jakarta.persistence.*;
+import jakarta.persistence.EntityListeners;
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Entity
 @Table(name = "college_exams")
+@EntityListeners(com.doit.api.studies.infrastructure.sync.EntitySyncListener.class)
 public class Exam {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(nullable = false)
     private String title; // Usually "Subject Name" or "Subject - Midterm"
@@ -31,7 +34,7 @@ public class Exam {
         this.semester = semester;
     }
 
-    public Long getId() { return id; }
+    public UUID getId() { return id; }
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
     public LocalDate getExamDate() { return examDate; }

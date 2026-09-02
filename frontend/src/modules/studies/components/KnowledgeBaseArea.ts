@@ -532,7 +532,7 @@ export const initKnowledgeBase = () => {
     renderMindMap();
   };
 
-  const loadContentData = (contentId: number, moduleId: number) => {
+  const loadContentData = (contentId: string, moduleId: string) => {
     activeContentId = contentId;
     activeModuleId = moduleId;
     sessionStorage.setItem('kb_last_content', contentId.toString());
@@ -873,7 +873,7 @@ export const initKnowledgeBase = () => {
           if ((ev.target as HTMLElement).classList.contains('kb-content-edit-btn')) return;
           const id = btn.getAttribute('data-id');
           const modId = btn.getAttribute('data-module');
-          if (id && modId) loadContentData(parseInt(id), parseInt(modId));
+          if (id && modId) loadContentData(id, modId);
         });
       });
 
@@ -902,7 +902,7 @@ export const initKnowledgeBase = () => {
           }
         }
         // Use a short timeout to let the DOM settle before loading content
-        setTimeout(() => loadContentData(parseInt(lastContentId), parseInt(lastModuleId)), 10);
+        setTimeout(() => loadContentData(lastContentId, lastModuleId), 10);
       }
 
       // If there's an active content, keep it highlighted
@@ -958,7 +958,7 @@ export const initKnowledgeBase = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          id: iId.value ? parseInt(iId.value) : null,
+          id: iId.value ? iId.value : null,
           name: iName.value,
           icon: iIcon.value
         })
@@ -1041,8 +1041,8 @@ export const initKnowledgeBase = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          id: iCId.value ? parseInt(iCId.value) : null,
-          moduleId: parseInt(iCModId.value),
+          id: iCId.value ? iCId.value : null,
+          moduleId: iCModId.value,
           title: iCTitle.value,
           notes: '',
           mindmap: ''

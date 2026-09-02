@@ -4,6 +4,7 @@ import com.doit.api.studies.application.CollegeService;
 import com.doit.api.studies.application.dto.college.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/studies/college")
@@ -33,9 +34,9 @@ public class CollegeController {
     }
 
     @DeleteMapping("/subjects/{id}")
-    public ResponseEntity<Void> deleteSubject(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteSubject(@PathVariable UUID id) {
         collegeService.deleteSubject(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/exams")
@@ -44,7 +45,7 @@ public class CollegeController {
     }
 
     @DeleteMapping("/exams/{id}")
-    public ResponseEntity<Void> deleteExam(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteExam(@PathVariable UUID id) {
         collegeService.deleteExam(id);
         return ResponseEntity.ok().build();
     }

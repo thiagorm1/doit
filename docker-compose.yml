@@ -5,9 +5,9 @@ services:
     image: postgres:16
     container_name: doit-postgres
     environment:
-      POSTGRES_USER: doit_user
-      POSTGRES_PASSWORD: doit_password
-      POSTGRES_DB: doit_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
     volumes:
@@ -23,9 +23,12 @@ services:
       - maven-repo:/root/.m2
     command: mvn spring-boot:run
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/doit_db
-      - SPRING_DATASOURCE_USERNAME=doit_user
-      - SPRING_DATASOURCE_PASSWORD=doit_password
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+      - APP_PC_ID=${APP_PC_ID}
     ports:
       - "8080:8080"
     depends_on:

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -87,7 +88,7 @@ public class CollegeService {
     }
 
     @Transactional
-    public void deleteSubject(Long id) {
+    public void deleteSubject(UUID id) {
         subjectRepository.deleteById(id);
     }
 
@@ -105,7 +106,7 @@ public class CollegeService {
     }
 
     @Transactional
-    public void deleteExam(Long id) {
+    public void deleteExam(UUID id) {
         examRepository.deleteById(id);
     }
 }

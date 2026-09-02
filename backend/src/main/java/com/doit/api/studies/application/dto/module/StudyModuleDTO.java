@@ -1,13 +1,15 @@
 package com.doit.api.studies.application.dto.module;
 
+import java.util.UUID;
+
 public class StudyModuleDTO {
-    private Long id;
+    private UUID id;
     private String name;
     private String icon;
     private java.util.List<StudyContentDTO> contents = new java.util.ArrayList<>();
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     public String getIcon() { return icon; }

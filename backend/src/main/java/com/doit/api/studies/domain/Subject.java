@@ -3,14 +3,17 @@ package com.doit.api.studies.domain;
 import com.doit.api.studies.domain.enums.SubjectGrade;
 import com.doit.api.studies.domain.enums.SubjectStatus;
 import jakarta.persistence.*;
+import jakarta.persistence.EntityListeners;
+import java.util.UUID;
 
 @Entity
 @Table(name = "college_subjects")
+@EntityListeners(com.doit.api.studies.infrastructure.sync.EntitySyncListener.class)
 public class Subject {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(nullable = false)
     private String name;
@@ -42,7 +45,7 @@ public class Subject {
         this.days = days;
     }
 
-    public Long getId() { return id; }
+    public UUID getId() { return id; }
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     public SubjectStatus getStatus() { return status; }

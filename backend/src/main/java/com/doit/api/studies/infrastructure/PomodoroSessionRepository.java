@@ -7,9 +7,10 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface PomodoroSessionRepository extends JpaRepository<PomodoroSession, Long> {
+public interface PomodoroSessionRepository extends JpaRepository<PomodoroSession, UUID> {
     List<PomodoroSession> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
     
     @Query("SELECT SUM(p.cycles) FROM PomodoroSession p")

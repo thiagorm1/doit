@@ -64,7 +64,7 @@ export const initApp = () => {
     initStudiesView();
   };
 
-  const renderEditor = (contentId: number, moduleId: number, title: string, htmlContent: string, mindmapContent: string = '') => {
+  const renderEditor = (contentId: string, moduleId: string, title: string, htmlContent: string, mindmapContent: string = '') => {
     root.innerHTML = MainLayout(ContentEditorView());
     
     const titleEl = document.getElementById('editor-topic-title');
@@ -376,7 +376,7 @@ export const initApp = () => {
   };
 
   // Exposed globally for KnowledgeBaseArea
-  (window as any).navigateToEditor = (contentId: number, moduleId: number, moduleName: string, title: string, htmlContent: string, mindmapContent: string = '') => {
+  (window as any).navigateToEditor = (contentId: string, moduleId: string, moduleName: string, title: string, htmlContent: string, mindmapContent: string = '') => {
     const cleanMod = encodeURIComponent(moduleName.toLowerCase().replace(/\s+/g, '-'));
     const cleanTitle = encodeURIComponent(title.toLowerCase().replace(/\s+/g, '-'));
     history.pushState({ contentId, moduleId, title, notes: htmlContent, mindmap: mindmapContent }, '', `/estudos/${cleanMod}/${cleanTitle}`);
