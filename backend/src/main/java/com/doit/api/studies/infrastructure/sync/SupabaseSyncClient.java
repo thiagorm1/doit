@@ -44,6 +44,7 @@ public class SupabaseSyncClient {
                         .path("/sync_events")
                         .queryParam("source_pc", "neq." + pcId)
                         .queryParam("select", "*")
+                        .queryParam("order", "created_at.asc")
                         .build())
                 .retrieve()
                 .body(new ParameterizedTypeReference<List<SyncEvent>>() {});
