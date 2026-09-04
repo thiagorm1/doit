@@ -9,8 +9,7 @@ import java.util.UUID;
 @EntityListeners(com.doit.api.studies.infrastructure.sync.EntitySyncListener.class)
 public class StudyModule {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private UUID id = UUID.randomUUID();
     private String name;
     private String icon = "folder";
 

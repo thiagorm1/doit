@@ -11,8 +11,7 @@ import java.util.UUID;
 public class Exam {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private UUID id = UUID.randomUUID();
 
     @Column(nullable = false)
     private String title; // Usually "Subject Name" or "Subject - Midterm"

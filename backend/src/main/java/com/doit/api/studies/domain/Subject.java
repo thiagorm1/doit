@@ -12,8 +12,7 @@ import java.util.UUID;
 public class Subject {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private UUID id = UUID.randomUUID();
 
     @Column(nullable = false)
     private String name;

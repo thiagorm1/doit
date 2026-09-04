@@ -9,8 +9,7 @@ import java.util.UUID;
 @EntityListeners(com.doit.api.studies.infrastructure.sync.EntitySyncListener.class)
 public class StudyContent {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private UUID id = UUID.randomUUID();
     
     private UUID moduleId;
     private String title;

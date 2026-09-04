@@ -10,8 +10,7 @@ import java.util.UUID;
 public class CollegeConfig {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private UUID id = UUID.randomUUID();
 
     private int currentSemester;
     private int graduationSemester;

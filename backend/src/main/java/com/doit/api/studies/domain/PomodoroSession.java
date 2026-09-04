@@ -11,8 +11,7 @@ import java.util.UUID;
 public class PomodoroSession {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private UUID id = UUID.randomUUID();
 
     @Column(nullable = false)
     private int focusTime; // in minutes
