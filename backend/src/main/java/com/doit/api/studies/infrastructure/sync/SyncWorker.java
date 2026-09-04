@@ -2,10 +2,13 @@ package com.doit.api.studies.infrastructure.sync;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 @Component
@@ -13,16 +16,18 @@ public class SyncWorker {
 
     private final SupabaseSyncClient syncClient;
     private final ObjectMapper objectMapper;
-    private final EntityManager entityManager;
+    private final TransactionTemplate transactionTemplate;
 
-    public SyncWorker(SupabaseSyncClient syncClient, ObjectMapper objectMapper, EntityManager entityManager) {
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    public SyncWorker(SupabaseSyncClient syncClient, ObjectMapper objectMapper, PlatformTransactionManager transactionManager) {
         this.syncClient = syncClient;
         this.objectMapper = objectMapper;
-        this.entityManager = entityManager;
+        this.transactionTemplate = new TransactionTemplate(transactionManager);
     }
 
     @Scheduled(fixedDelay = 5000) // Roda a cada 5 segundos
-    @Transactional
     public void processPendingSyncEvents() {
         try {
             List<SyncEvent> events = syncClient.fetchPendingEvents();
@@ -38,16 +43,27 @@ public class SyncWorker {
                     Class<?> entityClass = Class.forName("com.doit.api.studies.domain." + event.getEntityName());
                     Object entity = objectMapper.readValue(event.getPayload(), entityClass);
 
-                    if ("DELETE".equals(event.getOperation())) {
-                        Object managedEntity = entityManager.merge(entity);
-                        entityManager.remove(managedEntity);
-                    } else { // INSERT ou UPDATE
-                        entityManager.merge(entity);
-                    }
+                    transactionTemplate.execute(status -> {
+                        if ("DELETE".equals(event.getOperation())) {
+                            Object id = getEntityId(entity);
+                            if (id != null) {
+                                Object existing = entityManager.find(entityClass, id);
+                                if (existing != null) {
+                                    entityManager.remove(existing);
+                                }
+                            } else {
+                                Object managedEntity = entityManager.merge(entity);
+                                entityManager.remove(managedEntity);
+                            }
+                        } else { // INSERT ou UPDATE
+                            entityManager.merge(entity);
+                        }
+                        return null;
+                    });
 
                     // Se aplicou com sucesso, remove do Supabase
                     syncClient.deleteEvent(event.getId());
-                    System.out.println("Evento sincronizado com sucesso: " + event.getEntityName());
+                    System.out.println("Evento sincronizado com sucesso: " + event.getEntityName() + " (" + event.getOperation() + ")");
 
                 } catch (Exception e) {
                     System.err.println("Erro ao processar evento " + event.getId() + ": " + e.getMessage());
@@ -57,6 +73,15 @@ public class SyncWorker {
             System.err.println("Erro na rotina de sincronização: " + e.getMessage());
         } finally {
             EntitySyncListener.setSyncInProgress(false);
+        }
+    }
+
+    private Object getEntityId(Object entity) {
+        try {
+            Method getIdMethod = entity.getClass().getMethod("getId");
+            return getIdMethod.invoke(entity);
+        } catch (Exception e) {
+            return null;
         }
     }
 }
