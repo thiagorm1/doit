@@ -1,4 +1,3 @@
-import { API_BASE_URL } from '../../../shared/config';
 import { pomodoroGlobal } from '../PomodoroService';
 export const PomodoroCard = () => `
 <section class="glass-panel rounded-xl p-lg col-span-1 lg:col-span-4 flex flex-col justify-between relative overflow-hidden group glow-hover transition-all duration-300">
