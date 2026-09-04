@@ -3,7 +3,6 @@ type Listener = () => void;
 
 class YoutubeService {
   private player: any = null;
-  private isApiReady = false;
   private pendingPlaylistId: string | null = null;
   private updateInterval: any = null;
   private listeners: Listener[] = [];
@@ -105,7 +104,6 @@ class YoutubeService {
   }
 
   private initPlayer() {
-    this.isApiReady = true;
     this.player = new (window as any).YT.Player('yt-global-container', {
       height: '10',
       width: '10',
