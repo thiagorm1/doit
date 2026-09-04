@@ -263,8 +263,8 @@ export const initKnowledgeBase = () => {
   }
 
   let modulesData: any[] = [];
-  let activeContentId: number | null = null;
-  let activeModuleId: number | null = null;
+  let activeContentId: string | null = null;
+  let activeModuleId: string | null = null;
 
   // Topic & Editor State
   let currentTopics: TopicSection[] = [];
@@ -586,7 +586,7 @@ export const initKnowledgeBase = () => {
     // Highlight selected item in sidebar
     document.querySelectorAll('.kb-content-item').forEach(el => {
       el.classList.remove('bg-surface-container-highest', 'border', 'border-primary/30');
-      if (parseInt(el.getAttribute('data-id') || '0') === contentId) {
+      if (el.getAttribute('data-id') === contentId) {
         el.classList.add('bg-surface-container-highest', 'border', 'border-primary/30');
       }
     });
