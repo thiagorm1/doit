@@ -7,6 +7,7 @@ import { initImageResizer } from '../shared/utils/ImageResizer';
 import { YoutubeFloatingPlayer, initYoutubeFloatingPlayer } from '../modules/studies/components/YoutubeFloatingPlayer';
 import { ytService } from '../modules/studies/YoutubeService';
 import { pomodoroGlobal } from '../modules/studies/PomodoroService';
+import { initContentEditorToolbar, initSelectionTracker } from '../shared/utils/EditorUtils';
 
 export const App = () => {
   return `
@@ -23,6 +24,7 @@ export const initApp = () => {
   
   initRichTextContextMenu();
   initImageResizer();
+  initSelectionTracker();
 
   const renderCurrentRoute = async () => {
     const path = window.location.pathname;
@@ -66,6 +68,7 @@ export const initApp = () => {
 
   const renderEditor = (contentId: string, moduleId: string, title: string, htmlContent: string, mindmapContent: string = '') => {
     root.innerHTML = MainLayout(ContentEditorView());
+    initContentEditorToolbar();
     
     const titleEl = document.getElementById('editor-topic-title');
     if (titleEl) titleEl.textContent = title;

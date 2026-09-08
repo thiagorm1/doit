@@ -1,3 +1,5 @@
+import { TEXT_COLORS, HIGHLIGHT_COLORS } from '../../shared/utils/EditorUtils';
+
 export const ContentEditorView = () => `
 <div class="flex flex-col w-full min-h-[calc(100vh-120px)] animate-fade-in relative z-20 bg-background">
   <!-- Editor Header / Controls -->
@@ -60,17 +62,63 @@ export const ContentEditorView = () => `
     
     <div class="w-px h-6 bg-white/10 mx-1"></div>
     
-    <div class="flex items-center gap-1" title="Cor da Letra">
-      <span class="material-symbols-outlined text-[18px] text-on-surface-variant">format_color_text</span>
-      <div class="relative w-5 h-5 rounded overflow-hidden border border-outline-variant/30 cursor-pointer">
-        <input type="color" value="#d3e4fe" class="absolute -top-2 -left-2 w-10 h-10 cursor-pointer" onchange="document.execCommand('foreColor', false, this.value); document.getElementById('editor-rich-textarea').focus();">
+    <!-- Cor da Letra -->
+    <div class="relative inline-block text-left" id="editor-text-color-container">
+      <button id="editor-btn-text-color" type="button" class="px-1.5 py-1 rounded hover:bg-surface-variant text-on-surface-variant hover:text-on-surface transition-colors flex items-center gap-1 cursor-pointer" title="Cor da Letra">
+        <span class="material-symbols-outlined text-[18px]">format_color_text</span>
+        <span id="editor-text-color-bar" class="w-3.5 h-1 rounded-sm bg-[#FFFFFF] inline-block -mt-0.5 border border-white/20"></span>
+        <span class="material-symbols-outlined text-[14px]">arrow_drop_down</span>
+      </button>
+
+      <!-- Dropdown Popover -->
+      <div id="editor-text-color-menu" class="hidden absolute top-full left-0 mt-1 z-50 bg-[#1e1e24] border border-white/10 rounded-xl p-3 shadow-2xl min-w-[210px] backdrop-blur-md">
+        <div class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Cor da Letra</div>
+        <div class="grid grid-cols-5 gap-1.5 mb-3">
+          ${TEXT_COLORS.map(c => `
+            <button type="button" class="editor-text-color-chip w-7 h-7 rounded-lg border ${c.border} hover:scale-110 active:scale-95 transition-transform flex items-center justify-center cursor-pointer shadow-sm" style="background-color: ${c.value};" title="${c.label}" data-color="${c.value}"></button>
+          `).join('')}
+        </div>
+        <div class="pt-2 border-t border-white/10 flex items-center justify-between gap-2">
+          <label class="text-xs text-on-surface-variant flex items-center gap-1.5 cursor-pointer hover:text-on-surface">
+            <span class="material-symbols-outlined text-[16px]">palette</span>
+            <span>Personalizada</span>
+          </label>
+          <div class="relative w-6 h-6 rounded-md overflow-hidden border border-white/20 cursor-pointer">
+            <input type="color" id="editor-input-custom-text-color" value="#FFFFFF" class="absolute -top-2 -left-2 w-10 h-10 cursor-pointer">
+          </div>
+        </div>
       </div>
     </div>
     
-    <div class="flex items-center gap-1 ml-2" title="Marca Texto">
-      <span class="material-symbols-outlined text-[18px] text-on-surface-variant">format_ink_highlighter</span>
-      <div class="relative w-5 h-5 rounded overflow-hidden border border-outline-variant/30 cursor-pointer">
-        <input type="color" value="#eab308" class="absolute -top-2 -left-2 w-10 h-10 cursor-pointer" onchange="document.execCommand('backColor', false, this.value); document.getElementById('editor-rich-textarea').focus();">
+    <!-- Marca Texto -->
+    <div class="relative inline-block text-left ml-1" id="editor-highlight-container">
+      <button id="editor-btn-highlight" type="button" class="px-1.5 py-1 rounded hover:bg-surface-variant text-on-surface-variant hover:text-on-surface transition-colors flex items-center gap-1 cursor-pointer" title="Marca Texto">
+        <span class="material-symbols-outlined text-[18px]">format_ink_highlighter</span>
+        <span id="editor-highlight-color-bar" class="w-3.5 h-1 rounded-sm bg-[#FEF08A] inline-block -mt-0.5 border border-white/20"></span>
+        <span class="material-symbols-outlined text-[14px]">arrow_drop_down</span>
+      </button>
+
+      <!-- Dropdown Popover -->
+      <div id="editor-highlight-menu" class="hidden absolute top-full left-0 mt-1 z-50 bg-[#1e1e24] border border-white/10 rounded-xl p-3 shadow-2xl min-w-[210px] backdrop-blur-md">
+        <div class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Marca Texto</div>
+        <button id="editor-btn-remove-highlight" type="button" class="w-full mb-2.5 py-1 px-2 rounded-lg bg-surface-container-high hover:bg-surface-variant text-xs text-on-surface flex items-center justify-center gap-1.5 border border-white/5 transition-colors cursor-pointer">
+          <span class="material-symbols-outlined text-[16px] text-error">format_color_reset</span>
+          <span>Sem Marcação</span>
+        </button>
+        <div class="grid grid-cols-5 gap-1.5 mb-3">
+          ${HIGHLIGHT_COLORS.map(c => `
+            <button type="button" class="editor-highlight-chip w-7 h-7 rounded-lg border border-white/10 hover:scale-110 active:scale-95 transition-transform flex items-center justify-center cursor-pointer shadow-sm" style="background-color: ${c.value};" title="${c.label}" data-color="${c.value}"></button>
+          `).join('')}
+        </div>
+        <div class="pt-2 border-t border-white/10 flex items-center justify-between gap-2">
+          <label class="text-xs text-on-surface-variant flex items-center gap-1.5 cursor-pointer hover:text-on-surface">
+            <span class="material-symbols-outlined text-[16px]">palette</span>
+            <span>Personalizada</span>
+          </label>
+          <div class="relative w-6 h-6 rounded-md overflow-hidden border border-white/20 cursor-pointer">
+            <input type="color" id="editor-input-custom-highlight" value="#FEF08A" class="absolute -top-2 -left-2 w-10 h-10 cursor-pointer">
+          </div>
+        </div>
       </div>
     </div>
 
