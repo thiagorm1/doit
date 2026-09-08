@@ -1,4 +1,4 @@
-import { TEXT_COLORS, HIGHLIGHT_COLORS } from '../../shared/utils/EditorUtils';
+import { TEXT_COLORS, HIGHLIGHT_COLORS, FONT_SIZES } from '../../shared/utils/EditorUtils';
 
 export const ContentEditorView = () => `
 <div class="flex flex-col w-full min-h-[calc(100vh-120px)] animate-fade-in relative z-20 bg-background">
@@ -44,6 +44,17 @@ export const ContentEditorView = () => `
       <option value="Trebuchet MS">Trebuchet MS</option>
       <option value="monospace">Monoespaçada</option>
     </select>
+    
+    <!-- Tamanho da Fonte (Números) -->
+    <div class="flex items-center bg-surface-container-low border border-white/5 rounded px-1 py-0.5" title="Tamanho da Fonte (px)">
+      <button type="button" id="editor-btn-font-size-dec" class="w-6 h-6 rounded hover:bg-white/10 text-on-surface-variant hover:text-on-surface flex items-center justify-center font-bold text-xs transition-colors cursor-pointer" title="Diminuir tamanho">-</button>
+      <select id="editor-select-font-size" class="bg-transparent text-on-surface text-xs font-mono outline-none cursor-pointer text-center px-1">
+        ${FONT_SIZES.map(s => `
+          <option value="${s}" ${s === 16 ? 'selected' : ''}>${s} px</option>
+        `).join('')}
+      </select>
+      <button type="button" id="editor-btn-font-size-inc" class="w-6 h-6 rounded hover:bg-white/10 text-on-surface-variant hover:text-on-surface flex items-center justify-center font-bold text-xs transition-colors cursor-pointer" title="Aumentar tamanho">+</button>
+    </div>
     
     <div class="w-px h-6 bg-white/10 mx-1"></div>
     
