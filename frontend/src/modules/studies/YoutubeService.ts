@@ -1,9 +1,100 @@
-export type SavedPlaylist = { id: string, name: string };
+export type YoutubeMediaType = 'video' | 'playlist';
+
+export type SavedMedia = {
+  id: string;
+  name: string;
+  type: YoutubeMediaType;
+};
+
+// Backwards compatibility alias
+export type SavedPlaylist = SavedMedia;
+
+export interface ParsedYoutubeUrl {
+  id: string;
+  type: YoutubeMediaType;
+}
+
+export const parseYoutubeUrl = (input: string, preferType?: YoutubeMediaType): ParsedYoutubeUrl | null => {
+  const trimmed = input.trim();
+  if (!trimmed) return null;
+
+  try {
+    let url: URL | null = null;
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      url = new URL(trimmed);
+    } else if (trimmed.includes('youtube.com/') || trimmed.includes('youtu.be/')) {
+      url = new URL('https://' + trimmed);
+    }
+
+    if (url) {
+      const hostname = url.hostname.replace('www.', '');
+
+      // youtu.be/VIDEO_ID
+      if (hostname === 'youtu.be') {
+        const videoId = url.pathname.slice(1).split('/')[0].split('?')[0];
+        const list = url.searchParams.get('list');
+        if (preferType === 'playlist' && list) {
+          return { id: list, type: 'playlist' };
+        }
+        if (videoId) {
+          return { id: videoId, type: 'video' };
+        }
+      }
+
+      const v = url.searchParams.get('v');
+      const list = url.searchParams.get('list');
+
+      if (preferType === 'playlist' && list) {
+        return { id: list, type: 'playlist' };
+      }
+      if (preferType === 'video' && v) {
+        return { id: v, type: 'video' };
+      }
+
+      if (v) {
+        return { id: v, type: 'video' };
+      }
+      if (list) {
+        return { id: list, type: 'playlist' };
+      }
+
+      const paths = url.pathname.split('/').filter(Boolean);
+      if (paths.length >= 2 && (paths[0] === 'embed' || paths[0] === 'shorts')) {
+        return { id: paths[1], type: 'video' };
+      }
+    }
+  } catch (e) {}
+
+  // Fallbacks if not recognized as standard URL
+  if (trimmed.includes('list=')) {
+    const match = trimmed.match(/list=([a-zA-Z0-9_-]+)/);
+    if (match) return { id: match[1], type: 'playlist' };
+  }
+
+  if (trimmed.includes('v=')) {
+    const match = trimmed.match(/v=([a-zA-Z0-9_-]+)/);
+    if (match) return { id: match[1], type: 'video' };
+  }
+
+  if (preferType === 'playlist') {
+    return { id: trimmed, type: 'playlist' };
+  }
+  if (preferType === 'video') {
+    return { id: trimmed, type: 'video' };
+  }
+
+  if (trimmed.startsWith('PL') || trimmed.startsWith('UU') || trimmed.startsWith('LL') || trimmed.startsWith('RD') || trimmed.length > 20) {
+    return { id: trimmed, type: 'playlist' };
+  }
+
+  return { id: trimmed, type: 'video' };
+};
+
 type Listener = () => void;
 
 class YoutubeService {
   private player: any = null;
-  private pendingPlaylistId: string | null = null;
+  private pendingMedia: { id: string, type: YoutubeMediaType } | null = null;
   private updateInterval: any = null;
   private listeners: Listener[] = [];
 
@@ -11,13 +102,24 @@ class YoutubeService {
   public currentTime = 0;
   public duration = 0;
   public volume = 100;
-  public activeListId: string | null = null;
+  
+  public activeId: string | null = null;
+  public activeType: YoutubeMediaType = 'playlist';
+
+  public get activeListId(): string | null {
+    return this.activeId;
+  }
+  public set activeListId(val: string | null) {
+    this.activeId = val;
+  }
+
   public currentVideoData = {
     title: 'Sem áudio',
-    artist: 'Nenhuma playlist selecionada',
+    artist: 'Nenhuma música ou playlist selecionada',
     cover: ''
   };
-  public savedPlaylists: SavedPlaylist[] = [];
+
+  public savedPlaylists: SavedMedia[] = [];
 
   constructor() {
     this.loadSavedState();
@@ -33,37 +135,46 @@ class YoutubeService {
   }
 
   public notify() {
-    // Keep only listeners that don't throw (or we can just run them safely)
     this.listeners = this.listeners.filter(fn => {
       try {
         fn();
         return true;
       } catch (e) {
-        return false; // Auto-unsubscribe if DOM is gone and throws error
+        return false;
       }
     });
   }
 
   private loadSavedState() {
     try {
-      const savedPlaylistsStr = localStorage.getItem('doit_yt_playlists');
-      this.savedPlaylists = savedPlaylistsStr ? JSON.parse(savedPlaylistsStr) : [];
+      const savedStr = localStorage.getItem('doit_yt_playlists');
+      if (savedStr) {
+        const parsed = JSON.parse(savedStr);
+        this.savedPlaylists = parsed.map((item: any) => ({
+          id: item.id,
+          name: item.name,
+          type: item.type || (item.id.startsWith('PL') || item.id.startsWith('UU') || item.id.startsWith('RD') || item.id.length > 20 ? 'playlist' : 'video')
+        }));
+      } else {
+        this.savedPlaylists = [];
+      }
       
       const savedStateStr = localStorage.getItem('doit_yt_state');
       if (savedStateStr) {
         const state = JSON.parse(savedStateStr);
         if (state.volume !== undefined) this.volume = state.volume;
-        // Rest of state is loaded when player is ready
       }
     } catch(e) {}
   }
 
   private saveState() {
     try {
-      if (this.activeListId) {
+      if (this.activeId) {
         const state = {
-          listId: this.activeListId,
-          index: this.player?.getPlaylistIndex() || 0,
+          id: this.activeId,
+          type: this.activeType,
+          listId: this.activeId,
+          index: this.player?.getPlaylistIndex ? this.player.getPlaylistIndex() : 0,
           time: this.currentTime,
           volume: this.volume
         };
@@ -72,14 +183,13 @@ class YoutubeService {
     } catch(e) {}
   }
 
-  public savePlaylists(playlists: SavedPlaylist[]) {
+  public savePlaylists(playlists: SavedMedia[]) {
     this.savedPlaylists = playlists;
     localStorage.setItem('doit_yt_playlists', JSON.stringify(playlists));
     this.notify();
   }
 
   private initDOM() {
-    // Append hidden iframe container to body
     if (!document.getElementById('yt-global-container')) {
       const div = document.createElement('div');
       div.id = 'yt-global-container';
@@ -87,7 +197,6 @@ class YoutubeService {
       document.body.appendChild(div);
     }
 
-    // Load Iframe API
     if (!(window as any).YT) {
       const tag = document.createElement('script');
       tag.src = "https://www.youtube.com/iframe_api";
@@ -120,23 +229,41 @@ class YoutubeService {
   private onPlayerReady() {
     if (this.player.setVolume) this.player.setVolume(this.volume);
 
-    if (this.pendingPlaylistId) {
-      this.player.loadPlaylist({ list: this.pendingPlaylistId, listType: 'playlist' });
-      this.pendingPlaylistId = null;
+    if (this.pendingMedia) {
+      if (this.pendingMedia.type === 'video') {
+        this.player.loadVideoById(this.pendingMedia.id);
+      } else {
+        this.player.loadPlaylist({ list: this.pendingMedia.id, listType: 'playlist' });
+      }
+      this.pendingMedia = null;
     } else {
       // Auto-resume state
       try {
         const saved = localStorage.getItem('doit_yt_state');
         if (saved) {
           const state = JSON.parse(saved);
-          if (state.listId) {
-            this.activeListId = state.listId;
-            this.player.cuePlaylist({
-              list: state.listId,
-              listType: 'playlist',
-              index: state.index || 0,
-              startSeconds: state.time || 0
-            });
+          const id = state.id || state.listId;
+          const type: YoutubeMediaType = state.type || (state.listId && !state.type ? 'playlist' : 'video');
+          if (id) {
+            this.activeId = id;
+            this.activeType = type;
+            if (type === 'video') {
+              if (this.player.cueVideoById) {
+                this.player.cueVideoById({
+                  videoId: id,
+                  startSeconds: state.time || 0
+                });
+              }
+            } else {
+              if (this.player.cuePlaylist) {
+                this.player.cuePlaylist({
+                  list: id,
+                  listType: 'playlist',
+                  index: state.index || 0,
+                  startSeconds: state.time || 0
+                });
+              }
+            }
           }
         }
       } catch(e) {}
@@ -181,14 +308,27 @@ class YoutubeService {
 
   // --- Public Controls ---
   
-  public loadPlaylist(listId: string) {
-    this.activeListId = listId;
+  public loadMedia(id: string, type: YoutubeMediaType = 'video') {
+    this.activeId = id;
+    this.activeType = type;
     if (!this.player) {
-      this.pendingPlaylistId = listId;
+      this.pendingMedia = { id, type };
     } else {
-      this.player.loadPlaylist({ list: listId, listType: 'playlist' });
+      if (type === 'video') {
+        this.player.loadVideoById(id);
+      } else {
+        this.player.loadPlaylist({ list: id, listType: 'playlist' });
+      }
     }
     this.saveState();
+  }
+
+  public loadVideo(videoId: string) {
+    this.loadMedia(videoId, 'video');
+  }
+
+  public loadPlaylist(listId: string) {
+    this.loadMedia(listId, 'playlist');
   }
 
   public togglePlay() {
@@ -198,11 +338,26 @@ class YoutubeService {
   }
 
   public nextVideo() {
-    if (this.player) this.player.nextVideo();
+    if (!this.player) return;
+    if (this.activeType === 'playlist' && this.player.nextVideo) {
+      this.player.nextVideo();
+    } else {
+      // Single video: restart playback
+      if (this.player.seekTo) {
+        this.player.seekTo(0, true);
+      }
+    }
   }
 
   public prevVideo() {
-    if (this.player) this.player.previousVideo();
+    if (!this.player) return;
+    if (this.activeType === 'playlist' && this.player.previousVideo) {
+      this.player.previousVideo();
+    } else {
+      if (this.player.seekTo) {
+        this.player.seekTo(0, true);
+      }
+    }
   }
 
   public setVolume(vol: number) {
