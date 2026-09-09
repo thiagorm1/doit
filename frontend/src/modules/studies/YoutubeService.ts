@@ -381,6 +381,35 @@ class YoutubeService {
       this.notify();
     }
   }
+
+  public getState() {
+    return {
+      isPlaying: this.isPlaying,
+      currentTime: this.currentTime,
+      duration: this.duration,
+      volume: this.volume,
+      activeId: this.activeId,
+      activeType: this.activeType,
+      currentVideoData: this.currentVideoData,
+      savedPlaylists: this.savedPlaylists
+    };
+  }
 }
 
+import { useState, useEffect } from 'react';
+
 export const ytService = new YoutubeService();
+
+export type YoutubeState = ReturnType<typeof ytService.getState>;
+
+export const useYoutube = (): YoutubeState => {
+  const [state, setState] = useState<YoutubeState>(() => ytService.getState());
+
+  useEffect(() => {
+    return ytService.subscribe(() => {
+      setState(ytService.getState());
+    });
+  }, []);
+
+  return state;
+};

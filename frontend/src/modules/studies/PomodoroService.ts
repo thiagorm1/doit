@@ -175,4 +175,13 @@ class PomodoroService {
   }
 }
 
+import { useSyncExternalStore } from 'react';
+
 export const pomodoroGlobal = new PomodoroService();
+
+export const usePomodoro = (): PomodoroState => {
+  return useSyncExternalStore(
+    (cb) => pomodoroGlobal.subscribe(cb),
+    () => pomodoroGlobal.getState()
+  );
+};
