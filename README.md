@@ -1,46 +1,61 @@
-# Doit
+# DOiT
 
-Base inicial de uma aplicação web estruturada com arquitetura DDD.
+Plataforma web para gestao de estudos, produtividade e foco.
 
-## Tecnologias Utilizadas
+## Tecnologias
 
-- **Frontend:** React, Vite, TypeScript
-- **Backend:** Spring Boot (Java 21), Spring Data JPA, Validation
-- **Banco de Dados:** PostgreSQL
-- **Infraestrutura:** Docker e Docker Compose
+- Frontend: React 18, TypeScript, Vite, Tailwind CSS, Excalidraw, React Router
+- Backend: Java 21, Spring Boot, Spring Data JPA
+- Banco de Dados: PostgreSQL
+- Containerizacao: Docker, Docker Compose
 
 ## Estrutura do Projeto
 
-- `/frontend`: Aplicação SPA construída com React, Vite e TypeScript.
-- `/backend`: API RESTful construída com Spring Boot seguindo os princípios de Domain-Driven Design (DDD).
-  - `domain`: Entidades e regras de negócio.
-  - `application`: Casos de uso da aplicação e serviços.
-  - `infrastructure`: Configurações, integrações externas e repositórios.
-  - `presentation`: Controladores REST (APIs).
+- backend/: API RESTful desenvolvida em Spring Boot com arquitetura em camadas orientada a dominio (DDD).
+  - domain/: Entidades, contratos e regras de negocio.
+  - application/: Casos de uso, DTOs e servicos da aplicacao.
+  - infrastructure/: Adaptadores, repositorios JPA e configuracoes externas.
+  - presentation/: Controladores REST e exposicao de endpoints.
+- frontend/: Interface SPA desenvolvida em React com TypeScript.
+  - src/app/: Ponto de entrada, configuracao de rotas e componentes globais.
+  - src/modules/studies/: Modulo de estudos (Pomodoro, YouTube Player, Faculdade, Concursos, Base de Conhecimento e Excalidraw).
+  - src/shared/: Layouts, configuracoes da API, utilitarios de edicao e componentes compartilhados.
 
-## Como Executar
+## Execucao
 
-### Pré-requisitos
-- Node.js (v18+)
-- Java 21+
-- Maven
+### Pre-requisitos
+
 - Docker e Docker Compose
+- Node.js 18+ (opcional para execucao local fora do container)
+- Java 21 e Maven (opcional para execucao local fora do container)
 
-### 1. Banco de Dados (PostgreSQL via Docker)
-Na raiz do projeto, execute:
+### Execucao via Docker Compose
+
+Inicie todos os servicos (banco de dados, API e frontend):
+
 ```bash
 docker-compose up -d
 ```
 
-### 2. Backend (Spring Boot)
-Navegue até a pasta `backend` e inicie a aplicação:
+Servicos disponiveis:
+- Frontend: http://localhost:5173
+- Backend: http://localhost:8080
+- PostgreSQL: localhost:5432
+
+### Execucao Local (Desenvolvimento)
+
+1. Banco de Dados:
+```bash
+docker-compose up -d db
+```
+
+2. Backend:
 ```bash
 cd backend
 ./mvnw spring-boot:run
 ```
 
-### 3. Frontend (React + Vite)
-Navegue até a pasta `frontend`, instale as dependências e inicie o servidor de desenvolvimento:
+3. Frontend:
 ```bash
 cd frontend
 npm install
